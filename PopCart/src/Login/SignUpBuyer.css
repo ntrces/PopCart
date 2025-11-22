@@ -6,28 +6,27 @@
   min-height: 100vh;
   background-color: #f9f9f9;
   padding: 2rem;
-  width: 670.22px;       /* fixed width */
-  margin: 0 auto;        /* center horizontally */
+  width: 100%;
   box-sizing: border-box;
-/* Card container */}
+}
 
+/* Card container */
 .sign-up-card {
   background-color: #fff;
-  border-radius: 12px;
-  padding: 2rem;
+  border-radius: 14px;
+  padding: 1.5rem 2rem;
   width: 100%;
-  max-width: 670.22px; /* fixed max width */
+  max-width: 650px; /* wider */
   box-shadow: 0 4px 12px rgba(0,0,0,0.05);
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  text-align: center;
+  gap: 0.7rem;
   box-sizing: border-box;
 }
 
 /* Header */
 .title {
-  font-size: 1.8rem;       /* slightly smaller title */
+  font-size: 1.8rem;
   margin: 0;
 }
 
@@ -46,7 +45,7 @@
 
 .tab {
   flex: 1;
-  padding: 0.45rem;       /* slightly smaller */
+  padding: 0.45rem;
   border-radius: 10px;
   border: none;
   cursor: pointer;
@@ -60,11 +59,11 @@
   font-weight: bold;
 }
 
-/* Form */
+/* Form layout */
 .form {
   display: flex;
   flex-direction: column;
-  gap: 0.85rem;            /* smaller gap */
+  gap: 0.85rem;
   text-align: left;
 }
 
@@ -74,31 +73,25 @@
 }
 
 .form input {
-  padding: 0.45rem 0.75rem; /* slightly smaller height */
+  padding: 0.45rem 0.75rem;
   border-radius: 8px;
   border: 1px solid #ccc;
   font-size: 0.9rem;
   width: 100%;
-  height: 34px;             /* fixed height for inputs */
+  height: 34px;
   box-sizing: border-box;
 }
 
-/* Option select */
-.option-select {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.45rem 0.75rem;
-  border-radius: 8px;
-  background-color: #f3f3f5;
-  height: 34px;
+/* === Name fields row === */
+.name-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Last | First */
+  gap: 0.8rem;
 }
 
-/* Icon */
-.icon {
-  width: 16px;
-  height: 16px;
-  opacity: 0.5;
+.name-row label {
+  display: block;
+  margin-bottom: 3px;
 }
 
 /* Submit button */

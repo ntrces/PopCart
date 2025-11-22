@@ -1,12 +1,15 @@
 import React from "react";
-import "./App.css";
-import SignUpSeller from "./Login/SignUpSeller.jsx";
+import { Routes, Route } from "react-router-dom";
+
+import SignIn from "./Login/SignIn.jsx";
+import SignUpBuyer from "./Login/SignUpBuyer.jsx";
 
 function App() {
   return (
-    <>
-      <SignUpSeller />
-    </>
+    <Routes>
+      <Route path="/" element={<SignIn />} />
+      <Route path="/signup-buyer" element={<SignUpBuyer />} />
+    </Routes>
   );
 }
 

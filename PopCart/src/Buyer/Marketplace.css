@@ -1,0 +1,582 @@
+/* --------------------------------------------------
+   BASE
+-------------------------------------------------- */
+.marketplace-wrapper {
+  background: #ffffff;
+  font-family: "Inter", sans-serif;
+}
+
+.home-container {
+  display: flex;
+}
+
+.main-content {
+  padding: 25px;
+  width: 100%;
+}
+
+/* --------------------------------------------------
+   TOP BAR
+-------------------------------------------------- */
+.top-bar {
+  background: #fffdfd;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border-bottom: 1px solid #a2a2a6;
+}
+
+.left-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.toggle-btn {
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.right-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.icon-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* PROFILE */
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #8b5cf6;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* --------------------------------------------------
+   SIDEBAR
+-------------------------------------------------- */
+.sidebar {
+  width: 230px;
+  background: #ffffff;
+  padding: 20px;
+  border-right: 1px solid #a2a2a6;
+}
+
+.nav-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.nav-item,
+.sign-out {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 14px;
+  border: none;
+  background: transparent;
+  font-size: 16px;
+  color: #0a0a0a;
+  text-align: left;
+  cursor: pointer;
+}
+
+.nav-item svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.sign-out:hover {
+  background-color: #f2f2f2;
+  border-radius: 6px;
+}
+.nav-item:hover {
+  background-color: #f2f2f2;
+  border-radius: 6px;
+}
+
+.nav-item.active {
+  background-color: black;
+  color: white;
+  border-radius: 6px;
+}
+
+
+
+/* --------------------------------------------------
+   SIGN OUT MODAL
+-------------------------------------------------- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 10, 10, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.signout-modal {
+  width: 320px;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.signout-modal h3 {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.signout-modal p {
+  font-size: 14px;
+  color: #717182;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.cancel-btn,
+.confirm-btn {
+  background: none;
+  border: none;
+  font-size: 14px;
+  color: #717182;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.cancel-btn:hover,
+.confirm-btn:hover {
+  background: #000;
+  color: #fff;
+  border-radius: 5px;
+  padding: 5px;
+}
+/* --------------------------------------------------
+   PRODUCT LIST (placeholder)
+-------------------------------------------------- */
+
+/* ALBUMS */
+
+
+.album-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+  padding: 20px 0;
+}
+
+.album-card {
+  background: white;
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+}
+
+.album-img {
+  width: 100%;
+  height: 250px;
+  background: #e5e5e5;
+  border-radius: 10px;
+}
+
+.album-info {
+  margin-top: 12px;
+}
+
+.price-details-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.price {
+  color: #8b5cf6;
+  font-size: 1.1em;
+  font-weight: 700;
+}
+
+.details-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #eee;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.85em;
+}
+
+.cart-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: #000;
+  color: white;
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: none;
+  margin-top: 12px;
+  cursor: pointer;
+}
+
+
+.marketplace-section {
+  width: 100%;
+  padding: 20px 30px;
+}
+
+/* TOP ROW */
+.search-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 35px;
+  width: 100%;
+}
+
+.right-controls {
+  margin-left: auto; 
+  display: flex;
+  gap: 15px;
+}
+
+.search-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.search-wrapper {
+  position: relative;
+}
+
+.search-input {
+  width: 667px;
+  height: 44px;
+  padding: 0 45px 0 15px; /* leave space for icon */
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+.search-icon {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none; /* so clicks go to input */
+}
+
+.genre-dropdown {
+  width: 125px;
+  height: 44px;
+  padding: 0 12px;              /* optional: adjust left/right padding */
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: white;       /* ensure background is white */
+  appearance: none;              /* removes default arrow in most browsers */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M4 6L8 10L12 6' stroke='%23717182' stroke-width='1.33333' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 12px center;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.seller-btn {
+  display: inline-flex;           /* allows text + icon alignment */
+  align-items: center;            /* vertical center */
+  justify-content: center;        /* horizontal center */
+  gap: 8px;                       /* space between SVG and text */
+  padding: 10px 16px;             /* adjust height/width */
+  background-color: #ffffff;         /* button color */
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border: 1px solid #ccc;
+
+}
+
+
+.seller-btn:hover {
+  background-color: #100f12;
+  color: #fff;
+}
+
+.seller-btn svg {
+  width: 16px;                    /* standard icon width */
+  height: 16px;                   /* standard icon height */
+  flex-shrink: 0;                 /* prevent shrinking */
+  display: inline-block;
+  vertical-align: middle;         /* aligns with text */
+}
+
+/* Overlay */
+.seller-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+/* Modal box */
+.seller-modal {
+  background: #F8F9FA;
+  width: 100%;
+  max-width: 550px;
+  padding: 24px;
+  border-radius: 12px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 35px rgba(0,0,0,0.15);
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+/* Header */
+.seller-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.seller-close-btn {
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  color: #555;
+}
+
+.seller-modal-desc {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 16px;
+}
+
+/* Form */
+.seller-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.seller-form input,
+.seller-form select,
+.seller-form textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+/* Footer Buttons */
+.seller-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.seller-cancel-btn {
+  padding: 8px 16px;
+  border: 1px solid #999;
+  border-radius: 8px;
+  background: white;
+  cursor: pointer;
+}
+
+.seller-submit-btn {
+  padding: 8px 16px;
+  background: black;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* Animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* ALBUMS GRID */
+.album-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4 columns */
+  gap: 20px;
+  width: 100%;
+  padding: 20px 0;
+}
+
+/* Card */
+.album-card {
+  background: white;
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Placeholder image */
+.album-img {
+  width: 100%;
+  height: 250px;
+  background: #e5e5e5;
+  border-radius: 10px;
+}
+
+/* Title + Artist */
+.album-info {
+  margin-top: 12px;
+}
+
+/* Price + Details row */
+.price-details-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+
+/* Price text */
+.price {
+  color: #8B5CF6;
+  font-weight: 700;
+  font-size: 1.1em;
+  white-space: nowrap;
+}
+
+/* Small details button */
+.details-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #eee;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.85em;
+  white-space: nowrap;
+}
+
+/* Add to Cart button */
+.cart-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 12px;
+  background: #000;
+  color: white;
+  padding: 10px;
+  border-radius: 6px;
+  width: 100%;
+  border: none;
+  cursor: pointer;
+}
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal-container {
+  background: #fff;
+  padding: 24px;
+  width: 420px;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  animation: fadeIn 0.15s ease-in-out;
+}
+
+.modal-actions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.close-btn {
+  background: #e5e5e5;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+}
+
+.go-to-cart-btn {
+  background: black;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+}
+

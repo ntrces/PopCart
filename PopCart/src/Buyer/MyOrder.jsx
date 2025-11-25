@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import "./Home.css";
+import "./MyOrder.css";
 import { Link } from "react-router-dom";
 
 
-export default function Home() {
+export default function MyOrder() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
@@ -11,7 +11,7 @@ export default function Home() {
 
 
   return (
-    <div className="home-wrapper">
+    <div className="myOrder-wrapper">
 
       {/* TOP BAR */}
       <div className="top-bar">
@@ -65,7 +65,7 @@ export default function Home() {
    <nav className="nav-menu">
     
 <Link to="/Home">
- <button className="nav-item active"> <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+ <button className="nav-item "> <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M11.25 15.75V9.75C11.25 9.55109 11.171 9.36032 11.0303 9.21967C10.8897 9.07902 10.6989 9 10.5 9H7.5C7.30109 9 7.11032 9.07902 6.96967 9.21967C6.82902 9.36032 6.75 9.55109 6.75 9.75V15.75" stroke="black" stroke-width="1.5"/>
 <path d="M2.25 7.49999C2.24995 7.28179 2.2975 7.06621 2.38934 6.86828C2.48118 6.67035 2.6151 6.49484 2.78175 6.35399L8.03175 1.85399C8.30249 1.62517 8.64552 1.49963 9 1.49963C9.35448 1.49963 9.69751 1.62517 9.96825 1.85399L15.2183 6.35399C15.3849 6.49484 15.5188 6.67035 15.6107 6.86828C15.7025 7.06621 15.7501 7.28179 15.75 7.49999V14.25C15.75 14.6478 15.592 15.0293 15.3107 15.3107C15.0294 15.592 14.6478 15.75 14.25 15.75H3.75C3.35218 15.75 2.97064 15.592 2.68934 15.3107C2.40804 15.0293 2.25 14.6478 2.25 14.25V7.49999Z" stroke="black" stroke-width="1.5"/>
 </svg>
@@ -88,14 +88,14 @@ Home</button> </Link>
 </svg>
  Marketplace</button> </Link>
 
-<Link to="/MyOrder">
- <button className="nav-item"> <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M8.25 16.2975C8.47803 16.4291 8.7367 16.4985 9 16.4985C9.2633 16.4985 9.52197 16.4291 9.75 16.2975L15 13.2975C15.2278 13.166 15.417 12.9769 15.5487 12.7491C15.6803 12.5214 15.7497 12.263 15.75 12V5.99999C15.7497 5.73694 15.6803 5.4786 15.5487 5.25086C15.417 5.02312 15.2278 4.83401 15 4.70249L9.75 1.70249C9.52197 1.57084 9.2633 1.50153 9 1.50153C8.7367 1.50153 8.47803 1.57084 8.25 1.70249L3 4.70249C2.7722 4.83401 2.58299 5.02312 2.45135 5.25086C2.31971 5.4786 2.25027 5.73694 2.25 5.99999V12C2.25027 12.263 2.31971 12.5214 2.45135 12.7491C2.58299 12.9769 2.7722 13.166 3 13.2975L8.25 16.2975Z" stroke="#0A0A0A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M9 16.5V9" stroke="#0A0A0A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M2.46753 5.25L9.00003 9L15.5325 5.25" stroke="#0A0A0A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M5.625 3.20251L12.375 7.06501" stroke="#0A0A0A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
- My Orders</button> </Link>
+              <Link to="/MyOrder">
+               <button className="nav-item active"> <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M8.25 16.2975C8.47803 16.4291 8.7367 16.4985 9 16.4985C9.2633 16.4985 9.52197 16.4291 9.75 16.2975L15 13.2975C15.2278 13.166 15.417 12.9769 15.5487 12.7491C15.6803 12.5214 15.7497 12.263 15.75 12V5.99999C15.7497 5.73694 15.6803 5.4786 15.5487 5.25086C15.417 5.02312 15.2278 4.83401 15 4.70249L9.75 1.70249C9.52197 1.57084 9.2633 1.50153 9 1.50153C8.7367 1.50153 8.47803 1.57084 8.25 1.70249L3 4.70249C2.7722 4.83401 2.58299 5.02312 2.45135 5.25086C2.31971 5.4786 2.25027 5.73694 2.25 5.99999V12C2.25027 12.263 2.31971 12.5214 2.45135 12.7491C2.58299 12.9769 2.7722 13.166 3 13.2975L8.25 16.2975Z" stroke="#0A0A0A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M9 16.5V9" stroke="#0A0A0A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M2.46753 5.25L9.00003 9L15.5325 5.25" stroke="#0A0A0A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M5.625 3.20251L12.375 7.06501" stroke="#0A0A0A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+               My Orders</button> </Link>
 
 <button className="sign-out" onClick={() => setShowSignOutModal(true)}>
                 <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -131,89 +131,7 @@ Home</button> </Link>
 
         {/* MAIN CONTENT */}
         <main className="main-content">
-          <h2 className="welcome-text">Welcome back, Althea! <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M7.5 15V4.16667L17.5 2.5V13.3333" stroke="#8B5CF6" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M5 17.5C6.38071 17.5 7.5 16.3807 7.5 15C7.5 13.6193 6.38071 12.5 5 12.5C3.61929 12.5 2.5 13.6193 2.5 15C2.5 16.3807 3.61929 17.5 5 17.5Z" stroke="#8B5CF6" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M15 15.8333C16.3807 15.8333 17.5 14.7141 17.5 13.3333C17.5 11.9526 16.3807 10.8333 15 10.8333C13.6193 10.8333 12.5 11.9526 12.5 13.3333C12.5 14.7141 13.6193 15.8333 15 15.8333Z" stroke="#8B5CF6" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
-</h2>
-          <p className="subtext">Discover authentic albums and expand your collection</p>
-
-          <div className="stats-grid">
-            <div className="stat-card">
-              <p>Total Orders</p>
-              <h3>0</h3>
-              <span>All time purchases</span>
-            </div>
-            <div className="stat-card">
-              <p>Pending Orders</p>
-              <h3>0</h3>
-              <span>In progress</span>
-            </div>
-            <div className="stat-card">
-              <p>Completed</p>
-              <h3>0</h3>
-              <span>Successfully delivered</span>
-            </div>
-          </div>
-
-          <div className="albums-section">
-            <div className="albums-header">
-              <h3>Albums</h3>
-<div className="sidebar-bottom">
-    <button className="view-all">View All ➤
-</button>
-  </div>            </div>
-
-
-<div className="album-list">
-  {[1, 2, 3].map((item) => (
-    <div className="album-card" key={item}>
-      <div className="album-img"></div>
-
-      <div className="album-info">
-        <h4>Album {item}</h4>
-        <p>Artist Name</p>
-
-        <div className="price-details-box">
-          <div className="price-details-row">
-            <p className="price">₱398.97</p>
-
-            <button className="details-btn">
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M1.20284 7.203C1.15423 7.07203 1.15423 6.92796 1.20284 6.797C1.67634 5.64891 2.48006 4.66727 3.51213 3.97652C4.54419 3.28577 5.75812 2.91702 7.00001 2.91702C8.2419 2.91702 9.45583 3.28577 10.4879 3.97652C11.52 4.66727 12.3237 5.64891 12.7972 6.797C12.8458 6.92796 12.8458 7.07203 12.7972 7.203C12.3237 8.35108 11.52 9.33272 10.4879 10.0235C9.45583 10.7142 8.2419 11.083 7.00001 11.083C5.75812 11.083 4.54419 10.7142 3.51213 10.0235C2.48006 9.33272 1.67634 8.35108 1.20284 7.203Z" stroke="#717182" stroke-width="1.16667" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M7 8.75C7.9665 8.75 8.75 7.9665 8.75 7C8.75 6.0335 7.9665 5.25 7 5.25C6.0335 5.25 5.25 6.0335 5.25 7C5.25 7.9665 6.0335 8.75 7 8.75Z" stroke="#717182" stroke-width="1.16667" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
-
-              Details
-            </button>
-          </div>
-        </div>
-
-        <button className="cart-btn">
-         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g clip-path="url(#clip0_50_2259)">
-<path d="M5.33329 14.6667C5.70148 14.6667 5.99996 14.3682 5.99996 14C5.99996 13.6318 5.70148 13.3333 5.33329 13.3333C4.9651 13.3333 4.66663 13.6318 4.66663 14C4.66663 14.3682 4.9651 14.6667 5.33329 14.6667Z" stroke="white" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M12.6667 14.6667C13.0349 14.6667 13.3333 14.3682 13.3333 14C13.3333 13.6318 13.0349 13.3333 12.6667 13.3333C12.2985 13.3333 12 13.6318 12 14C12 14.3682 12.2985 14.6667 12.6667 14.6667Z" stroke="white" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M1.3667 1.36667H2.70003L4.47337 9.64667C4.53842 9.94991 4.70715 10.221 4.95051 10.4132C5.19387 10.6055 5.49664 10.7069 5.8067 10.7H12.3267C12.6301 10.6995 12.9244 10.5955 13.1607 10.4052C13.3971 10.2149 13.5615 9.94969 13.6267 9.65333L14.7267 4.7H3.41337" stroke="white" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
-</g>
-<defs>
-<clipPath id="clip0_50_2259">
-<rect width="16" height="16" fill="white"/>
-</clipPath>
-</defs>
-</svg>
-
-          Add to Cart
-        </button>
-      </div>
-    </div>
-    
-              ))}
-
-            
-            </div>
-          </div>
+          
         </main>
       </div>
     </div>

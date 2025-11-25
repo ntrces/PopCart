@@ -14,6 +14,12 @@ export default function Marketplace() {
   const closeModal = () => setShowSellerModal(false);
 
   const [showAddCartModal, setShowAddCartModal] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
+  const [selectedAlbum, setSelectedAlbum] = useState(null);
+  const [cartItems, setCartItems] = useState([]);
+  const addToCart = (album) => { setCartItems([...cartItems, album]); setShowAddCartModal(true);
+}
+
 
 
 
@@ -272,7 +278,11 @@ export default function Marketplace() {
           <div className="price-details-row">
             <p className="price">₱499</p>
 
-            <button className="details-btn">
+            <button className="details-btn" onClick={() => {
+             setSelectedAlbum(item);
+             setShowDetails(true);
+  }}
+>
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M1.20284 7.203C1.15423 7.07203 1.15423 6.92796 1.20284 6.797C1.67634 5.64891 2.48006 4.66727 3.51213 3.97652C4.54419 3.28577 5.75812 2.91702 7.00001 2.91702C8.2419 2.91702 9.45583 3.28577 10.4879 3.97652C11.52 4.66727 12.3237 5.64891 12.7972 6.797C12.8458 6.92796 12.8458 7.07203 12.7972 7.203C12.3237 8.35108 11.52 9.33272 10.4879 10.0235C9.45583 10.7142 8.2419 11.083 7.00001 11.083C5.75812 11.083 4.54419 10.7142 3.51213 10.0235C2.48006 9.33272 1.67634 8.35108 1.20284 7.203Z" stroke="#717182" strokeWidth="1.16667" strokeLinecap="round" strokeLinejoin="round"/>
                 <path d="M7 8.75C7.9665 8.75 8.75 7.9665 8.75 7C8.75 6.0335 7.9665 5.25 7 5.25C6.0335 5.25 5.25 6.0335 5.25 7C5.25 7.9665 6.0335 8.75 7 8.75Z" stroke="#717182" strokeWidth="1.16667" strokeLinecap="round" strokeLinejoin="round"/>
@@ -282,22 +292,94 @@ export default function Marketplace() {
         
           </div>
         </div>
+       
+      {/* BODY */}
 
-       <button className="cart-btn" onClick={() => setShowAddCartModal(true)}>
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <g clipPath="url(#clip0_50_2259)">
-              <path d="M5.33329 14.6667C5.70148 14.6667 5.99996 14.3682 5.99996 14C5.99996 13.6318 5.70148 13.3333 5.33329 13.3333C4.9651 13.3333 4.66663 13.6318 4.66663 14C4.66663 14.3682 4.9651 14.6667 5.33329 14.6667Z" stroke="white" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M12.6667 14.6667C13.0349 14.6667 13.3333 14.3682 13.3333 14C13.3333 13.6318 13.0349 13.3333 12.6667 13.3333C12.2985 13.3333 12 13.6318 12 14C12 14.3682 12.2985 14.6667 12.6667 14.6667Z" stroke="white" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M1.3667 1.36667H2.70003L4.47337 9.64667C4.53842 9.94991 4.70715 10.221 4.95051 10.4132C5.19387 10.6055 5.49664 10.7069 5.8067 10.7H12.3267C12.6301 10.6995 12.9244 10.5955 13.1607 10.4052C13.3971 10.2149 13.5615 9.94969 13.6267 9.65333L14.7267 4.7H3.41337" stroke="white" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/>
-            </g>
-            <defs>
-              <clipPath id="clip0_50_2259">
-                <rect width="16" height="16" fill="white"/>
-              </clipPath>
-            </defs>
-          </svg>
-          Add to Cart
-        </button>
+       <button
+  className="album-add-cart-btn"
+  onClick={() => addToCart(item)}
+>
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <g clipPath="url(#clip0_50_2259)">
+      <path d="M5.33329 14.6667C5.70148 14.6667 5.99996 14.3682 5.99996 14C5.99996 13.6318 5.70148 13.3333 5.33329 13.3333C4.9651 13.3333 4.66663 13.6318 4.66663 14C4.66663 14.3682 4.9651 14.6667 5.33329 14.6667Z" stroke="white" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M12.6667 14.6667C13.0349 14.6667 13.3333 14.3682 13.3333 14C13.3333 13.6318 13.0349 13.3333 12.6667 13.3333C12.2985 13.3333 12 13.6318 12 14C12 14.3682 12.2985 14.6667 12.6667 14.6667Z" stroke="white" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M1.3667 1.36667H2.70003L4.47337 9.64667C4.53842 9.94991 4.70715 10.221 4.95051 10.4132C5.19387 10.6055 5.49664 10.7069 5.8067 10.7H12.3267C12.6301 10.6995 12.9244 10.5955 13.1607 10.4052C13.3971 10.2149 13.5615 9.94969 13.6267 9.65333L14.7267 4.7H3.41337" stroke="white" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/>
+    </g>
+    <defs>
+      <clipPath id="clip0_50_2259">
+        <rect width="16" height="16" fill="white"/>
+      </clipPath>
+    </defs>
+  </svg>
+  Add to Cart
+</button>
+
+{showDetails && selectedAlbum && (
+  <div className="details-modal-overlay">
+    <div className="details-modal">
+
+      {/* HEADER */}
+      <div className="details-modal-header">
+        <button className="back-btn" onClick={() => setShowDetails(false)}>←</button>
+        <h2>Album Details</h2>
+        <button className="close-btn" onClick={() => setShowDetails(false)}>×</button>
+      </div>
+
+      {/* BODY */}
+      <div className="details-modal-body">
+
+        {/* LEFT PANEL: Image */}
+        <div className="details-left">
+          <div className="album-main-img">
+            {/* Placeholder gray box */}
+          </div>
+          <div className="image-tag">1 / 3</div>
+          <div className="image-dots">
+            <span className="dot active"></span>
+            <span className="dot"></span>
+            <span className="dot"></span>
+          </div>
+          <p className="image-count-label">3 images available</p>
+        </div>
+
+        {/* RIGHT PANEL: Info */}
+        <div className="details-right">
+          <h1 className="album-title">Album {selectedAlbum}</h1>
+          <p className="album-subtitle">Artist Name</p>
+
+          {/* Tags / Badges */}
+          <div className="album-tags">
+            <span className="tag">Rock</span>
+            <span className="tag">Very Good</span>
+          </div>
+
+          {/* Price */}
+          <p className="album-price">₱499</p>
+
+          {/* Stock */}
+          <p className="album-stock">Stock: 1000</p>
+
+          {/* Description */}
+          <div className="album-description">
+            <h3>Description</h3>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam at purus pulvinar, placerat turpis ac, interdum metus.</p>
+          </div>
+
+          {/* Add to Cart Button */}
+         <button className="album-add-cart-btn" onClick={() => {
+  addToCart(selectedAlbum);      // Add to cart
+  setShowDetails(false);         // Close the details modal
+}}>
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M1.3667 1.36667H2.70003L4.47337 9.64667C4.53842 9.94991 4.70715 10.221 4.95051 10.4132C5.19387 10.6055 5.49664 10.7069 5.8067 10.7H12.3267C12.6301 10.6995 12.9244 10.5955 13.1607 10.4052C13.3971 10.2149 13.5615 9.94969 13.6267 9.65333L14.7267 4.7H3.41337" stroke="white" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+  Add to Cart
+</button>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
         {showAddCartModal && (
   <div className="modal-overlay">
     <div className="modal-container">
@@ -321,8 +403,10 @@ export default function Marketplace() {
       </div>
     </div>
   ))}
-</div>
 
+
+
+</div>
       </div>
       </div>
       </div>

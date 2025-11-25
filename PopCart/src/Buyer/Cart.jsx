@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import "./MyOrder.css";
+import "./Cart.css";
 import { Link } from "react-router-dom";
 
 
-export default function MyOrder() {
+export default function Cart() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
@@ -11,7 +11,7 @@ export default function MyOrder() {
 
 
   return (
-    <div className="myOrder-wrapper">
+    <div className="Cart-wrapper">
 
       {/* TOP BAR */}
       <div className="top-bar">
@@ -27,32 +27,32 @@ export default function MyOrder() {
 
         <div className="right-controls">
           <Link to="/cart" className="icon-btn">
-                      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <g clip-path="url(#clip0_42_608)">
-          <path d="M6 16.5C6.41421 16.5 6.75 16.1642 6.75 15.75C6.75 15.3358 6.41421 15 6 15C5.58579 15 5.25 15.3358 5.25 15.75C5.25 16.1642 5.58579 16.5 6 16.5Z" stroke="#0A0A0A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M14.25 16.5C14.6642 16.5 15 16.1642 15 15.75C15 15.3358 14.6642 15 14.25 15C13.8358 15 13.5 15.3358 13.5 15.75C13.5 16.1642 13.8358 16.5 14.25 16.5Z" stroke="#0A0A0A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M1.53748 1.53751H3.03748L5.03248 10.8525C5.10566 11.1937 5.29548 11.4986 5.56926 11.7149C5.84304 11.9312 6.18366 12.0453 6.53248 12.0375H13.8675C14.2089 12.037 14.5398 11.92 14.8057 11.7059C15.0717 11.4918 15.2566 11.1934 15.33 10.86L16.5675 5.28751H3.83998" stroke="#0A0A0A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </g>
-          <defs>
-          <clipPath id="clip0_42_608">
-          <rect width="18" height="18" fill="white"/>
-          </clipPath>
-          </defs>
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_42_608)">
+<path d="M6 16.5C6.41421 16.5 6.75 16.1642 6.75 15.75C6.75 15.3358 6.41421 15 6 15C5.58579 15 5.25 15.3358 5.25 15.75C5.25 16.1642 5.58579 16.5 6 16.5Z" stroke="#0A0A0A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M14.25 16.5C14.6642 16.5 15 16.1642 15 15.75C15 15.3358 14.6642 15 14.25 15C13.8358 15 13.5 15.3358 13.5 15.75C13.5 16.1642 13.8358 16.5 14.25 16.5Z" stroke="#0A0A0A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M1.53748 1.53751H3.03748L5.03248 10.8525C5.10566 11.1937 5.29548 11.4986 5.56926 11.7149C5.84304 11.9312 6.18366 12.0453 6.53248 12.0375H13.8675C14.2089 12.037 14.5398 11.92 14.8057 11.7059C15.0717 11.4918 15.2566 11.1934 15.33 10.86L16.5675 5.28751H3.83998" stroke="#0A0A0A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</g>
+<defs>
+<clipPath id="clip0_42_608">
+<rect width="18" height="18" fill="white"/>
+</clipPath>
+</defs>
+</svg>
+
+         </Link>
+         
+          <Link to="/Buyernotif" className="icon-btn">
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M6.84534 14C6.96237 14.2027 7.13068 14.371 7.33337 14.488C7.53605 14.605 7.76597 14.6666 8 14.6666C8.23404 14.6666 8.46396 14.605 8.66664 14.488C8.86933 14.371 9.03764 14.2027 9.15467 14" stroke="#0A0A0A" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M2.17467 10.2173C2.08758 10.3128 2.0301 10.4315 2.00924 10.559C1.98837 10.6865 2.00501 10.8174 2.05714 10.9356C2.10926 11.0538 2.19462 11.1544 2.30284 11.225C2.41105 11.2956 2.53745 11.3332 2.66667 11.3333H13.3333C13.4625 11.3334 13.589 11.2959 13.6972 11.2254C13.8055 11.1549 13.891 11.0545 13.9433 10.9364C13.9955 10.8182 14.0123 10.6874 13.9916 10.5599C13.9709 10.4323 13.9136 10.3136 13.8267 10.218C12.94 9.30401 12 8.33268 12 5.33334C12 4.27248 11.5786 3.25506 10.8284 2.50492C10.0783 1.75477 9.06087 1.33334 8 1.33334C6.93914 1.33334 5.92172 1.75477 5.17157 2.50492C4.42143 3.25506 4 4.27248 4 5.33334C4 8.33268 3.05933 9.30401 2.17467 10.2173Z" stroke="#0A0A0A" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-          
-                   </Link>
+                     </Link>
 
-         <Link to="/Buyernotif" className="icon-btn">
-                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-         <path d="M6.84534 14C6.96237 14.2027 7.13068 14.371 7.33337 14.488C7.53605 14.605 7.76597 14.6666 8 14.6666C8.23404 14.6666 8.46396 14.605 8.66664 14.488C8.86933 14.371 9.03764 14.2027 9.15467 14" stroke="#0A0A0A" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
-         <path d="M2.17467 10.2173C2.08758 10.3128 2.0301 10.4315 2.00924 10.559C1.98837 10.6865 2.00501 10.8174 2.05714 10.9356C2.10926 11.0538 2.19462 11.1544 2.30284 11.225C2.41105 11.2956 2.53745 11.3332 2.66667 11.3333H13.3333C13.4625 11.3334 13.589 11.2959 13.6972 11.2254C13.8055 11.1549 13.891 11.0545 13.9433 10.9364C13.9955 10.8182 14.0123 10.6874 13.9916 10.5599C13.9709 10.4323 13.9136 10.3136 13.8267 10.218C12.94 9.30401 12 8.33268 12 5.33334C12 4.27248 11.5786 3.25506 10.8284 2.50492C10.0783 1.75477 9.06087 1.33334 8 1.33334C6.93914 1.33334 5.92172 1.75477 5.17157 2.50492C4.42143 3.25506 4 4.27248 4 5.33334C4 8.33268 3.05933 9.30401 2.17467 10.2173Z" stroke="#0A0A0A" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
-         </svg>
-                    </Link>
-
-          <Link to="/myprofile" className="profile">
-                      <div className="avatar">A</div>
-                      <p>Althea</p>
-                    </Link>
+          <div className="profile">
+            <div className="avatar">A</div>
+            <p>Althea</p>
+          </div>
         </div>
       </div>
 
@@ -132,86 +132,7 @@ Home</button> </Link>
 
         {/* MAIN CONTENT */}
         <main className="main-content">
-<div className="myorders-header">
-    <div className="left">
-      <div className="icon-box">
-  <svg className="orders-icon" viewBox="0 0 24 24" fill="none">
-    <path d="M11 21.73C11.304 21.9055 11.6489 21.9979 12 21.9979C12.3511 21.9979 12.696 21.9055 13 21.73L20 17.73C20.3037 17.5546 20.556 17.3025 20.7315 16.9988C20.9071 16.6952 20.9996 16.3507 21 16V7.99999C20.9996 7.64927 20.9071 7.3048 20.7315 7.00116C20.556 6.69751 20.3037 6.44536 20 6.26999L13 2.26999C12.696 2.09446 12.3511 2.00204 12 2.00204C11.6489 2.00204 11.304 2.09446 11 2.26999L4 6.26999C3.69626 6.44536 3.44398 6.69751 3.26846 7.00116C3.09294 7.3048 3.00036 7.64927 3 7.99999V16C3.00036 16.3507 3.09294 16.6952 3.26846 16.9988C3.44398 17.3025 3.69626 17.5546 4 17.73L11 21.73Z" stroke="#0A0A0A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M12 22V12" stroke="#0A0A0A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M3.29004 7L12 12L20.71 7" stroke="#0A0A0A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M7.5 4.26999L16.5 9.41999" stroke="#0A0A0A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-  </svg>
-</div>
-      <div>
-        <h1>My Orders</h1>
-        <p>Track your purchases</p>
-      </div>
-    </div>
-    <div className="order-count">1 order</div>
-  </div>
-
-  {/* ORDER HISTORY CARD */}
-  <div className="order-history-card">
-    <h2>Order History</h2>
-    <p className="sub">View all your orders and their status</p>
-
-    {/* INNER ORDER CARD */}
-    <div className="order-card">
-
-      {/* Order Header */}
-      <div className="order-card-header">
-        <div>
-          <h3>Order ORD006</h3>
-          <p className="date">November 25, 2025 00:00:00</p>
-        </div>
-
-        <div className="status-pill">
-  <span className="clock-icon">
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-      <path d="M10 5V10L13.3333 11.6667" stroke="#F0B100" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
-      <path d="M10.0001 18.3333C14.6025 18.3333 18.3334 14.6024 18.3334 10C18.3334 5.39763 14.6025 1.66667 10.0001 1.66667C5.39771 1.66667 1.66675 5.39763 1.66675 10C1.66675 14.6024 5.39771 18.3333 10.0001 18.3333Z" stroke="#F0B100" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-  </span>
-
-  <span className="pending">PENDING</span>
-</div>
-
-      </div>
-
-      {/* Customer Info */}
-      <div className="section">
-        <h4>Customer Information:</h4>
-        <p>Last Name, First Name</p>
-        <p>Email Address</p>
-        <p>Contact Number</p>
-      </div>
-
-      {/* Items */}
-      <div className="section">
-        <h4>Items</h4>
-        <div className="item-row">
-          <span>Thriller by Michael Jackson x 1</span>
-          <span className="price-myorder">₱24.99</span>
-        </div>
-        <div className="item-row">
-          <span>Hotel California by Eagles x 1</span>
-          <span className="price-myorder">₱22.99</span>
-        </div>
-      </div>
-
-      {/* Shipping */}
-      <div className="section">
-        <h4>Shipping Address:</h4>
-        <p>Blk 0 Lot 0 California Heights, California City, USA</p>
-      </div>
-
-      {/* Total */}
-      <div className="total-section">
-        <div className="line"></div>
-        <div className="total-amount">₱47.98</div>
-      </div>
-    </div>
-  </div>
+          
         </main>
       </div>
     </div>

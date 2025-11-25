@@ -1,9 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=Arimo:wght@400;500;600;700&display=swap');
+
 /* --------------------------------------------------
    BASE
 -------------------------------------------------- */
 .myOrder-wrapper {
   background: #ffffff;
-  font-family: "Inter", sans-serif;
+  font-family: 'Arimo', sans-serif;
 }
 
 .home-container {
@@ -75,19 +77,26 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  text-decoration: none !important;
+  color: inherit;
 }
 
+.profile p {
+  color: #000 !important; /* name stays black */
+}
+
+/* Avatar default violet — ALWAYS visible */
 .avatar {
-  width: 32px;
-  height: 32px;
+  background-color: #9b5de5 !important; /* FORCE the violet color */
+  width: 45px;
+  height: 45px;
   border-radius: 50%;
-  background: #8b5cf6;
-  color: white;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-weight: bold;
+  color: white !important;
 }
-
 /* --------------------------------------------------
    SIDEBAR
 -------------------------------------------------- */
@@ -236,10 +245,10 @@
   margin-top: 8px;
 }
 
-.price {
-  color: #8b5cf6;
-  font-size: 1.1em;
-  font-weight: 700;
+.price-myorder {
+  color: #4A5565;
+  font-size: 16px;
+  font-weight: 400;
 }
 
 .details-btn {
@@ -267,4 +276,166 @@
   border: none;
   margin-top: 12px;
   cursor: pointer;
+}
+
+.myorders-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.myorders-header .left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.icon-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+}
+
+.orders-icon {
+  width: 24px;
+  height: 24px;
+  display: block;
+}
+
+
+.myorders-header h1 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.myorders-header p {
+  margin: 0;
+  margin-top: -2px;
+  font-size: 14px;
+  color: #666;
+}
+
+.order-count {
+  color: #777;
+  font-size: 14px;
+}
+
+/* ORDER HISTORY CARD */
+.order-history-card {
+  background: #f7f7f7;
+  padding: 22px;
+  border-radius: 12px;
+  border: 1px solid #ececec;
+}
+
+.order-history-card h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.order-history-card .sub {
+  margin-top: 4px;
+  font-size: 14px;
+  color: #888;
+}
+
+/* INNER ORDER CARD */
+.order-card {
+  background: #fff;
+  margin-top: 18px;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #eaeaea;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+
+/* HEADER OF ORDER CARD */
+.order-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.order-card-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.order-card-header .date {
+  margin: 0;
+  font-size: 13px;
+  color: #666;
+}
+
+/* STATUS PILL */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* SVG stays clean with no background */
+.clock-icon svg {
+  display: block;
+}
+
+/* Yellow background ONLY for the text */
+.pending {
+  background: #FFF2B3;
+  color: #D9A500;
+  font-weight: 600;
+  font-size: 13px;
+  border-radius: 16px;
+  padding: 4px 10px;
+  border: 1px solid #F5D97A;
+}
+
+/* SECTIONS */
+.section {
+  margin-bottom: 18px;
+}
+
+.section h4 {
+  margin: 0 0 6px 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.section p {
+  margin: 2px 0;
+  font-size: 14px;
+  color: #444;
+}
+
+/* ITEMS */
+.item-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  margin: 4px 0;
+}
+
+/* TOTAL */
+.total-section {
+  margin-top: 20px;
+}
+
+.line {
+  width: 100%;
+  height: 1px;
+  background: #ddd;
+  margin-bottom: 10px;
+}
+
+.total-amount {
+  text-align: right;
+  font-size: 16px;
+  font-weight: bold;
 }

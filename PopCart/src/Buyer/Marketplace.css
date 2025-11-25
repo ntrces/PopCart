@@ -75,19 +75,26 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  text-decoration: none !important;
+  color: inherit;
 }
 
+.profile p {
+  color: #000 !important; /* name stays black */
+}
+
+/* Avatar default violet — ALWAYS visible */
 .avatar {
-  width: 32px;
-  height: 32px;
+  background-color: #9b5de5 !important; /* FORCE the violet color */
+  width: 45px;
+  height: 45px;
   border-radius: 50%;
-  background: #8b5cf6;
-  color: white;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-weight: bold;
+  color: white !important;
 }
-
 /* --------------------------------------------------
    SIDEBAR
 -------------------------------------------------- */

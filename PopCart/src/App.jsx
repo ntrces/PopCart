@@ -1,44 +1,33 @@
-// ...existing code...
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from "react";
+import { Routes, Route } from "react-router-dom";
+
+import SignIn from "./Login/SignIn.jsx";
+import SignUpBuyer from "./Login/SignUpBuyer.jsx";
+
+// BUYER PAGES
+import Home from "./Buyer/Home.jsx";
+import Marketplace from "./Buyer/Marketplace.jsx";
+import MyOrder from "./Buyer/MyOrder.jsx";
+import MyProfile from "./Buyer/Myprofile.jsx";   // <--- ADDED
+import Cart from "./Buyer/Cart.jsx";             // <--- ADDED
+import BuyerNotification from "./Buyer/Buyernotif.jsx";   // <--- ADDED
+
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div className="flex gap-6 mb-6">
-        <a href="https://vite.dev" target="_blank" rel="noopener noreferrer">
-          <img src={viteLogo} className="h-20 w-20 hover:scale-105 transition-transform" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank" rel="noopener noreferrer">
-          <img src={reactLogo} className="h-20 w-20 hover:rotate-6 transition-transform" alt="React logo" />
-        </a>
-      </div>
+    <Routes>
+      <Route path="/" element={<SignIn />} />
+      <Route path="/signup-buyer" element={<SignUpBuyer />} />
 
-      <h1 className="text-4xl font-extrabold text-gray-900 mb-4">Vite + React</h1>
-
-      <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-md flex flex-col items-center gap-4">
-        <button
-          onClick={() => setCount((c) => c + 1)}
-          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 active:scale-95 transition"
-        >
-          count is {count}
-        </button>
-
-        <p className="text-sm text-gray-600">
-          Edit <code className="bg-gray-100 px-1 rounded">src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-
-      <p className="text-sm text-gray-500 mt-6">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+      {/* BUYER ROUTES */}
+      <Route path="/home" element={<Home />} />
+      <Route path="/marketplace" element={<Marketplace />} />
+      <Route path="/myorder" element={<MyOrder />} />
+      <Route path="/myprofile" element={<MyProfile />} />   {/* NEW */}
+      <Route path="/cart" element={<Cart />} />             {/* NEW */}
+      <Route path="/buyernotif" element={<BuyerNotification />} />
+    </Routes>
+  );
 }
 
-export default App
-// ...existing code...
+export default App;

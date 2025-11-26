@@ -1,0 +1,148 @@
+/* Center the whole page */
+.sign-in {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f9f9f9;
+  padding: 2rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Card container (WIDER + SHORTER) */
+.sign-in-card {
+  background-color: #fff;
+  border-radius: 14px;
+  padding: 1.5rem 2rem;
+  width: 100%;
+  max-width: 650px; /* wider */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem; /* tighter spacing */
+  box-sizing: border-box;
+}
+
+/* Header */
+.title {
+  font-size: 1.6rem;
+  margin: 0;
+  font-weight: 600;
+  text-align: center;
+  color: #030213;
+}
+
+.subtitle {
+  color: #666;
+  margin: 0;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.6rem; /* reduced */
+}
+
+.tab {
+  flex: 1;
+  padding: 0.5rem;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  background-color: #ececf0;
+  font-size: 0.9rem;
+}
+
+.tab.active {
+  background-color: #030213;
+  color: #fff;
+  font-weight: 600;
+}
+
+/* Form */
+.form {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* two columns -> wider look */
+  gap: 0.8rem 1rem;
+  margin-top: 0.3rem;
+}
+
+/* Labels + Inputs full width inside each grid cell */
+.form label {
+  font-weight: 500;
+  font-size: 0.82rem;
+  display: block;
+  margin-bottom: 3px;
+  color: #030213;
+}
+
+.form input {
+  padding: 0.4rem 0.7rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 0.9rem;
+  width: 100%;
+  height: 34px;
+  box-sizing: border-box;
+}
+
+/* Make password + email span both columns */
+#email,
+#password {
+  grid-column: span 2;
+}
+
+/* Buttons */
+.submit-btn {
+  grid-column: span 2;
+  padding: 0.55rem 0.75rem;
+  border: none;
+  border-radius: 8px;
+  background-color: #030213;
+  color: #fff;
+  font-size: 0.95rem;
+  cursor: pointer;
+  height: 36px;
+  margin-top: 0.3rem;
+}
+
+.error-text {
+  color: #e63946;
+  font-size: 0.85rem;
+  margin-top: 4px;
+  margin-bottom: 10px;
+}
+
+.input-error {
+  border: 1.5px solid #e63946 !important;
+  background: #ffe6e6;
+}
+
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-wrapper input {
+  width: 100%;
+  padding-right: 40px; /* space for the eye icon */
+}
+
+.toggle-eye {
+  position: absolute;
+  right: 10px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  user-select: none;
+  opacity: 0.7;
+}
+
+.toggle-eye:hover {
+  opacity: 1;
+}

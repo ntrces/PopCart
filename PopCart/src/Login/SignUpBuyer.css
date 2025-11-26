@@ -1,0 +1,107 @@
+/* Center the whole page */
+.sign-up-buyer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f9f9f9;
+  padding: 2rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Card container */
+.sign-up-card {
+  background-color: #fff;
+  border-radius: 14px;
+  padding: 1.5rem 2rem;
+  width: 100%;
+  max-width: 650px; /* wider */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  box-sizing: border-box;
+}
+
+/* Header */
+.title {
+  font-size: 1.8rem;
+  margin: 0;
+}
+
+.subtitle {
+  color: #666;
+  margin-bottom: 0.8rem;
+  font-size: 0.95rem;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.tab {
+  flex: 1;
+  padding: 0.45rem;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  background-color: #ececf0;
+  font-size: 0.9rem;
+}
+
+.tab.active {
+  background-color: #030213;
+  color: #fff;
+  font-weight: bold;
+}
+
+/* Form layout */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  text-align: left;
+}
+
+.form label {
+  font-weight: 500;
+  font-size: 0.85rem;
+}
+
+.form input {
+  padding: 0.45rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 0.9rem;
+  width: 100%;
+  height: 34px;
+  box-sizing: border-box;
+}
+
+/* === Name fields row === */
+.name-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Last | First */
+  gap: 0.8rem;
+}
+
+.name-row label {
+  display: block;
+  margin-bottom: 3px;
+}
+
+/* Submit button */
+.submit-btn {
+  padding: 0.6rem 0.75rem;
+  border: none;
+  border-radius: 8px;
+  background-color: #030213;
+  color: #fff;
+  font-size: 0.95rem;
+  cursor: pointer;
+  height: 36px;
+}

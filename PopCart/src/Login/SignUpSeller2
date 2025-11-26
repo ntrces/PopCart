@@ -1,0 +1,140 @@
+/* Container */
+.pc-container {
+  width: 100%;
+  min-height: 100vh;
+  background: #f6f6ff;
+  display: flex;
+  justify-content: center;
+  align-items: center; /* vertically center card */
+  padding: 40px 20px;
+  font-family: "Inter", sans-serif;
+  box-sizing: border-box;
+}
+
+/* Card */
+.pc-card {
+  display: flex;
+  flex-direction: column; /* stack header + form vertically */
+  justify-content: flex-start;
+  align-items: center;
+  background-color: #f9f9f9;
+  padding: 2rem;
+  width: 100%;
+  max-width: 670px; /* responsive instead of fixed width */
+  margin: 0 auto;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  box-sizing: border-box;
+}
+
+/* Headers */
+.pc-title {
+  text-align: center;
+  margin-bottom: 10px;
+  font-size: 28px;
+  font-weight: 700;
+  color: #08093d;
+}
+
+.pc-subtitle {
+  text-align: center;
+  color: #777;
+  margin-bottom: 25px;
+  font-size: 15px;
+}
+
+/* Switch Buttons */
+.pc-switch {
+  display: flex;
+  justify-content: space-between;
+  background: #f1f1f8;
+  border-radius: 12px;
+  padding: 4px;
+  margin-bottom: 25px;
+  width: 100%;
+}
+
+.pc-switch-btn {
+  width: 50%;
+  padding: 10px 0;
+  border: none;
+  background: transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.2s ease;
+}
+
+.pc-switch-btn.active {
+  background: white;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* Form */
+.pc-form {
+  width: 100%;
+}
+
+.pc-form label {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.pc-form input,
+.pc-form select,
+.pc-form textarea {
+  width: 100%;
+  padding: 12px 14px;
+  margin-bottom: 15px;
+  border: 1.5px solid #dcdcec;
+  border-radius: 10px;
+  font-size: 14px;
+  background: #fafafe;
+  box-sizing: border-box;
+}
+
+.pc-form textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+/* Box Section */
+.pc-box {
+  background: #f4f2ff;
+  padding: 18px;
+  border-radius: 12px;
+  margin-top: 15px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.pc-box h3 {
+  margin: 0 0 6px 0;
+  font-size: 17px;
+}
+
+.pc-info-text {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 16px;
+}
+
+/* Button */
+.pc-submit {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  background: #08093d;
+  color: white;
+  font-size: 16px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.pc-submit:hover {
+  opacity: 0.85;
+}

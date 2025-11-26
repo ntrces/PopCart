@@ -1,14 +1,25 @@
 import React, { useState } from "react";
 import "./Myprofile.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 
 export default function Myprofile() {
+  const navigate = useNavigate(); // ✅ MUST be at top
+
   const [sidebarOpen, setSidebarOpen] = useState(true);
-
-  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
   const [showSignOutModal, setShowSignOutModal] = useState(false);
+  const [showModal, setShowModal] = useState(false); // ✅ FOR ADD ADDRESS MODAL
 
+  // ✅ Sidebar Toggle
+  const toggleSidebar = () => {
+    setSidebarOpen(prev => !prev);
+  };
+
+  // ✅ Close Profile Button
+  const handleClose = () => {
+    navigate(-1);
+  };
+  
 
   return (
     <div className="Cart-wrapper">
@@ -91,7 +102,7 @@ Home</button> </Link>
  Marketplace</button> </Link>
 
               <Link to="/MyOrder">
-               <button className="nav-item active"> <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+               <button className="nav-item"> <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M8.25 16.2975C8.47803 16.4291 8.7367 16.4985 9 16.4985C9.2633 16.4985 9.52197 16.4291 9.75 16.2975L15 13.2975C15.2278 13.166 15.417 12.9769 15.5487 12.7491C15.6803 12.5214 15.7497 12.263 15.75 12V5.99999C15.7497 5.73694 15.6803 5.4786 15.5487 5.25086C15.417 5.02312 15.2278 4.83401 15 4.70249L9.75 1.70249C9.52197 1.57084 9.2633 1.50153 9 1.50153C8.7367 1.50153 8.47803 1.57084 8.25 1.70249L3 4.70249C2.7722 4.83401 2.58299 5.02312 2.45135 5.25086C2.31971 5.4786 2.25027 5.73694 2.25 5.99999V12C2.25027 12.263 2.31971 12.5214 2.45135 12.7491C2.58299 12.9769 2.7722 13.166 3 13.2975L8.25 16.2975Z" stroke="#0A0A0A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
               <path d="M9 16.5V9" stroke="#0A0A0A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
               <path d="M2.46753 5.25L9.00003 9L15.5325 5.25" stroke="#0A0A0A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -129,11 +140,203 @@ Home</button> </Link>
       </div>
     </div>
   </div>
+  
 )}
 
         {/* MAIN CONTENT */}
         <main className="main-content">
-          
+      {/* Header */}
+      <div className="profile-header">
+        <div>
+          <h2>My Profile</h2>
+          <p className="subtitle">Manage your account information</p>
+        </div>
+        <button className="close-btn" onClick={handleClose}>Close</button>
+
+      </div>
+
+      {/* BASIC INFO CARD */}
+      <div className="card">
+        <h3>Basic Information</h3>
+        <p className="card-subtitle">Update your personal details</p>
+
+        <div className="two-grid">
+          <div className="input-group">
+            <label>Last Name</label>
+            <input defaultValue="Althea" />
+          </div>
+
+          <div className="input-group">
+            <label>First Name</label>
+            <input defaultValue="Althea" />
+          </div>
+        </div>
+
+        <div className="input-group">
+          <label>Birthday</label>
+          <input placeholder="mm/dd/yyyy" />
+        </div>
+
+        <div className="input-group">
+          <label>Email Address</label>
+          <input disabled defaultValue="alteya75@gmail.com" />
+          <p className="warning-text">Email cannot be changed</p>
+        </div>
+
+        <div className="input-group">
+          <label>Phone Number</label>
+          <input placeholder="+63 XXX XXXX XXXX" />
+        </div>
+
+        <button className="save-btn">Save Changes</button>
+      </div>
+
+     <div className="card">
+
+  {/* Header */}
+  <div className="addresses-header">
+    <div>
+      <h3 className="address-main-title">Shipping Addresses</h3>
+      <p className="card-subtitle">Manage your delivery addresses</p>
+    </div>
+    <button className="add-btn" onClick={() => setShowModal(true)}> <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M13.3334 6.66666C13.3334 9.99533 9.64075 13.462 8.40075 14.5327C8.28523 14.6195 8.14461 14.6665 8.00008 14.6665C7.85555 14.6665 7.71493 14.6195 7.59941 14.5327C6.35941 13.462 2.66675 9.99533 2.66675 6.66666C2.66675 5.25217 3.22865 3.89562 4.22885 2.89543C5.22904 1.89523 6.58559 1.33333 8.00008 1.33333C9.41457 1.33333 10.7711 1.89523 11.7713 2.89543C12.7715 3.89562 13.3334 5.25217 13.3334 6.66666Z" stroke="#6B7280" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M8 8.66667C9.10457 8.66667 10 7.77124 10 6.66667C10 5.5621 9.10457 4.66667 8 4.66667C6.89543 4.66667 6 5.5621 6 6.66667C6 7.77124 6.89543 8.66667 8 8.66667Z" stroke="#6B7280" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+ Add Address</button>
+  </div>
+{showModal && (
+  <div className="modal-overlay">
+    <div className="modal-box">
+
+      {/* HEADER */}
+      <div className="modal-header">
+        <div>
+          <h2>Shipping Addresses</h2>
+          <p>Manage your delivery addresses</p>
+        </div>
+
+        <button className="close-btn" onClick={() => setShowModal(false)}>
+          ×
+        </button>
+      </div>
+
+      {/* SECTION LABEL */}
+      <div className="new-address">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M16.6666 8.33335C16.6666 12.4942 12.0508 16.8275 10.5008 18.1659C10.3564 18.2744 10.1806 18.3331 9.99992 18.3331C9.81925 18.3331 9.64348 18.2744 9.49909 18.1659C7.94909 16.8275 3.33325 12.4942 3.33325 8.33335C3.33325 6.56524 4.03563 4.86955 5.28587 3.61931C6.53612 2.36907 8.23181 1.66669 9.99992 1.66669C11.768 1.66669 13.4637 2.36907 14.714 3.61931C15.9642 4.86955 16.6666 6.56524 16.6666 8.33335Z" stroke="#8B5CF6" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M10 10.8333C11.3807 10.8333 12.5 9.71402 12.5 8.33331C12.5 6.9526 11.3807 5.83331 10 5.83331C8.61929 5.83331 7.5 6.9526 7.5 8.33331C7.5 9.71402 8.61929 10.8333 10 10.8333Z" stroke="#8B5CF6" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+ New Address
+      </div>
+
+      {/* FORM */}
+      <form className="address-form">
+
+        <div className="form-group">
+          <label>Address Label *</label>
+          <input placeholder="Home, Office, etc." />
+        </div>
+
+        <div className="form-group">
+          <label>Postal Code</label>
+          <input defaultValue="1000" />
+        </div>
+
+        <div className="form-group">
+          <label>Street Address *</label>
+          <input placeholder="House number, street name, barangay" />
+        </div>
+
+        <div className="form-group">
+          <label>City/Municipality *</label>
+          <input placeholder="Manila, Quezon City, etc." />
+        </div>
+
+        <div className="form-group">
+          <label>Province</label>
+          <input placeholder="Metro Manila, Cebu, etc." />
+        </div>
+
+        <div className="checkbox-row">
+          <input type="checkbox" />
+          <span>Set as default address</span>
+        </div>
+
+        {/* ACTION BUTTONS */}
+        <div className="modal-actions">
+          <button type="submit" className="mp-save-btn">
+             Add Address
+          </button>
+
+          <button
+            type="button"
+            className="mp-cancel-btn"
+            onClick={() => setShowModal(false)}
+          >
+            Cancel
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+)}
+
+  {/* Address Item - Home */}
+  <div className="address-card">
+    <div className="address-left">
+      <div className="address-icon">
+        <i className="fa-solid fa-house"></i>
+      </div>
+
+      <div className="address-info">
+        <div className="address-header">
+          <div className="address-title">Home</div>
+          <span className="default-badge">Default</span>
+        </div>
+
+        <div className="address-text">
+          <p className="address-line highlight">Blk 0 Lot 0 Parfum Homes</p>
+          <p className="address-line">TANZA, CAVITE</p>
+          <p className="address-line">2755, Philippines</p>
+        </div>
+      </div>
+    </div>
+
+    <button className="delete-btn">Delete</button>
+  </div>
+
+  {/* Address Item - School */}
+  <div className="address-card">
+    <div className="address-left">
+      <div className="address-icon student">
+        <i className="fa-solid fa-school"></i>
+      </div>
+
+      <div className="address-info">
+        <div className="address-header">
+          <div className="address-title">School</div>
+        </div>
+
+        <div className="address-text">
+          <p className="address-line highlight">Blk 0 Lot 0 Parfum Homes</p>
+          <p className="address-line">TANZA, CAVITE</p>
+          <p className="address-line">2755, Philippines</p>
+        </div>
+      </div>
+    </div>
+
+    <div className="address-actions">
+      <button className="set-default-btn">Set Default</button>
+      <button className="delete-btn">Delete</button>
+    </div>
+  
+</div>
+</div>
+
+     
+
         </main>
       </div>
     </div>

@@ -276,3 +276,471 @@
   margin-top: 12px;
   cursor: pointer;
 }
+
+.cart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.cart-header h2 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.selected-text {
+  color: #9b5de5;
+  font-weight: 500;
+  cursor: pointer;
+}
+/* SELECT ALL */
+.cart-select-all {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* pushes right text to the far right */
+  padding: 14px 14px;
+  background: #ffffff;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  margin-bottom: 18px;
+  white-space: nowrap;  
+}
+
+.cart-select-all-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.selected-count {
+  font-size: 13px;
+  color: #9b5de5;
+  font-weight: 500;
+}
+
+
+/* CART ITEM */
+.cart-item {
+  background: #ffffff;
+  border: 1px solid #e7e7e7;
+  border-radius: 14px;
+  padding: 18px;
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cart-item.selected {
+  background: #f8f2ff;
+  border: 1px solid #cba7ff;
+}
+
+.left-side {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.item-info h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  white-space: nowrap;  
+}
+
+.artist {
+  margin: 3px 0 0;
+  color: #18a058;
+  font-weight: 500;
+}
+
+.genre {
+  color: #888;
+  font-size: 14px;
+}
+
+/* RIGHT SIDE ACTIONS */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.qty-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.qty-box button {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: 1px solid #e3e3e3;
+  background: #fff;
+  font-size: 18px;
+}
+
+.price {
+  font-weight: 600;
+}
+
+.delete-btn {
+  border: none;
+  background: transparent;
+  font-size: 20px;
+  cursor: pointer;
+  color: #dd3d3d;
+}
+
+/* TOTAL */
+.cart-total {
+  margin-top: 15px;
+}
+
+.cart-total p {
+  color: #666;
+}
+
+.cart-total h2 {
+  font-size: 26px;
+  margin-top: 5px;
+}
+
+/* CHECKOUT BUTTON */
+.checkout-btn {
+  width: 100%;
+  background: #000;
+  color: white;
+  padding: 16px;
+  border-radius: 14px;
+  font-size: 18px;
+  font-weight: 600;
+  margin-top: 20px;
+}
+
+.checkout-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 3000;
+}
+
+.checkout-modal-box {
+  width: 1002px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: #fff;
+  border-radius: 14px;
+  padding: 20px;
+}
+
+/* HEADER */
+.checkout-header {
+  display: flex;
+  flex-direction: column;
+}
+
+.checkout-back-btn {
+  background: none;
+  border: none;
+  color: #4A5565;
+  font-size: 15px;
+  cursor: pointer;
+
+  display: flex;              /* aligns SVG + text horizontally */
+  align-items: center;        /* vertically centers both */
+  gap: 6px;                   /* space between icon and text */
+
+  padding: 0;  
+  margin-bottom: 20px;               /* removes weird spacing */
+}
+
+.checkout-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+/* SECTIONS */
+.checkout-section {
+  margin-top: 20px;
+}
+
+.checkout-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.checkout-section-title {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+/* ADD ADDRESS */
+.checkout-add-btn {
+  font-size: 13px;
+  background: #ffffff;        /* White background */
+  padding: 5px 12px;
+  color: #000000;             /* Black text */
+  border-radius: 6px;
+  border: 1px solid #EEF0F3;  /* Black border */
+  cursor: pointer;
+  display: inline-flex;       /* For icon alignment */
+  align-items: center;
+  gap: 6px;                   /* Space between icon and text */
+  transition: 0.2s;
+}
+
+.checkout-add-btn:hover {
+  background: #f3f4f6;       /* Slight gray on hover */
+}
+
+/* SVG icon inside the button */
+.checkout-add-btn svg {
+  width: 14px;                /* Adjust icon size */
+  height: 14px;
+  fill: none;                 /* If you want stroke only */
+  stroke: #000000;            /* Black stroke */
+  flex-shrink: 0;             /* Prevent shrinking */
+}
+
+/* ADDRESS CARD */
+.checkout-address-card {
+  border: 1px solid #dcdcdc;
+  padding: 12px;
+  border-radius: 10px;
+  background: #f8f8f8;
+}
+
+.checkout-address-top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.checkout-default-label {
+  background: #357bff;
+  color: white;
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-left: auto;
+}
+
+.checkout-full-address {
+  font-size: 14px;
+  color: #444;
+}
+
+/* INPUTS */
+.checkout-input-field {
+  width: 100%;
+  padding: 10px;
+  margin-top: 8px;
+  border: 1px solid #dcdcdc;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+/* ORDER SUMMARY */
+.checkout-summary-item,
+.checkout-summary-total {
+  display: flex;
+  justify-content: space-between;
+  margin: 6px 0;
+}
+
+.checkout-summary-total strong {
+  font-size: 16px;
+}
+
+/* COD */
+
+
+.checkout-cod-box {
+  display: flex;
+  align-items: flex-start; /* Aligns icon with first line of text */
+  gap: 10px;               /* Space between icon and text */
+  padding: 12px;
+  margin-top: 20px;
+  border-radius: 10px;
+  background: #EFF6FF;
+  border: 1px solid #dcdcdc;
+}
+
+.checkout-cod-icon {
+  display: flex;
+  align-items: center;
+  margin-top: 18px; /* adjust 2–5px depending on what looks best */
+}
+
+.checkout-cod-icon svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  display: block;
+}
+/* ORDER BUTTON */
+.checkout-place-order-btn {
+  width: 100%;
+  padding: 14px;
+  margin-top: 20px;
+  background: #000;
+  color: #fff;
+  font-size: 16px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+
+/* NEW ADDRESS LABEL */
+.add-address-overlay {
+  position: fixed;      /* Stay on top of everything */
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5); /* Semi-transparent dark background */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;       /* Higher than checkout modal */
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+/* ADD ADDRESS MODAL BOX */
+.add-address-modal {
+  background: white;
+  border-radius: 12px;
+  width: 400px;
+  max-width: 90%;
+  padding: 24px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  animation: fadeIn 0.2s ease-in-out;
+  position: relative;
+}
+
+.new-address {
+  margin: 18px 0 12px;
+  font-weight: 600;
+  font-size: 14px;
+  color: #7c3aed;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* FORM */
+.address-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #111827;
+}
+
+/* INPUTS */
+.address-form input {
+  height: 42px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  outline: none;
+  font-size: 14px;
+}
+
+.address-form input::placeholder {
+  color: #9ca3af;
+}
+
+.address-form input:focus {
+  border-color: #7c3aed;
+}
+
+/* CHECKBOX ROW — SMALL & CLEAN */
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.checkbox-row input {
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+}
+
+/* ACTION BUTTONS — COMPACT */
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+/* ADD ADDRESS BUTTON — SMALLER */
+.mp-save-btn {
+  flex: 1;
+  height: 38px;              /* ⬇ smaller */
+  border-radius: 7px;
+  background: #000;
+  color: white;
+  border: none;
+  font-size: 13px;           /* ⬇ smaller text */
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.mp-save-btn:hover {
+  background: #111;
+}
+
+/* CANCEL BUTTON — MATCH SIZE */
+.mp-cancel-btn {
+  flex: 1;
+  height: 38px;              /* ⬇ smaller */
+  border-radius: 7px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  font-size: 13px;           /* ⬇ smaller text */
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.mp-cancel-btn:hover {
+  background: #f3f4f6;
+}
+
+/* ANIMATION */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

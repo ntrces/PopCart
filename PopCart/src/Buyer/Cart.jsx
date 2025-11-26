@@ -8,6 +8,10 @@ export default function Cart() {
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
   const [showSignOutModal, setShowSignOutModal] = useState(false);
+  const [showCheckoutModal, setShowCheckoutModal] = useState(false);
+  const [showModal, setShowModal] = useState(false); // ✅ FOR ADD ADDRESS MODAL
+  
+
 
 
   return (
@@ -49,10 +53,10 @@ export default function Cart() {
           </svg>
                      </Link>
 
-          <div className="profile">
-            <div className="avatar">A</div>
-            <p>Althea</p>
-          </div>
+          <Link to="/myprofile" className="profile">
+                                <div className="avatar">A</div>
+                                <p>Althea</p>
+                              </Link>
         </div>
       </div>
 
@@ -131,9 +135,235 @@ Home</button> </Link>
 )}
 
         {/* MAIN CONTENT */}
-        <main className="main-content">
-          
-        </main>
+       <main className="main-content">
+
+        <div className="cart-header">
+  <h2>Shopping Cart (2 items)</h2>
+  <span className="selected-text">1 selected</span>
+</div>
+
+  {/* SELECT ALL */}
+ <div className="cart-select-all">
+
+  <div className="cart-select-all-left">
+    <input type="checkbox" />
+    <span>Select All Items</span>
+  </div>
+
+  <span className="selected-count">1 selected</span>
+</div>
+
+  {/* ITEM 1 (SELECTED) */}
+  <div className="cart-item selected">
+    <div className="left-side">
+      <input type="checkbox" checked readOnly />
+
+      <div className="item-info">
+        <h3>Come Closer</h3>
+        <p className="artist">LEO</p>
+        <p className="genre">R&B</p>
+      </div>
+    </div>
+
+    <div className="actions">
+      <div className="qty-box">
+        <button>-</button>
+        <span>1</span>
+        <button>+</button>
+      </div>
+
+      <p className="price">₱799.00</p>
+
+      <button className="delete-btn">🗑</button>
+    </div>
+  </div>
+
+  {/* ITEM 2 */}
+  <div className="cart-item">
+    <div className="left-side">
+      <input type="checkbox" />
+
+      <div className="item-info">
+        <h3>One Look</h3>
+        <p className="artist">LEO</p>
+        <p className="genre">Pop</p>
+      </div>
+    </div>
+
+    <div className="actions">
+      <div className="qty-box">
+        <button>-</button>
+        <span>1</span>
+        <button>+</button>
+      </div>
+
+      <p className="price">₱899.00</p>
+
+      <button className="delete-btn">🗑</button>
+    </div>
+  </div>
+
+  {/* TOTAL */}
+  <div className="cart-total">
+    <p>Total (1 item)</p>
+    <h2>₱799.00</h2>
+  </div>
+
+  {/* CHECKOUT */}
+  <button
+  className="checkout-btn"
+  onClick={() => setShowCheckoutModal(true)}
+>
+  Proceed to Checkout (1)
+</button>
+{/* CHECKOUT MODAL */}
+{showCheckoutModal && (
+  <div className="checkout-overlay">
+    <div className="checkout-modal-box">
+
+      {/* HEADER */}
+      <div className="checkout-header">
+        <button
+          className="checkout-back-btn"
+          onClick={() => setShowCheckoutModal(false)}
+        >
+         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M9.99984 15.8333L4.1665 10L9.99984 4.16666" stroke="#4A5565" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M15.8332 10H4.1665" stroke="#4A5565" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+Back to Cart
+        </button>
+        <h2>Checkout</h2>
+      </div>
+
+      {/* SHIPPING ADDRESS */}
+      <div className="checkout-section">
+        <div className="checkout-section-header">
+          <p className="checkout-section-title">Shipping Address *</p>
+          <button className="checkout-add-btn" onClick={() => setShowModal(true)}> <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M13.3334 6.66666C13.3334 9.99533 9.64075 13.462 8.40075 14.5327C8.28523 14.6195 8.14461 14.6665 8.00008 14.6665C7.85555 14.6665 7.71493 14.6195 7.59941 14.5327C6.35941 13.462 2.66675 9.99533 2.66675 6.66666C2.66675 5.25217 3.22865 3.89562 4.22885 2.89543C5.22904 1.89523 6.58559 1.33333 8.00008 1.33333C9.41457 1.33333 10.7711 1.89523 11.7713 2.89543C12.7715 3.89562 13.3334 5.25217 13.3334 6.66666Z" stroke="#6B7280" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M8 8.66667C9.10457 8.66667 10 7.77124 10 6.66667C10 5.5621 9.10457 4.66667 8 4.66667C6.89543 4.66667 6 5.5621 6 6.66667C6 7.77124 6.89543 8.66667 8 8.66667Z" stroke="#6B7280" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+ Add Address</button>
+        </div>
+
+        <div className="checkout-address-card">
+          <div className="checkout-address-top">
+            <span className="checkout-home-icon">🏠</span>
+            <span className="checkout-address-type">Home</span>
+            <span className="checkout-default-label">Default</span>
+          </div>
+          <p className="checkout-full-address">
+            Blk 0 Lot 0 Parfum Homes TANZA, CAVITE 2755, Philippines
+          </p>
+        </div>
+      </div>
+
+       {/* ADD ADDRESS MODAL INSIDE CHECKOUT */}
+      {showModal && (
+        <div className="add-address-overlay">
+          <div className="add-address-modal">
+            <h3>Add Address</h3>
+            <form className="address-form">
+              <div className="form-group">
+                <label>Address Label *</label>
+                <input placeholder="Home, Office, etc." />
+              </div>
+
+              <div className="form-group">
+                <label>Postal Code</label>
+                <input defaultValue="1000" />
+              </div>
+
+              <div className="form-group">
+                <label>Street Address *</label>
+                <input placeholder="House number, street name, barangay" />
+              </div>
+
+              <div className="form-group">
+                <label>City/Municipality *</label>
+                <input placeholder="Manila, Quezon City, etc." />
+              </div>
+
+              <div className="form-group">
+                <label>Province</label>
+                <input placeholder="Metro Manila, Cebu, etc." />
+              </div>
+
+              <div className="checkbox-row">
+                <input type="checkbox" />
+                <span>Set as default address</span>
+              </div>
+
+              <div className="modal-actions">
+                <button type="submit" className="mp-save-btn">Add Address</button>
+                <button
+                  type="button"
+                  className="mp-cancel-btn"
+                  onClick={() => setShowModal(false)}
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* CUSTOMER INFO */}
+      <div className="checkout-section">
+        <p className="checkout-section-title">Customer Information:</p>
+        <input className="checkout-input-field" placeholder="Last Name, First Name" />
+        <input className="checkout-input-field" placeholder="Email Address" />
+        <input className="checkout-input-field" placeholder="Contact Number" />
+      </div>
+
+      {/* ORDER SUMMARY */}
+      <div className="checkout-section">
+        <p className="checkout-section-title">Order Summary</p>
+
+        <div className="checkout-summary-item">
+          <span>Thriller x 1</span>
+          <span>P24.99</span>
+        </div>
+
+        <div className="checkout-summary-item">
+          <span>Hotel California x 1</span>
+          <span>P22.99</span>
+        </div>
+
+        <div className="checkout-summary-total">
+          <strong>Total</strong>
+          <strong>P47.98</strong>
+        </div>
+      </div>
+
+      {/* COD */}
+      <div className="checkout-cod-box">
+        <div className="checkout-cod-icon"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M16.6665 4.16669H3.33317C2.4127 4.16669 1.6665 4.91288 1.6665 5.83335V14.1667C1.6665 15.0872 2.4127 15.8334 3.33317 15.8334H16.6665C17.587 15.8334 18.3332 15.0872 18.3332 14.1667V5.83335C18.3332 4.91288 17.587 4.16669 16.6665 4.16669Z" stroke="#155DFC" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M1.6665 8.33331H18.3332" stroke="#155DFC" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+</div>
+        <p>
+          <strong>Cash on Delivery (COD)</strong><br />
+          Payment will be collected when your order is delivered.
+        </p>
+      </div>
+
+      {/* ORDER BUTTON */}
+      <button className="checkout-place-order-btn">
+        Place Order
+      </button>
+
+    </div>
+  </div>
+)}
+
+
+
+</main>
+
       </div>
     </div>
   );

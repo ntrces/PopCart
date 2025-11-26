@@ -164,8 +164,9 @@ Home</button> </Link>
             <div className="albums-header">
               <h3>Albums</h3>
 <div className="sidebar-bottom">
-    <button className="view-all">View All ➤
-</button>
+  <Link to="/marketplace">
+    <button className="view-all">View All ➤ </button>
+</Link>
   </div>            </div>
 
 

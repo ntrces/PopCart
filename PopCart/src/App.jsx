@@ -3,7 +3,6 @@ import { Routes, Route } from "react-router-dom";
 
 import SignIn from "./Login/SignIn.jsx";
 import SignUpBuyer from "./Login/SignUpBuyer.jsx";
-
 // BUYER PAGES
 import Home from "./Buyer/Home.jsx";
 import Marketplace from "./Buyer/Marketplace.jsx";
@@ -19,7 +18,7 @@ import ProductManagement from "./Employee/ProductManagement.jsx";  // <--- ADDED
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<SignIn />} />
+      <Route path="/" element={<Home />} />
       <Route path="/signup-buyer" element={<SignUpBuyer />} />
       {/* BUYER ROUTES */}
       <Route path="/home" element={<Home />} />

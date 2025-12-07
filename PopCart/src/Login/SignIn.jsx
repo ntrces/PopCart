@@ -38,7 +38,7 @@ export default function SignIn() {
   const handleSubmit = (e) => {
   e.preventDefault();
   if (validateForm()) {
-    navigate("/home"); // <-- Redirects to Home page
+    navigate("/ordermanagement"); // <-- Redirects to Home page
   }
 };
 

@@ -1,0 +1,279 @@
+/* --------------------------------------------------
+   BASE
+-------------------------------------------------- */
+.Buyernotif-wrapper {
+  background: #ffffff;
+  font-family: "Inter", sans-serif;
+}
+
+.home-container {
+  display: flex;
+}
+
+.main-content {
+  padding: 25px;
+  width: 100%;
+}
+
+/* --------------------------------------------------
+   TOP BAR
+-------------------------------------------------- */
+.top-bar {
+  background: #fffdfd;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border-bottom: 1px solid #a2a2a6;
+}
+
+.left-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.toggle-btn {
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.right-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.icon-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* PROFILE */
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none !important;
+  color: inherit;
+}
+
+.profile p {
+  color: #000 !important; /* name stays black */
+}
+
+/* Avatar default violet — ALWAYS visible */
+.avatar {
+  background-color: #9b5de5 !important; /* FORCE the violet color */
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: white !important;
+}
+/* --------------------------------------------------
+   SIDEBAR
+-------------------------------------------------- */
+.sidebar {
+  width: 230px;
+  background: #ffffff;
+  padding: 20px;
+  border-right: 1px solid #a2a2a6;
+}
+
+.nav-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.nav-item,
+.sign-out {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 14px;
+  border: none;
+  background: transparent;
+  font-size: 16px;
+  color: #0a0a0a;
+  text-align: left;
+  cursor: pointer;
+}
+
+.nav-item svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.sign-out:hover {
+  background-color: #f2f2f2;
+  border-radius: 6px;
+}
+.nav-item:hover {
+  background-color: #f2f2f2;
+  border-radius: 6px;
+}
+
+.nav-item.active {
+  background-color: black;
+  color: white;
+  border-radius: 6px;
+}
+
+/* --------------------------------------------------
+   SIGN OUT MODAL
+-------------------------------------------------- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 10, 10, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.signout-modal {
+  width: 320px;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.signout-modal h3 {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.signout-modal p {
+  font-size: 14px;
+  color: #717182;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.cancel-btn,
+.confirm-btn {
+  background: none;
+  border: none;
+  font-size: 14px;
+  color: #717182;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.cancel-btn:hover,
+.confirm-btn:hover {
+  background: #000;
+  color: #fff;
+  border-radius: 5px;
+  padding: 5px;
+}
+
+/* --------------------------------------------------
+   PRODUCT LIST (placeholder)
+-------------------------------------------------- */
+.album-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+  padding: 20px 0;
+}
+
+.album-card {
+  background: white;
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+}
+
+.album-img {
+  width: 100%;
+  height: 250px;
+  background: #e5e5e5;
+  border-radius: 10px;
+}
+
+.album-info {
+  margin-top: 12px;
+}
+
+.price-details-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.price {
+  color: #8b5cf6;
+  font-size: 1.1em;
+  font-weight: 700;
+}
+
+.details-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #eee;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.85em;
+}
+
+.cart-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: #000;
+  color: white;
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: none;
+  margin-top: 12px;
+  cursor: pointer;
+}
+
+

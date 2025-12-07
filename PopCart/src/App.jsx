@@ -11,6 +11,9 @@ import MyOrder from "./Buyer/MyOrder.jsx";
 import MyProfile from "./Buyer/Myprofile.jsx";   // <--- ADDED
 import Cart from "./Buyer/Cart.jsx";             // <--- ADDED
 import BuyerNotification from "./Buyer/Buyernotif.jsx";   // <--- ADDED
+import OrderManagement from "./Employee/OrderManagement.jsx";      // <--- ADDED
+import ProductManagement from "./Employee/ProductManagement.jsx";  // <--- ADDED
+
 
 
 function App() {
@@ -18,7 +21,6 @@ function App() {
     <Routes>
       <Route path="/" element={<SignIn />} />
       <Route path="/signup-buyer" element={<SignUpBuyer />} />
-
       {/* BUYER ROUTES */}
       <Route path="/home" element={<Home />} />
       <Route path="/marketplace" element={<Marketplace />} />
@@ -26,6 +28,10 @@ function App() {
       <Route path="/myprofile" element={<MyProfile />} />   {/* NEW */}
       <Route path="/cart" element={<Cart />} />             {/* NEW */}
       <Route path="/buyernotif" element={<BuyerNotification />} />
+
+   {/* MANAGEMENT ROUTES */}
+      <Route path="/ordermanagement" element={<OrderManagement />} />
+      <Route path="/productmanagement" element={<ProductManagement />} />
     </Routes>
   );
 }

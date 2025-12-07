@@ -132,6 +132,30 @@ Home</button> </Link>
   </div>
 )}
 
+<Link to="/OrderManagement">
+  <button className="nav-item">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M3 3.75H15" stroke="#0A0A0A" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M3 7.5H12" stroke="#0A0A0A" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M3 11.25H15" stroke="#0A0A0A" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M3 15H12" stroke="#0A0A0A" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+    Order Management
+  </button>
+</Link>
+
+<Link to="/ProductManagement">
+  <button className="nav-item">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M3 3.75H15" stroke="#0A0A0A" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M3 7.5H12" stroke="#0A0A0A" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M3 11.25H15" stroke="#0A0A0A" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M3 15H12" stroke="#0A0A0A" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+    Product Management
+  </button>
+</Link>
+
         {/* MAIN CONTENT */}
         <main className="main-content">
           <h2 className="welcome-text">Welcome back, Althea! <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">

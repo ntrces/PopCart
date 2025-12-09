@@ -4,12 +4,12 @@ import { Routes, Route } from "react-router-dom";
 import SignIn from "./Login/SignIn.jsx";
 import SignUpBuyer from "./Login/SignUpBuyer.jsx";
 // BUYER PAGES
-import Home from "./Buyer/Home.jsx";
-import Marketplace from "./Buyer/Marketplace.jsx";
-import MyOrder from "./Buyer/MyOrder.jsx";
-import MyProfile from "./Buyer/Myprofile.jsx";   // <--- ADDED
-import Cart from "./Buyer/Cart.jsx";             // <--- ADDED
-import BuyerNotification from "./Buyer/Buyernotif.jsx";   // <--- ADDED
+import Home from "./Buyer/Home/Home.jsx";
+import Marketplace from "./Buyer/Marketplace/Marketplace.jsx";
+import MyOrder from "./Buyer/MyOrder/MyOrder.jsx";
+import MyProfile from "./Buyer/Profile/Myprofile.jsx";   // <--- ADDED
+import Cart from "./Buyer/Cart/Cart.jsx";             // <--- ADDED
+import BuyerNotification from "./Buyer/Notification/Buyernotif.jsx";   // <--- ADDED
 import OrderManagement from "./Employee/OrderManagement.jsx";      // <--- ADDED
 import ProductManagement from "./Employee/ProductManagement.jsx";  // <--- ADDED
 
@@ -18,7 +18,7 @@ import ProductManagement from "./Employee/ProductManagement.jsx";  // <--- ADDED
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
+      <Route path="/" element={<SignIn />} />
       <Route path="/signup-buyer" element={<SignUpBuyer />} />
       {/* BUYER ROUTES */}
       <Route path="/home" element={<Home />} />

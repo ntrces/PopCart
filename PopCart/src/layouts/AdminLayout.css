@@ -1,0 +1,23 @@
+/* reset */
+* {
+  box-sizing: border-box;
+  font-family: 'Arimo', sans-serif;
+}
+
+/* parent container */
+.admin-layout {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* MAIN CONTENT AREA */
+.admin-main {
+  position: relative;
+  padding-top: 71px;     /* height of header */
+  padding-left: 248px;   /* width of sidebar */
+  
+  height: 100vh;
+  overflow-y: auto;
+  background: #f5f5f5;
+}

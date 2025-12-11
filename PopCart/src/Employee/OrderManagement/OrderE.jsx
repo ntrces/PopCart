@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import "./Order.css";
+import "./OrderE.css";
 import OrderDetails from "./OrderDetails.jsx";
-import Header from "../Header/HeaderA.jsx";
-import Sidebar from "../Sidebar/SidebarA.jsx";
+import Header from "../Header/HeaderE.jsx";
+import Sidebar from "../Sidebar/SidebarE.jsx";
 
 const initialOrders = [
   {
@@ -108,7 +108,7 @@ const filters = [
   { id: "cancelled", label: "Cancelled" },
 ];
 
-export const OrderManagement = () => {
+export const Order = () => {
   const [orders, setOrders] = useState(initialOrders);
   const [activeFilter, setActiveFilter] = useState("all");
   const [expandedOrderId, setExpandedOrderId] = useState(null);
@@ -345,4 +345,4 @@ export const OrderManagement = () => {
   );
 };
 
-export default OrderManagement;
+export default Order;

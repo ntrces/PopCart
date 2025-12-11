@@ -1,14 +1,14 @@
 import React, { useState } from "react";
-import "./ProductManagement.css";
-import Modal from "../Users/Modal.jsx";
-import AddProduct from "./AddProduct.jsx";
-import EditProduct from "./EditProduct.jsx";
-import DeleteProduct from "./DeleteProduct.jsx";
+import "./ProductE.css";
+import Modal from "../../Admin/Users/Modal.jsx";
+import AddProduct from "./AddE.jsx";
+import EditProduct from "./EditE.jsx";
+import DeleteProduct from "./DeleteE.jsx";
 import image from "../../assets/image.png";
-import Header from "../Header/HeaderA.jsx";
-import Sidebar from "../Sidebar/SidebarA.jsx";
+import Header from "../Header/HeaderE.jsx";
+import Sidebar from "../Sidebar/SidebarE.jsx";
 
-function ProductManagement() {
+function ProductE() {
   const [searchValue, setSearchValue] = useState("");
   const [selectedGenre, setSelectedGenre] = useState("All Genres");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -325,4 +325,4 @@ function ProductManagement() {
   );
 }
 
-export default ProductManagement;
+export default ProductE;

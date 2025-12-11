@@ -89,11 +89,12 @@
 }
 
 .ap-select {
-  height: 36px;
+  height: 40px;
   appearance: none;
   background: #f3f3f5;
   padding-right: 32px;
   cursor: pointer;
+  width: 100%;
 }
 
 .ap-file-input {

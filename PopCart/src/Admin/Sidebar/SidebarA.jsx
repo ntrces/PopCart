@@ -4,7 +4,7 @@ import { NavLink, useLocation } from "react-router-dom";
 import { useAuth } from "../../auth/useAuth.jsx";
 import "./SidebarA.css";
 
-export default function Sidebar() {
+export default function SidebarA() {
   const location = useLocation();
   const { logout } = useAuth();
 

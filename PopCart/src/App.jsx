@@ -1,5 +1,6 @@
+// ...existing code...
 import React from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "./auth/useAuth.jsx";
 import ProtectedRoute from "./routes/ProtectedRoute.jsx";
 
@@ -18,69 +19,37 @@ import Users from "./Admin/Users/Users.jsx";
 import ProductManagement from "./Admin/Products/ProductManagement.jsx";
 import OrderManagement from "./Admin/Orders/OrderManagement.jsx";
 
-import OrderManage from "./Employee/OrderManagement/OrderManagement.jsx";
-import ProductManage from "./Employee/ProductManagement/ProductManagement.jsx";
-
-import AdminLayout from "./layouts/AdminLayout.jsx";
-import EmployeeLayout from "./layouts/EmployeeLayout.jsx";
-import BuyerLayout from "./layouts/BuyerLayout.jsx";
+import OrderManage from "./Employee/OrderManagement/OrderE.jsx";
+import ProductManage from "./Employee/ProductManagement/ProductE.jsx";
 
 export default function App() {
   const { user } = useAuth();
 
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Navigate to={user ? `/${user.role}` : "/signin"} replace />} />
-        <Route path="/signin" element={<SignIn />} />
-        <Route path="/signup-buyer" element={<SignUpBuyer />} />
+    <Routes>
+      <Route path="/" element={<Navigate to={user ? `/${user.role}` : "/signin"} replace />} />
+      <Route path="/signin" element={<SignIn />} />
+      <Route path="/signup-buyer" element={<SignUpBuyer />} />
 
-        {/* Admin routes with nested pages rendered into AdminLayout's <Outlet /> */}
-        <Route
-          path="/admin"
-          element={
-            <ProtectedRoute allowedRoles={["admin"]}>
-              <AdminLayout />
-            </ProtectedRoute>
-          }
-        >
-          <Route index element={<AdminDashboard />} />
-          <Route path="/users" element={<Users />} />
-          <Route path="/products" element={<ProductManagement />} />
-          <Route path="/orders" element={<OrderManagement />} />
-        </Route>
+      {/* Admin routes */}
+      <Route path="/admin" element={<ProtectedRoute allowedRoles={["admin"]}><AdminDashboard /></ProtectedRoute>} />
+      <Route path="/admin/users" element={<ProtectedRoute allowedRoles={["admin"]}><Users /></ProtectedRoute>} />
+      <Route path="/admin/products" element={<ProtectedRoute allowedRoles={["admin"]}><ProductManagement /></ProtectedRoute>} />
+      <Route path="/admin/orders" element={<ProtectedRoute allowedRoles={["admin"]}><OrderManagement /></ProtectedRoute>} />
 
-        {/* Buyer routes */}
-        <Route path="/buyer"
-          element={
-            <ProtectedRoute allowedRoles={["buyer"]}>
-              <BuyerLayout />
-            </ProtectedRoute>
-          }
-        >
-          <Route index element={<Home />} />
-          <Route path="/marketplace" element={<Marketplace />} />
-          <Route path="/orders" element={<MyOrder />} />
-          <Route path="/profile" element={<MyProfile />} />
-          <Route path="/cart" element={<Cart />} />
-          <Route path="/notifications" element={<BuyerNotification />} />
-        </Route>
+      {/* Buyer routes */}
+      <Route path="/buyer" element={<ProtectedRoute allowedRoles={["buyer"]}><Home /></ProtectedRoute>} />
+      <Route path="/buyer/marketplace" element={<ProtectedRoute allowedRoles={["buyer"]}><Marketplace /></ProtectedRoute>} />
+      <Route path="/buyer/orders" element={<ProtectedRoute allowedRoles={["buyer"]}><MyOrder /></ProtectedRoute>} />
+      <Route path="/buyer/profile" element={<ProtectedRoute allowedRoles={["buyer"]}><MyProfile /></ProtectedRoute>} />
+      <Route path="/buyer/cart" element={<ProtectedRoute allowedRoles={["buyer"]}><Cart /></ProtectedRoute>} />
+      <Route path="/buyer/notifications" element={<ProtectedRoute allowedRoles={["buyer"]}><BuyerNotification /></ProtectedRoute>} />
 
-        {/* Employee routes */}
-        <Route
-          path="/employee"
-          element={
-            <ProtectedRoute allowedRoles={["employee"]}>
-              <EmployeeLayout />
-            </ProtectedRoute>
-          }
-        >
-          <Route index element={<ProductManage />} />
-          <Route path="orders" element={<OrderManage />} />
-        </Route>
+      {/* Employee routes */}
+      <Route path="/employee" element={<ProtectedRoute allowedRoles={["employee"]}><ProductManage /></ProtectedRoute>} />
+      <Route path="/employee/orders" element={<ProtectedRoute allowedRoles={["employee"]}><OrderManage /></ProtectedRoute>} />
 
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </BrowserRouter>
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 }

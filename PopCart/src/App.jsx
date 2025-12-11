@@ -15,7 +15,7 @@ import BuyerNotification from "./Buyer/Notification/Buyernotif.jsx";   // <--- A
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
+      <Route path="/" element={<SignIn />} />
       <Route path="/signup-buyer" element={<SignUpBuyer />} />
 
       {/* BUYER ROUTES */}

@@ -2,6 +2,12 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./SignUpBuyer.css";
 
+// ------------------------------------------------------------------
+// 1. Define the API endpoint URL (Adjust this if your path is different!)
+// IMPORTANT: This path assumes your PHP file is located at C:\xampp\htdocs\popcart_api\signup_buyer.php
+const API_URL = "http://localhost/popcart_api/signup_buyer.php"; 
+// ------------------------------------------------------------------
+
 export default function SignUpBuyer() {
   const navigate = useNavigate();
 
@@ -15,6 +21,7 @@ export default function SignUpBuyer() {
   });
 
   const [errors, setErrors] = useState({});
+  const [isLoading, setIsLoading] = useState(false); // State for loading status
 
   const handleChange = (e) => {
     setForm({
@@ -73,14 +80,55 @@ export default function SignUpBuyer() {
     return valid;
   };
 
-  const handleSubmit = (e) => {
+
+  // ------------------------------------------------------------------
+  // 2. Implementation of the API call to the PHP backend
+  // ------------------------------------------------------------------
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (validateForm()) {
-      alert("Form validated! Ready to sign up.");
-      // Add API call later
+    if (!validateForm()) {
+      return; // Stop if validation fails
+    }
+
+    setIsLoading(true); // Start loading state
+
+    try {
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        // Send the form data (excluding confirmPassword) as a JSON string
+        body: JSON.stringify({
+            lastName: form.lastName,
+            firstName: form.firstName,
+            email: form.email,
+            birthday: form.birthday,
+            password: form.password, // PHP will hash this before storing
+        }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        // Successful registration
+        alert(result.message);
+        navigate("/"); // Redirect to the Sign In page
+      } else {
+        // Registration failed (e.g., email already exists, or other server error)
+        alert(`Sign Up Failed: ${result.message}`);
+      }
+    } catch (error) {
+      // Network failure (server unreachable)
+      console.error("API Fetch Error:", error);
+      alert("Could not connect to the server. Please check your XAMPP Apache and MySQL services.");
+    } finally {
+      setIsLoading(false); // Stop loading state
     }
   };
+  // ------------------------------------------------------------------
+
 
   return (
     <div className="sign-up-buyer">
@@ -109,6 +157,7 @@ export default function SignUpBuyer() {
                 value={form.lastName}
                 onChange={handleChange}
                 className={errors.lastName ? "input-error" : ""}
+                disabled={isLoading}
               />
               {errors.lastName && (
                 <p className="error-text">{errors.lastName}</p>
@@ -124,6 +173,7 @@ export default function SignUpBuyer() {
                 value={form.firstName}
                 onChange={handleChange}
                 className={errors.firstName ? "input-error" : ""}
+                disabled={isLoading}
               />
               {errors.firstName && (
                 <p className="error-text">{errors.firstName}</p>
@@ -139,6 +189,7 @@ export default function SignUpBuyer() {
             value={form.email}
             onChange={handleChange}
             className={errors.email ? "input-error" : ""}
+            disabled={isLoading}
           />
           {errors.email && <p className="error-text">{errors.email}</p>}
 
@@ -149,6 +200,7 @@ export default function SignUpBuyer() {
             value={form.birthday}
             onChange={handleChange}
             className={errors.birthday ? "input-error" : ""}
+            disabled={isLoading}
           />
           {errors.birthday && <p className="error-text">{errors.birthday}</p>}
 
@@ -160,6 +212,7 @@ export default function SignUpBuyer() {
             value={form.password}
             onChange={handleChange}
             className={errors.password ? "input-error" : ""}
+            disabled={isLoading}
           />
           {errors.password && <p className="error-text">{errors.password}</p>}
 
@@ -171,13 +224,14 @@ export default function SignUpBuyer() {
             value={form.confirmPassword}
             onChange={handleChange}
             className={errors.confirmPassword ? "input-error" : ""}
+            disabled={isLoading}
           />
           {errors.confirmPassword && (
             <p className="error-text">{errors.confirmPassword}</p>
           )}
 
-          <button type="submit" className="submit-btn">
-            Sign Up
+          <button type="submit" className="submit-btn" disabled={isLoading}>
+            {isLoading ? 'Signing Up...' : 'Sign Up'}
           </button>
         </form>
       </div>

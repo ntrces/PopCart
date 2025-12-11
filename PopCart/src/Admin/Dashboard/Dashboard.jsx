@@ -4,6 +4,8 @@ import "./Dashboard.css";
 import Monthly from "./Monthly.jsx";
 import Yearly from "./Yearly.jsx";
 import Weekly from "./Weekly.jsx";
+import Sidebar from "../Sidebar/SidebarA.jsx";
+import Header from "../Header/HeaderA.jsx";
 
 export const Dashboard = () => {
 
@@ -149,12 +151,13 @@ export const Dashboard = () => {
   const [selectedPeriod, setSelectedPeriod] = useState("Daily");
 
   return (
-    <div className="dashboard-layout">
+    <div className="admin-layout">
+      <Header className="admin-header" />
+      <div className="admin-content-wrapper">
 
-      {/* Main Content */}
-      <div className="dashboard-main">
+        <Sidebar className="admin-sidebar" />
 
-
+        <main className="admin-main-content">
     <div className="dashboard-container">
       {/* Header */}
       <div className="dashboard-header">
@@ -244,6 +247,7 @@ export const Dashboard = () => {
         </div>
       </div>
     </div>
+    </main>
       </div>
     </div>
   );

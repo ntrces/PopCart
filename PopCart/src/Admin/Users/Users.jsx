@@ -4,6 +4,8 @@ import Delete from "./Delete.jsx";
 import EditUser from "./Edit.jsx";
 import AddUser from "./AddUser.jsx";
 import Modal from "./Modal.jsx";
+import Header from "../Header/HeaderA.jsx";
+import Sidebar from "../Sidebar/SidebarA.jsx";
 
 export default function Users() {
   const [showAddModal, setShowAddModal] = useState(false);
@@ -33,7 +35,14 @@ export default function Users() {
   };
 
   return (
-    <main className="users-page">
+ <div className="admin-layout">
+      <Header className="admin-header" />
+      <div className="admin-content-wrapper">
+
+        <Sidebar className="admin-sidebar" />
+
+        <main className="admin-main-content">
+    <div className="users-page">
       <div className="users-container">
         <UserManagementSection onAdd={handleOpenAdd} />
         <UserSearchFilterSection />
@@ -57,7 +66,10 @@ export default function Users() {
           <Delete user={selectedUser} onClose={handleCloseDelete} />
         </Modal>
       )}
-    </main>
+    </div>
+        </main>
+      </div>
+    </div>
   );
 }
 

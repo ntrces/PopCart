@@ -1,8 +1,6 @@
 // ...existing code...
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import { useAuth } from "./auth/useAuth.jsx";
-import ProtectedRoute from "./routes/ProtectedRoute.jsx";
 
 import SignIn from "./Login/SignIn.jsx";
 import SignUpBuyer from "./Login/SignUpBuyer.jsx";
@@ -23,31 +21,30 @@ import OrderManage from "./Employee/OrderManagement/OrderE.jsx";
 import ProductManage from "./Employee/ProductManagement/ProductE.jsx";
 
 export default function App() {
-  const { user } = useAuth();
-
   return (
     <Routes>
-      <Route path="/" element={<Navigate to={user ? `/${user.role}` : "/signin"} replace />} />
+      <Route path="/" element={<Navigate to="/buyer" replace />} />
       <Route path="/signin" element={<SignIn />} />
       <Route path="/signup-buyer" element={<SignUpBuyer />} />
 
       {/* Admin routes */}
-      <Route path="/admin" element={<ProtectedRoute allowedRoles={["admin"]}><AdminDashboard /></ProtectedRoute>} />
-      <Route path="/admin/users" element={<ProtectedRoute allowedRoles={["admin"]}><Users /></ProtectedRoute>} />
-      <Route path="/admin/products" element={<ProtectedRoute allowedRoles={["admin"]}><ProductManagement /></ProtectedRoute>} />
-      <Route path="/admin/orders" element={<ProtectedRoute allowedRoles={["admin"]}><OrderManagement /></ProtectedRoute>} />
+      <Route path="/admin" element={<AdminDashboard />} />
+      <Route path="/admin/users" element={<Users />} />
+      <Route path="/admin/products" element={<ProductManagement />} />
+      <Route path="/admin/orders" element={<OrderManagement />} />
 
       {/* Buyer routes */}
-      <Route path="/buyer" element={<ProtectedRoute allowedRoles={["buyer"]}><Home /></ProtectedRoute>} />
-      <Route path="/buyer/marketplace" element={<ProtectedRoute allowedRoles={["buyer"]}><Marketplace /></ProtectedRoute>} />
-      <Route path="/buyer/orders" element={<ProtectedRoute allowedRoles={["buyer"]}><MyOrder /></ProtectedRoute>} />
-      <Route path="/buyer/profile" element={<ProtectedRoute allowedRoles={["buyer"]}><MyProfile /></ProtectedRoute>} />
-      <Route path="/buyer/cart" element={<ProtectedRoute allowedRoles={["buyer"]}><Cart /></ProtectedRoute>} />
-      <Route path="/buyer/notifications" element={<ProtectedRoute allowedRoles={["buyer"]}><BuyerNotification /></ProtectedRoute>} />
+      <Route path="/buyer" element={<Home />} />
+      <Route path="/buyer/marketplace" element={<Marketplace />} />
+      <Route path="/buyer/orders" element={<MyOrder />} />
+      <Route path="/buyer/profile" element={<MyProfile />} />
+      <Route path="/buyer/cart" element={<Cart />} />
+      <Route path="/buyer/notifications" element={<BuyerNotification />} />
 
       {/* Employee routes */}
-      <Route path="/employee" element={<ProtectedRoute allowedRoles={["employee"]}><ProductManage /></ProtectedRoute>} />
-      <Route path="/employee/orders" element={<ProtectedRoute allowedRoles={["employee"]}><OrderManage /></ProtectedRoute>} />
+        <Route path="/employee" element={<Navigate to="/employee/products" replace />} />
+        <Route path="/employee/products" element={<ProductManage />} />
+        <Route path="/employee/orders" element={<OrderManage />} />
 
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

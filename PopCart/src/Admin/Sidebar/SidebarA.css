@@ -8,7 +8,6 @@
   height: calc(100vh - 71px);;
   z-index: 999;  
   border-right: 1px solid #e5e7eb;
-  margin-left: 150px;
 }
 
 .sidebar-closed {

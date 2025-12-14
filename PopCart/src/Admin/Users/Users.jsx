@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Users.css";
 import Delete from "./Delete.jsx";
 import EditUser from "./Edit.jsx";
@@ -12,6 +12,7 @@ export default function Users() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [searchValue, setSearchValue] = useState("");
 
   const handleOpenAdd = () => setShowAddModal(true);
   const handleCloseAdd = () => setShowAddModal(false);
@@ -45,8 +46,8 @@ export default function Users() {
     <div className="users-page">
       <div className="users-container">
         <UserManagementSection onAdd={handleOpenAdd} />
-        <UserSearchFilterSection />
-        <UserTableSection onEdit={handleOpenEdit} onDelete={handleOpenDelete} />
+        <UserSearchFilterSection searchValue={searchValue} setSearchValue={setSearchValue} />
+        <UserTableSection onEdit={handleOpenEdit} onDelete={handleOpenDelete} searchValue={searchValue} />
       </div>
 
       {showAddModal && (
@@ -101,9 +102,7 @@ const UserManagementSection = ({ onAdd }) => {
   );
 };
 
-const UserSearchFilterSection = () => {
-  const [searchValue, setSearchValue] = useState("");
-
+const UserSearchFilterSection = ({ searchValue, setSearchValue }) => {
   return (
     <div className="usf-wrapper">
       <div className="search-and-filter">
@@ -111,11 +110,11 @@ const UserSearchFilterSection = () => {
           <input
             id="search-input"
             className="search-input"
-            placeholder="Search by title or artist..."
+            placeholder="Search by name or email"
             type="search"
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
-            aria-label="Search by title or artist"
+            aria-label="Search by name or email"
           />
         </label>
       </div>
@@ -123,64 +122,79 @@ const UserSearchFilterSection = () => {
   );
 };
 
-const UserTableSection = ({ onEdit, onDelete }) => {
+const UserTableSection = ({ onEdit, onDelete, searchValue }) => {
   const [activeFilter, setActiveFilter] = useState("all");
+  const [counts, setCounts] = useState({ all: 5, customer: 3, employee: 1, admin: 1 });
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    const fetchCounts = async () => {
+      try {
+        const response = await fetch('http://localhost/popcart-api/get_user_counts.php');
+        const data = await response.json();
+        if (data.success) {
+          setCounts(data.counts);
+        }
+      } catch (error) {
+        console.error('Error fetching user counts:', error);
+      }
+    };
+    fetchCounts();
+  }, []);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch('http://localhost/popcart-api/get_users.php');
+        const data = await response.json();
+        if (data.success) {
+          setUsers(data.users);
+        }
+      } catch (error) {
+        console.error('Error fetching users:', error);
+      }
+    };
+    fetchUsers();
+  }, []);
+
+  const getRoleStyles = (usertype) => {
+    switch (usertype) {
+      case 'buyer':
+        return { roleColor: "role-badge-blue", roleTextColor: "role-text-blue" };
+      case 'employee':
+        return { roleColor: "role-badge-green", roleTextColor: "role-text-green" };
+      case 'admin':
+        return { roleColor: "role-badge-red", roleTextColor: "role-text-red" };
+      default:
+        return { roleColor: "role-badge-gray", roleTextColor: "role-text-gray" };
+    }
+  };
+
+  const filteredUsers = users.filter(user => {
+    if (activeFilter === "all") return true;
+    if (activeFilter === "customer") return user.usertype === 'buyer';
+    if (activeFilter === "employee") return user.usertype === 'employee';
+    if (activeFilter === "admin") return user.usertype === 'admin';
+    return false;
+  });
+
+  // apply search (name or email)
+  const searchLower = (searchValue || "").trim().toLowerCase();
+  const visibleUsers = filteredUsers.filter((user) => {
+    if (!searchLower) return true;
+    const fullName = `${user.firstname} ${user.lastname}`.toLowerCase();
+    const email = (user.email || "").toLowerCase();
+    return fullName.includes(searchLower) || email.includes(searchLower);
+  });
 
   const filterButtons = [
-    { id: "all", label: "All (5)", count: 5 },
-    { id: "customer", label: "Customer (3)", count: 3 },
-    { id: "employee", label: "Employee (1)", count: 1 },
-    { id: "admin", label: "Admin (1)", count: 1 },
+    { id: "all", label: `All (${counts.all})`, count: counts.all },
+    { id: "customer", label: `Customer (${counts.customer})`, count: counts.customer },
+    { id: "employee", label: `Employee (${counts.employee})`, count: counts.employee },
+    { id: "admin", label: `Admin (${counts.admin})`, count: counts.admin },
   ];
 
-  const userData = [
-    {
-      id: 1,
-      name: "John Customer",
-      email: "customer@demo.com",
-      role: "customer",
-      roleColor: "role-badge-blue",
-      roleTextColor: "role-text-blue",
-      joinedDate: "Oct 15, 2025",
-      status: "active",
-      avatar: "J",
-    },
-    {
-      id: 2,
-      name: "Jane Employee",
-      email: "employee@demo.com",
-      role: "employee",
-      roleColor: "role-badge-green",
-      roleTextColor: "role-text-green",
-      joinedDate: "Sep 20, 2025",
-      status: "active",
-      avatar: "J",
-    },
-    {
-      id: 3,
-      name: "Admin",
-      email: "admin@demo.com",
-      role: "admin",
-      roleColor: "role-badge-red",
-      roleTextColor: "role-text-red",
-      joinedDate: "Aug 1, 2025",
-      status: "active",
-      avatar: "A",
-    },
-    {
-      id: 4,
-      name: "Sarah Williams",
-      email: "sarah@example.com",
-      role: "customer",
-      roleColor: "role-badge-blue",
-      roleTextColor: "role-text-blue",
-      joinedDate: "Nov 1, 2025",
-      status: "active",
-      avatar: "S",
-    },
-  ];
-
-  const tableHeaders = ["User", "Email", "Role", "Joined Date", "Status", "Actions"];
+  const tableHeaders = ["User", "Email", "Role", "Status", "Actions"];
 
   return (
     <section className="ut-section">
@@ -200,6 +214,17 @@ const UserTableSection = ({ onEdit, onDelete }) => {
         ))}
       </nav>
 
+      {searchValue && (
+        <div className="search-results" style={{ padding: '12px 16px' }}>
+          <p style={{ margin: 0, fontSize: 14 }}>{visibleUsers.length} result(s) for "{searchValue}"</p>
+          <ul style={{ margin: '6px 0 0 0', paddingLeft: 16 }}>
+            {visibleUsers.slice(0, 10).map((u) => (
+              <li key={u.user_id} style={{ fontSize: 13 }}>{`${u.firstname} ${u.lastname} — ${u.email}`}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       <div className="ut-card">
         <div className="ut-table">
           <div className="ut-table-head">
@@ -213,25 +238,21 @@ const UserTableSection = ({ onEdit, onDelete }) => {
           </div>
 
           <div className="ut-table-body">
-            {userData.map((user) => (
-              <div key={user.id} className="ut-row">
+            {visibleUsers.map((user) => (
+              <div key={user.user_id} className="ut-row">
                 <div className="ut-cell user-cell">
-                  <div className="user-avatar">{user.avatar}</div>
-                  <div className="user-name">{user.name}</div>
+                  <div className="user-avatar">{user.firstname.charAt(0)}</div>
+                  <div className="user-name">{`${user.firstname} ${user.lastname}`}</div>
                 </div>
 
                 <div className="ut-cell">{user.email}</div>
 
                 <div className="ut-cell">
                   <div className="role-wrap">
-                    <div className={`role-badge ${user.roleColor}`}>
-                      <span className={`role-text ${user.roleTextColor}`}>{user.role}</span>
+                    <div className={`role-badge ${getRoleStyles(user.usertype).roleColor}`}>
+                      <span className={`role-text ${getRoleStyles(user.usertype).roleTextColor}`}>{user.usertype}</span>
                     </div>
                   </div>
-                </div>
-
-                <div className="ut-cell">
-                  <time className="joined-date">{user.joinedDate}</time>
                 </div>
 
                 <div className="ut-cell">
@@ -243,7 +264,7 @@ const UserTableSection = ({ onEdit, onDelete }) => {
                     <button
                       className="action-btn edit"
                       onClick={() => onEdit(user)}
-                      aria-label={`Edit ${user.name}`}
+                        aria-label={`Edit ${user.firstname} ${user.lastname}`}
                       type="button"
                     >
                       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -255,7 +276,7 @@ const UserTableSection = ({ onEdit, onDelete }) => {
                     <button
                       className="action-btn delete"
                       onClick={() => onDelete(user)}
-                      aria-label={`Delete ${user.name}`}
+                        aria-label={`Delete ${user.firstname} ${user.lastname}`}
                       type="button"
                     >
                       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">

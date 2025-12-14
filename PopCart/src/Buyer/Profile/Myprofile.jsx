@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Myprofile.css";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -9,6 +9,23 @@ export default function Myprofile() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [showSignOutModal, setShowSignOutModal] = useState(false);
   const [showModal, setShowModal] = useState(false); // ✅ FOR ADD ADDRESS MODAL
+  const [user, setUser] = useState(null);
+  const [formData, setFormData] = useState({
+    lastname: '',
+    firstname: '',
+    birthday: '',
+    email: '',
+    contact_number: ''
+  });
+  const [addresses, setAddresses] = useState([]);
+  const [addressForm, setAddressForm] = useState({
+    address_label: '',
+    postal_code: '1000',
+    street_address: '',
+    city_municipality: '',
+    province: '',
+    is_default: false
+  });
 
   // ✅ Sidebar Toggle
   const toggleSidebar = () => {
@@ -18,6 +35,194 @@ export default function Myprofile() {
   // ✅ Close Profile Button
   const handleClose = () => {
     navigate(-1);
+  };
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        const userData = JSON.parse(storedUser);
+        try {
+          const response = await fetch(`http://localhost/popcart-api/get_user.php?user_id=${userData.user_id}`);
+          const data = await response.json();
+          if (data.success) {
+            setUser(data.user);
+            setFormData({
+              lastname: data.user.lastname || '',
+              firstname: data.user.firstname || '',
+              birthday: data.user.birthday || '',
+              email: data.user.email || '',
+              contact_number: data.user.contact_number || '09'
+            });
+          }
+        } catch (error) {
+          console.error('Error fetching user:', error);
+        }
+      }
+    };
+    const fetchAddresses = async () => {
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        const userData = JSON.parse(storedUser);
+        try {
+          const response = await fetch(`http://localhost/popcart-api/get_addresses.php?user_id=${userData.user_id}`);
+          const data = await response.json();
+          if (data.success) {
+            setAddresses(data.addresses);
+          }
+        } catch (error) {
+          console.error('Error fetching addresses:', error);
+        }
+      }
+    };
+    fetchUser();
+    fetchAddresses();
+  }, []);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    if (name === 'contact_number') {
+      // Allow only digits
+      let filtered = value.replace(/\D/g, '');
+      // Ensure starts with 09
+      if (!filtered.startsWith('09')) {
+        filtered = '09' + filtered.replace(/^09/, '');
+      }
+      // Limit to 11 digits
+      if (filtered.length > 11) {
+        filtered = filtered.slice(0, 11);
+      }
+      setFormData(prev => ({ ...prev, [name]: filtered }));
+    } else {
+      setFormData(prev => ({ ...prev, [name]: value }));
+    }
+  };
+
+  const handleSave = async () => {
+    try {
+      const response = await fetch('http://localhost/popcart-api/update_user.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: user.user_id, ...formData })
+      });
+      const data = await response.json();
+      if (data.success) {
+        alert('Profile updated successfully');
+        // Update localStorage
+        const updatedUser = { ...user, ...formData };
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        setUser(updatedUser);
+      } else {
+        alert('Error updating profile');
+      }
+    } catch (error) {
+      console.error('Error updating user:', error);
+    }
+  };
+
+  const handleAddressSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch('http://localhost/popcart-api/add_address.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: user.user_id, ...addressForm })
+      });
+      const data = await response.json();
+      if (data.success) {
+        alert('Address added successfully');
+        setShowModal(false);
+        setAddressForm({
+          address_label: '',
+          postal_code: '1000',
+          street_address: '',
+          city_municipality: '',
+          province: '',
+          is_default: false
+        });
+        // Refresh addresses
+        const fetchAddresses = async () => {
+          try {
+            const response = await fetch(`http://localhost/popcart-api/get_addresses.php?user_id=${user.user_id}`);
+            const data = await response.json();
+            if (data.success) {
+              setAddresses(data.addresses);
+            }
+          } catch (error) {
+            console.error('Error fetching addresses:', error);
+          }
+        };
+        fetchAddresses();
+      } else {
+        alert('Error adding address');
+      }
+    } catch (error) {
+      console.error('Error adding address:', error);
+    }
+  };
+
+  const handleSetDefault = async (addressId) => {
+    try {
+      const response = await fetch('http://localhost/popcart-api/update_address_status.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: user.user_id, shipping_address_id: addressId })
+      });
+      const data = await response.json();
+      if (data.success) {
+        alert('Address set as default');
+        // Refresh addresses
+        const fetchAddresses = async () => {
+          try {
+            const response = await fetch(`http://localhost/popcart-api/get_addresses.php?user_id=${user.user_id}`);
+            const data = await response.json();
+            if (data.success) {
+              setAddresses(data.addresses);
+            }
+          } catch (error) {
+            console.error('Error fetching addresses:', error);
+          }
+        };
+        fetchAddresses();
+      } else {
+        alert('Error setting default address');
+      }
+    } catch (error) {
+      console.error('Error setting default address:', error);
+    }
+  };
+
+  const handleDeleteAddress = async (addressId) => {
+    if (confirm('Are you sure you want to delete this address?')) {
+      try {
+        const response = await fetch('http://localhost/popcart-api/delete_address.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user_id: user.user_id, shipping_address_id: addressId })
+        });
+        const data = await response.json();
+        if (data.success) {
+          alert('Address deleted successfully');
+          // Refresh addresses
+          const fetchAddresses = async () => {
+            try {
+              const response = await fetch(`http://localhost/popcart-api/get_addresses.php?user_id=${user.user_id}`);
+              const data = await response.json();
+              if (data.success) {
+                setAddresses(data.addresses);
+              }
+            } catch (error) {
+              console.error('Error fetching addresses:', error);
+            }
+          };
+          fetchAddresses();
+        } else {
+          alert('Error deleting address');
+        }
+      } catch (error) {
+        console.error('Error deleting address:', error);
+      }
+    }
   };
   
 
@@ -62,8 +267,8 @@ export default function Myprofile() {
            </Link>
 
          <Link to="/buyer/profile" className="profile">
-                     <div className="avatar">A</div>
-                     <p>Althea</p>
+                     <div className="avatar">{user?.firstname?.charAt(0).toUpperCase() || 'U'}</div>
+                     <p>{user?.firstname || 'User'}</p>
                    </Link>
         </div>
       </div>
@@ -134,7 +339,7 @@ Home</button> </Link>
           Cancel
         </button>
 
-        <button className="confirm-btn">
+        <button className="confirm-btn" onClick={() => { localStorage.removeItem('user'); setShowSignOutModal(false); navigate('/'); }}>
           Sign Out
         </button>
       </div>
@@ -163,32 +368,32 @@ Home</button> </Link>
         <div className="two-grid">
           <div className="input-group">
             <label>Last Name</label>
-            <input defaultValue="Althea" />
+            <input name="lastname" value={formData.lastname} onChange={handleInputChange} />
           </div>
 
           <div className="input-group">
             <label>First Name</label>
-            <input defaultValue="Althea" />
+            <input name="firstname" value={formData.firstname} onChange={handleInputChange} />
           </div>
         </div>
 
         <div className="input-group">
           <label>Birthday</label>
-          <input placeholder="mm/dd/yyyy" />
+          <input name="birthday" type="date" value={formData.birthday} onChange={handleInputChange} />
         </div>
 
         <div className="input-group">
           <label>Email Address</label>
-          <input disabled defaultValue="alteya75@gmail.com" />
+          <input disabled value={formData.email} />
           <p className="warning-text">Email cannot be changed</p>
         </div>
 
         <div className="input-group">
           <label>Phone Number</label>
-          <input placeholder="+63 XXX XXXX XXXX" />
+          <input name="contact_number" value={formData.contact_number} onChange={handleInputChange} placeholder="09123456789" />
         </div>
 
-        <button className="save-btn">Save Changes</button>
+        <button className="save-btn" onClick={handleSave}>Save Changes</button>
       </div>
 
      <div className="card">
@@ -231,35 +436,35 @@ Home</button> </Link>
       </div>
 
       {/* FORM */}
-      <form className="address-form">
+      <form className="address-form" onSubmit={handleAddressSubmit}>
 
         <div className="form-group">
           <label>Address Label *</label>
-          <input placeholder="Home, Office, etc." />
+          <input placeholder="Home, Office, etc." value={addressForm.address_label} onChange={(e) => setAddressForm(prev => ({ ...prev, address_label: e.target.value }))} />
         </div>
 
         <div className="form-group">
           <label>Postal Code</label>
-          <input defaultValue="1000" />
+          <input defaultValue="1000" value={addressForm.postal_code} onChange={(e) => setAddressForm(prev => ({ ...prev, postal_code: e.target.value }))} />
         </div>
 
         <div className="form-group">
           <label>Street Address *</label>
-          <input placeholder="House number, street name, barangay" />
+          <input placeholder="House number, street name, barangay" value={addressForm.street_address} onChange={(e) => setAddressForm(prev => ({ ...prev, street_address: e.target.value }))} />
         </div>
 
         <div className="form-group">
           <label>City/Municipality *</label>
-          <input placeholder="Manila, Quezon City, etc." />
+          <input placeholder="Manila, Quezon City, etc." value={addressForm.city_municipality} onChange={(e) => setAddressForm(prev => ({ ...prev, city_municipality: e.target.value }))} />
         </div>
 
         <div className="form-group">
           <label>Province</label>
-          <input placeholder="Metro Manila, Cebu, etc." />
+          <input placeholder="Metro Manila, Cebu, etc." value={addressForm.province} onChange={(e) => setAddressForm(prev => ({ ...prev, province: e.target.value }))} />
         </div>
 
         <div className="checkbox-row">
-          <input type="checkbox" />
+          <input type="checkbox" checked={addressForm.is_default} onChange={(e) => setAddressForm(prev => ({ ...prev, is_default: e.target.checked }))} />
           <span>Set as default address</span>
         </div>
 
@@ -283,56 +488,34 @@ Home</button> </Link>
   </div>
 )}
 
-  {/* Address Item - Home */}
-  <div className="address-card">
-    <div className="address-left">
-      <div className="address-icon">
-        <i className="fa-solid fa-house"></i>
+  {/* Address Items */}
+  {addresses.map((address) => (
+    <div className="address-card" key={address.shipping_address_id}>
+      <div className="address-left">
+        <div className="address-icon">
+          {address.address_label.charAt(0).toUpperCase()}
+        </div>
+
+        <div className="address-info">
+          <div className="address-header">
+            <div className="address-title">{address.address_label}</div>
+            {address.status === 'default' && <span className="default-badge">Default</span>}
+          </div>
+
+          <div className="address-text">
+            <p className="address-line highlight">{address.street_address}</p>
+            <p className="address-line">{address.city_municipality}, {address.province}</p>
+            <p className="address-line">{address.postal_code}, Philippines</p>
+          </div>
+        </div>
       </div>
 
-      <div className="address-info">
-        <div className="address-header">
-          <div className="address-title">Home</div>
-          <span className="default-badge">Default</span>
-        </div>
-
-        <div className="address-text">
-          <p className="address-line highlight">Blk 0 Lot 0 Parfum Homes</p>
-          <p className="address-line">TANZA, CAVITE</p>
-          <p className="address-line">2755, Philippines</p>
-        </div>
-      </div>
-    </div>
-
-    <button className="delete-btn">Delete</button>
-  </div>
-
-  {/* Address Item - School */}
-  <div className="address-card">
-    <div className="address-left">
-      <div className="address-icon student">
-        <i className="fa-solid fa-school"></i>
-      </div>
-
-      <div className="address-info">
-        <div className="address-header">
-          <div className="address-title">School</div>
-        </div>
-
-        <div className="address-text">
-          <p className="address-line highlight">Blk 0 Lot 0 Parfum Homes</p>
-          <p className="address-line">TANZA, CAVITE</p>
-          <p className="address-line">2755, Philippines</p>
-        </div>
+      <div className="address-actions">
+        {address.status !== 'default' && <button className="set-default-btn" onClick={() => handleSetDefault(address.shipping_address_id)}>Set Default</button>}
+        {address.status !== 'default' && <button className="delete-btn" onClick={() => handleDeleteAddress(address.shipping_address_id)}>Delete</button>}
       </div>
     </div>
-
-    <div className="address-actions">
-      <button className="set-default-btn">Set Default</button>
-      <button className="delete-btn">Delete</button>
-    </div>
-  
-</div>
+  ))}
 </div>
 
      

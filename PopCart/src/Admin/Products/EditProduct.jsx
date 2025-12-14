@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./EditProduct.css";
 
-function EditProduct({ onClose }) {
+function EditProduct({ product, onClose, onUpdate }) {
   const [formData, setFormData] = useState({
     albumTitle: "",
     artist: "",
@@ -12,6 +12,34 @@ function EditProduct({ onClose }) {
     albumCoverImages: null,
     description: "",
   });
+  const [showFileInput, setShowFileInput] = useState(false);
+  const [selectedFiles, setSelectedFiles] = useState([]);
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const response = await fetch(`http://localhost/popcart-api/get_product.php?product_id=${product.product_id}`);
+        const data = await response.json();
+        if (data.success) {
+          const p = data.product;
+          setFormData({
+            albumTitle: p.album_title,
+            artist: p.artist,
+            price: p.price,
+            stockQuantity: p.stock,
+            genre: p.genre,
+            releasedYear: p.released_year,
+            description: p.description,
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching product:', error);
+      }
+    };
+    if (product.product_id) {
+      fetchProduct();
+    }
+  }, [product.product_id]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -22,16 +50,48 @@ function EditProduct({ onClose }) {
   };
 
   const handleFileChange = (e) => {
+    const files = Array.from(e.target.files);
     setFormData((prev) => ({
       ...prev,
-      albumCoverImages: e.target.files,
+      albumCoverImages: files,
     }));
+    setSelectedFiles(files);
+    setShowFileInput(true);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
-    if (onClose) onClose();
+    const data = new FormData();
+    data.append('product_id', product.product_id);
+    data.append('album_title', formData.albumTitle);
+    data.append('artist', formData.artist);
+    data.append('price', formData.price);
+    data.append('stock', formData.stockQuantity);
+    data.append('genre', formData.genre);
+    data.append('released_year', formData.releasedYear);
+    data.append('description', formData.description);
+    if (formData.albumCoverImages) {
+      for (let i = 0; i < formData.albumCoverImages.length; i++) {
+        data.append('album_cover_img[]', formData.albumCoverImages[i]);
+      }
+    }
+    try {
+      const response = await fetch('http://localhost/popcart-api/update_product.php', {
+        method: 'POST',
+        body: data
+      });
+      const result = await response.json();
+      if (result.success) {
+        alert('Product updated successfully');
+        if (onUpdate) onUpdate();
+        if (onClose) onClose();
+      } else {
+        alert('Error: ' + result.message);
+      }
+    } catch (error) {
+      console.error('Error updating product:', error);
+      alert('Failed to update product');
+    }
   };
 
   return (

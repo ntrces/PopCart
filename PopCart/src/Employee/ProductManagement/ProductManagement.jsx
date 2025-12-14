@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useMemo } from "react";
 import "./ProductManagement.css";
-import Modal from "../Users/Modal.jsx";
-import AddProduct from "./AddProduct.jsx";
-import EditProduct from "./EditProduct.jsx";
-import DeleteProduct from "./DeleteProduct.jsx";
+import Modal from "../../Admin/Users/Modal.jsx";
+import AddProduct from "../ProductManagement/AddE.jsx";
+import EditProduct from "../ProductManagement/EditE.jsx";
+import DeleteProduct from "../ProductManagement/DeleteE.jsx";
 import image from "../../assets/image.png";
-import Header from "../Header/HeaderA.jsx";
-import Sidebar from "../Sidebar/SidebarA.jsx";
+import Header from "../Header/HeaderE.jsx";
+import Sidebar from "../Sidebar/SidebarE.jsx";
 
 function ProductManagement() {
   const [searchValue, setSearchValue] = useState("");

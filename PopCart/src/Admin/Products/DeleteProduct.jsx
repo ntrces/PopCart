@@ -1,14 +1,31 @@
 import React from "react";
 import "./DeleteProduct.css";
 
-export default function DeleteProduct ({ onClose }) {
+export default function DeleteProduct ({ product, onClose, onDelete }) {
   const handleCancel = () => {
     console.log("Cancel clicked");
     onClose();
   };
 
-  const handleDelete = () => {
-    console.log("Delete clicked");
+  const handleDelete = async () => {
+    try {
+      const response = await fetch('http://localhost/popcart-api/delete_product.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ product_id: product.product_id })
+      });
+      const result = await response.json();
+      if (result.success) {
+        alert('Product deleted successfully');
+        if (onDelete) onDelete();
+        onClose();
+      } else {
+        alert('Error: ' + result.message);
+      }
+    } catch (error) {
+      console.error('Error deleting product:', error);
+      alert('Failed to delete product');
+    }
   };
 
   return (

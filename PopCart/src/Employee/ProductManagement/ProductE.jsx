@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import "./ProductE.css";
 import Modal from "../../Admin/Users/Modal.jsx";
 import AddProduct from "./AddE.jsx";
@@ -16,6 +16,17 @@ function ProductE() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [tableData, setTableData] = useState([]);
+
+  const filteredData = useMemo(() => {
+    return tableData.filter(row => {
+      const matchesSearch = searchValue === '' || 
+        row.album_title.toLowerCase().includes(searchValue.toLowerCase()) || 
+        row.artist.toLowerCase().includes(searchValue.toLowerCase());
+      const matchesGenre = selectedGenre === 'All Genres' || row.genre.toLowerCase() === selectedGenre.toLowerCase();
+      return matchesSearch && matchesGenre;
+    });
+  }, [tableData, searchValue, selectedGenre]);
 
   const genres = [
     "All Genres",
@@ -28,65 +39,20 @@ function ProductE() {
     "Country",
   ];
 
-  const [tableData, setTableData] = useState([
-    {
-      id: 1,
-      albumImage: image,
-      albumName: "Thriller",
-      artist: "Michael Jackson",
-      genre: "Pop",
-      price: "$24.99",
-      quantity: "45",
-      year: "1982",
-    },
-    {
-      id: 2,
-      albumImage: image,
-      albumName: "Bad",
-      artist: "Michael Jackson",
-      genre: "Pop",
-      price: "$19.99",
-      quantity: "32",
-      year: "1987",
-    },
-    {
-      id: 3,
-      albumImage: image,
-      albumName: "Dangerous",
-      artist: "Michael Jackson",
-      genre: "Pop",
-      price: "$22.99",
-      quantity: "28",
-      year: "1991",
-    },
-    {
-      id: 4,
-      albumImage: image,
-      albumName: "HIStory",
-      artist: "Michael Jackson",
-      genre: "Pop",
-      price: "$24.99",
-      quantity: "15",
-      year: "1995",
-    },
-    {
-      id: 5,
-      albumImage: image,
-      albumName: "Invincible",
-      artist: "Michael Jackson",
-      genre: "Pop",
-      price: "$26.99",
-      quantity: "10",
-      year: "2001",
-    },
-  ]);
+  useEffect(() => {
+    fetchProducts();
+  }, []);
 
-   const handleQuantityChange = (id, newQuantity) => {
-    setTableData((prevData) =>
-      prevData.map((item) =>
-        item.id === id ? { ...item, quantity: newQuantity } : item
-      )
-    );
+  const fetchProducts = async () => {
+    try {
+      const response = await fetch('http://localhost/popcart-api/get_products.php');
+      const data = await response.json();
+      if (data.success) {
+        setTableData(data.products);
+      }
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    }
   };
 
   const headers = [
@@ -96,7 +62,7 @@ function ProductE() {
     { label: "Price", align: "left" },
     { label: "Stock", align: "left" },
     { label: "Year", align: "left" },
-    { label: "Actions", align: "right" },
+    { label: "Actions", align: "center" },
   ];
 
   const handleSearchChange = (e) => {
@@ -220,7 +186,7 @@ function ProductE() {
               <div className="pm-table-row">
                 {headers.map((header, i) => (
                   <div key={i} className="pm-th">
-                    <div className={`pm-th-text ${header.align === "right" ? "align-right" : ""}`}>
+                    <div className="pm-th-text" style={{ textAlign: header.align }}>
                       {header.label}
                     </div>
                   </div>
@@ -229,39 +195,35 @@ function ProductE() {
             </header>
 
             <div className="pm-table-body">
-              {tableData.map((row) => (
-                <div key={row.id} className="pm-table-row">
+              {filteredData.map((row) => (
+                <div key={row.product_id} className="pm-table-row">
                   <div className="pm-table-cell album-cell">
-                    <div className="pm-album-image" style={{ backgroundImage: `url(${row.albumImage})` }} />
-                    <span className="pm-album-name">{row.albumName}</span>
+                    {row.album_cover_img ? (
+                      <img src={'http://localhost/' + row.album_cover_img.split(',')[0]} alt={row.album_title} className="pm-album-image" />
+                    ) : (
+                      <img src={image} alt={row.album_title} className="pm-album-image" />
+                    )}
+                    <span className="pm-album-name" title={row.album_title}>{row.album_title}</span>
                   </div>
 
                   <div className="pm-table-cell">
-                    <span>{row.artist}</span>
+                    <span className="pm-text-truncate" title={row.artist}>{row.artist}</span>
                   </div>
 
                   <div className="pm-table-cell">
-                    <div className="pm-genre-badge">{row.genre}</div>
+                    <div className="pm-genre-badge pm-text-truncate" title={row.genre}>{row.genre}</div>
                   </div>
 
                   <div className="pm-table-cell">
-                    <span>{row.price}</span>
+                    <span className="pm-text-truncate" title={`₱${parseFloat(row.price).toFixed(2)}`}>₱{parseFloat(row.price).toFixed(2)}</span>
                   </div>
 
                   <div className="pm-table-cell">
-                    <input
-                      type="number"
-                      className="pm-quantity-input"
-                      value={row.quantity}
-                      min="0"
-                      onChange={(e) =>
-                        handleQuantityChange(row.id, e.target.value)
-                      }
-                    />
+                    <span className="pm-text-truncate" title={row.stock}>{row.stock}</span>
                   </div>
 
                   <div className="pm-table-cell">
-                    <span>{row.year}</span>
+                    <span className="pm-text-truncate" title={row.released_year}>{row.released_year}</span>
                   </div>
 
                   <div className="pm-table-cell actions-cell">
@@ -269,7 +231,7 @@ function ProductE() {
                       <button
                         className="pm-action-btn edit"
                         onClick={() => handleOpenEdit(row)}
-                        aria-label={`Edit ${row.albumName}`}
+                        aria-label={`Edit ${row.album_title}`}
                         type="button"
                       >
                         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -281,7 +243,7 @@ function ProductE() {
                       <button
                         className="pm-action-btn delete"
                         onClick={() => handleOpenDelete(row)}
-                        aria-label={`Delete ${row.albumName}`}
+                        aria-label={`Delete ${row.album_title}`}
                         type="button"
                       >
                         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -303,19 +265,19 @@ function ProductE() {
 
       {showAddModal && (
         <Modal onClose={handleCloseAdd}>
-          <AddProduct onClose={handleCloseAdd} />
+          <AddProduct onClose={handleCloseAdd} onAdd={fetchProducts} />
         </Modal>
       )}
 
       {showEditModal && (
         <Modal onClose={handleCloseEdit}>
-          <EditProduct product={selectedProduct} onClose={handleCloseEdit} />
+          <EditProduct product={selectedProduct} onClose={handleCloseEdit} onUpdate={fetchProducts} />
         </Modal>
       )}
 
       {showDeleteModal && (
         <Modal onClose={handleCloseDelete}>
-          <DeleteProduct product={selectedProduct} onClose={handleCloseDelete} />
+          <DeleteProduct product={selectedProduct} onClose={handleCloseDelete} onDelete={fetchProducts} />
         </Modal>
       )}
     </div>

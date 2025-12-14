@@ -246,8 +246,7 @@ body {
 }
 
 .pm-table-row {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  display: flex;
   align-items: center;
   border-bottom: 1px solid #e5e7eb;
 }
@@ -257,11 +256,11 @@ body {
 }
 
 .pm-th {
+  flex: 1;
   padding: 12px 16px;
   font-size: 14px;
   font-weight: 600;
   color: #374151;
-  min-width: 0;
 }
 
 .pm-th-text {
@@ -273,10 +272,10 @@ body {
 }
 
 .pm-table-cell {
+  flex: 1;
   padding: 12px 16px;
   font-size: 14px;
   color: #1f2937;
-  min-width: 0;
 }
 
 .pm-table-cell.album-cell {
@@ -298,18 +297,6 @@ body {
 .pm-album-name {
   font-size: 14px;
   color: #1f2937;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  flex: 1;
-  min-width: 0;
-}
-
-/* Text truncate class */
-.pm-text-truncate {
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
 }
 
 .pm-genre-badge {
@@ -379,6 +366,9 @@ body {
   color: #e7000b;
 }
 
-.pm-action-btn.delete:hover {
-  background-color: rgba(231, 0, 11, 0.1);
+.pm-text-truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }

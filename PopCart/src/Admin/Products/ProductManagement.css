@@ -369,3 +369,10 @@ body {
 .pm-action-btn.delete:hover {
   background-color: rgba(231, 0, 11, 0.1);
 }
+
+.pm-text-truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { PieChart, Pie, Cell, Legend, Tooltip, ResponsiveContainer } from "recharts";
 import "./Dashboard.css";
 import Monthly from "./Monthly.jsx";
@@ -8,11 +8,43 @@ import Sidebar from "../Sidebar/SidebarA.jsx";
 import Header from "../Header/HeaderA.jsx";
 
 export const Dashboard = () => {
+  const [totalUsers, setTotalUsers] = useState("5");
+  const [totalProducts, setTotalProducts] = useState("5");
+
+  useEffect(() => {
+    const fetchUserCount = async () => {
+      try {
+        const response = await fetch('http://localhost/popcart-api/get_user_count.php');
+        const data = await response.json();
+        if (data.success) {
+          setTotalUsers(data.total_users.toString());
+        }
+      } catch (error) {
+        console.error('Error fetching user count:', error);
+      }
+    };
+    fetchUserCount();
+  }, []);
+
+  useEffect(() => {
+    const fetchProductCount = async () => {
+      try {
+        const response = await fetch('http://localhost/popcart-api/get_product_count.php');
+        const data = await response.json();
+        if (data.success) {
+          setTotalProducts(data.total_products.toString());
+        }
+      } catch (error) {
+        console.error('Error fetching product count:', error);
+      }
+    };
+    fetchProductCount();
+  }, []);
 
   const statsData = [
     {
       title: "Total Users",
-      value: "5",
+      value: totalUsers,
       description: "All registered users",
       icon: (
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -36,7 +68,7 @@ export const Dashboard = () => {
     },
     {
       title: "Total Products",
-      value: "5",
+      value: totalProducts,
       description: "Listed albums",
       icon: (
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">

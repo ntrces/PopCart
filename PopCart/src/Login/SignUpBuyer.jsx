@@ -27,19 +27,16 @@ export default function SignUpBuyer() {
     let valid = true;
     const newErrors = {};
 
-    // Last name
     if (!form.lastName.trim()) {
       newErrors.lastName = "Last name is required.";
       valid = false;
     }
 
-    // First name
     if (!form.firstName.trim()) {
       newErrors.firstName = "First name is required.";
       valid = false;
     }
 
-    // Email
     if (!form.email) {
       newErrors.email = "Email is required.";
       valid = false;
@@ -48,19 +45,16 @@ export default function SignUpBuyer() {
       valid = false;
     }
 
-    // Birthday
     if (!form.birthday) {
       newErrors.birthday = "Birthday is required.";
       valid = false;
     }
 
-    // Password
     if (!form.password) {
       newErrors.password = "Password is required.";
       valid = false;
     }
 
-    // Confirm Password
     if (!form.confirmPassword) {
       newErrors.confirmPassword = "Confirm your password.";
       valid = false;
@@ -73,12 +67,38 @@ export default function SignUpBuyer() {
     return valid;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (validateForm()) {
-      alert("Form validated! Ready to sign up.");
-      // Add API call later
+    if (!validateForm()) return;
+
+    try {
+      const response = await fetch(
+        "http://localhost/popcart-api/signup_buyer.php",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            lastName: form.lastName,
+            firstName: form.firstName,
+            email: form.email,
+            birthday: form.birthday,
+            password: form.password,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (data.success) {
+        alert("Account created successfully!");
+        navigate("/"); // Navigate to Sign In
+      } else {
+        alert(data.message);
+      }
+    } catch (error) {
+      console.error("Signup error:", error);
+      alert("Server error. Please try again later.");
     }
   };
 
@@ -88,7 +108,6 @@ export default function SignUpBuyer() {
         <h1 className="title">🎵 Pop Cart</h1>
         <p className="subtitle">Your marketplace for authentic albums</p>
 
-        {/* Tabs */}
         <div className="tabs">
           <button onClick={() => navigate("/")} className="tab">
             Sign In
@@ -97,8 +116,6 @@ export default function SignUpBuyer() {
         </div>
 
         <form className="form" onSubmit={handleSubmit}>
-
-          {/* Name Row */}
           <div className="name-row">
             <div>
               <label htmlFor="lastName">Last Name</label>
@@ -150,7 +167,9 @@ export default function SignUpBuyer() {
             onChange={handleChange}
             className={errors.birthday ? "input-error" : ""}
           />
-          {errors.birthday && <p className="error-text">{errors.birthday}</p>}
+          {errors.birthday && (
+            <p className="error-text">{errors.birthday}</p>
+          )}
 
           <label htmlFor="password">Password</label>
           <input
@@ -161,7 +180,9 @@ export default function SignUpBuyer() {
             onChange={handleChange}
             className={errors.password ? "input-error" : ""}
           />
-          {errors.password && <p className="error-text">{errors.password}</p>}
+          {errors.password && (
+            <p className="error-text">{errors.password}</p>
+          )}
 
           <label htmlFor="confirmPassword">Confirm Password</label>
           <input

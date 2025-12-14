@@ -1,14 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Edit.css";
 
 
-function Edit ({ onClose }) {
+function Edit ({ user, onClose }) {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    password: "",
     role: "",
   });
+
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        name: `${user.firstname || ""} ${user.lastname || ""}`.trim(),
+        email: user.email || "",
+        role: user.usertype || "",
+      });
+    }
+  }, [user]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -24,12 +33,7 @@ function Edit ({ onClose }) {
   };
 
   const handleCancel = () => {
-    setFormData({
-      name: "",
-      email: "",
-      password: "",
-      role: "",
-    });
+    setFormData({ name: "", email: "", role: "" });
   };
 
   return (
@@ -84,24 +88,6 @@ function Edit ({ onClose }) {
 
         <div className="field-group">
           <div className="label-wrapper">
-            <label htmlFor="password" className="label">
-              Password:
-            </label>
-          </div>
-
-          <input
-            type="password"
-            id="password"
-            name="password"
-            value={formData.password}
-            onChange={handleInputChange}
-            className="input"
-            required
-          />
-        </div>
-
-        <div className="field-group">
-          <div className="label-wrapper">
             <label htmlFor="role" className="label">
               Role
             </label>
@@ -117,8 +103,7 @@ function Edit ({ onClose }) {
           >
             <option value="">Select a role</option>
             <option value="admin">Admin</option>
-            <option value="user">User</option>
-            <option value="moderator">Employee</option>
+            <option value="buyer">Customer</option>
           </select>
         </div>
       </div>

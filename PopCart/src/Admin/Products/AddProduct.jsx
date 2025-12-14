@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./AddProduct.css";
 
-function AddProduct({ onClose }) {
+function AddProduct({ onClose, onAdd }) {
   const [formData, setFormData] = useState({
     albumTitle: "",
     artist: "",
@@ -28,10 +28,40 @@ function AddProduct({ onClose }) {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
-    if (onClose) onClose();
+    if (!formData.albumCoverImages || formData.albumCoverImages.length === 0) {
+      alert('Please upload at least one album cover image.');
+      return;
+    }
+    const data = new FormData();
+    data.append('album_title', formData.albumTitle);
+    data.append('artist', formData.artist);
+    data.append('price', formData.price);
+    data.append('stock', formData.stockQuantity);
+    data.append('genre', formData.genre);
+    data.append('released_year', formData.releasedYear);
+    data.append('description', formData.description);
+    for (let i = 0; i < formData.albumCoverImages.length; i++) {
+      data.append('album_cover_img[]', formData.albumCoverImages[i]);
+    }
+    try {
+      const response = await fetch('http://localhost/popcart-api/add_product.php', {
+        method: 'POST',
+        body: data
+      });
+      const result = await response.json();
+      if (result.success) {
+        alert('Product added successfully');
+        if (onAdd) onAdd();
+        if (onClose) onClose();
+      } else {
+        alert('Error: ' + result.message);
+      }
+    } catch (error) {
+      console.error('Error adding product:', error);
+      alert('Failed to add product');
+    }
   };
 
   return (

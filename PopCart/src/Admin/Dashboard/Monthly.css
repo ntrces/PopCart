@@ -31,7 +31,6 @@
 /* reuse card/header/chart styles */
 .analytics-card {
   background: #ffffff;
-  border: 1px solid rgba(0,0,0,0.08);
   border-radius: 12px;
   padding: 16px;
   box-sizing: border-box;

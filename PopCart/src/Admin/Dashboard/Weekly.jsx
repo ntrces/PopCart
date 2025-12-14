@@ -28,12 +28,12 @@ export const RevenueAnalyticsSection = () => {
     <section className="analytics-card" aria-labelledby="revenue-title">
 
       <div className="chart-area">
-        <ResponsiveContainer width="100%" height={300}>
+        <ResponsiveContainer width="100%" height={320}>
           <AreaChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
             <defs>
               <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#0f172a" stopOpacity={0.6} />
-                <stop offset="95%" stopColor="#0f172a" stopOpacity={0.05} />
+                <stop offset="5%" stopColor="#0A0A0A" stopOpacity={0.6} />
+                <stop offset="95%" stopColor="#0A0A0A" stopOpacity={0.05} />
               </linearGradient>
             </defs>
             <CartesianGrid stroke="#e6e7ea" vertical={false} />
@@ -70,13 +70,13 @@ export const SalesAnalyticsSection = () => {
     <section className="analytics-card" aria-labelledby="sales-title">
 
       <div className="chart-area">
-        <ResponsiveContainer width="100%" height={300}>
+        <ResponsiveContainer width="100%" height={320}>
           <LineChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
             <CartesianGrid stroke="#e6e7ea" vertical={false} />
             <XAxis dataKey="day" tick={{ fill: "#334155" }} />
             <YAxis tick={{ fill: "#334155" }} />
             <Tooltip formatter={(v) => v.toLocaleString()} />
-            <Line type="monotone" dataKey="value" stroke="#1e3a8a" strokeWidth={2} dot={{ r: 3 }} />
+            <Line type="monotone" dataKey="value" stroke="#717182" strokeWidth={2} dot={{ r: 3 }} />
           </LineChart>
         </ResponsiveContainer>
       </div>

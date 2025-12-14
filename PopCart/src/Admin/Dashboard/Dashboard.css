@@ -266,7 +266,10 @@ body {
 }
 
 .chart-render-area {
-  width: 100%;
+
+  width: 80%;
   padding-right: 8px;
+  margin: auto;
+  
 }
 

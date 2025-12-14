@@ -31,15 +31,15 @@ export default function Yearly() {
       </header>
 
       <div className="chart-area">
-        <ResponsiveContainer width="100%" height={360}>
+        <ResponsiveContainer width="100%" height={330}>
           <BarChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
             <CartesianGrid stroke="#e6e7ea" vertical={false} />
             <XAxis dataKey="year" tick={{ fill: "#334155" }} />
             <YAxis tick={{ fill: "#334155" }} />
             <Tooltip formatter={(v) => v} />
             <Legend />
-            <Bar dataKey="Revenue" fill="#0f172a" barSize={36} />
-            <Bar dataKey="Sales" fill="#1e3a8a" barSize={36} />
+            <Bar dataKey="Revenue" fill="#0a0a0a" barSize={36} />
+            <Bar dataKey="Sales" fill="#717182" barSize={36} />
           </BarChart>
         </ResponsiveContainer>
       </div>

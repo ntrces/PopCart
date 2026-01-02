@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { PieChart, Pie, Cell, Legend, Tooltip, ResponsiveContainer } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Cell, Legend, Tooltip, ResponsiveContainer } from "recharts";
 import "./Dashboard.css";
 import Monthly from "./Monthly.jsx";
 import Yearly from "./Yearly.jsx";
@@ -175,12 +175,12 @@ export const Dashboard = () => {
   ];
 
   const chartData = [
-    { name: "Sales", value: 54.06, fill: "#717182" },
-    { name: "Revenue", value: 45.94, fill: "#0A0A0A" },
+    { name: "Sales", Today: 54.06, fill: "#717182" },
+    { name: "Revenue", Today: 45.94, fill: "#0A0A0A" },
   ];
 
-  const timePeriods = ["Daily", "Weekly", "Monthly", "Yearly"];
-  const [selectedPeriod, setSelectedPeriod] = useState("Daily");
+  const timePeriods = ["Today", "Weekly", "Monthly", "Yearly"];
+  const [selectedPeriod, setSelectedPeriod] = useState("Today");
 
   return (
     <div className="admin-layout">
@@ -251,26 +251,20 @@ export const Dashboard = () => {
 
         {/* Conditional charts */}
         <div className="chart-render-area">
-          {selectedPeriod === "Daily" && (
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie
-                  data={chartData}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  label={({ name, value }) => `${name}: ${value}%`}
-                  outerRadius={80}
-                  fill="#8884d8"
-                  dataKey="value"
-                >
+          {selectedPeriod === "Today" && (
+            <ResponsiveContainer width="100%" height={350}>
+              <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip formatter={(Today) => `${Today}%`} />
+                <Legend />
+                <Bar dataKey="Today" barSize={150}>
                   {chartData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.fill} />
                   ))}
-                </Pie>
-                <Tooltip formatter={(value) => `${value}%`} />
-                <Legend />
-              </PieChart>
+                </Bar>
+              </BarChart>
             </ResponsiveContainer>
           )}
           {selectedPeriod === "Weekly" && <Weekly />}

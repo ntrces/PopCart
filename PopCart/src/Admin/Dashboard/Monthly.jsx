@@ -53,7 +53,7 @@ export default function Monthly() {
         </header>
 
         <div className="chart-area">
-          <ResponsiveContainer width="100%" height={320}>
+          <ResponsiveContainer width="100%" height={330}>
             <AreaChart data={revenueData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
               <defs>
                 <linearGradient id={`revGrad-${year}`} x1="0" y1="0" x2="0" y2="1">
@@ -65,7 +65,7 @@ export default function Monthly() {
               <XAxis dataKey="month" tick={{ fill: "#334155" }} />
               <YAxis tick={{ fill: "#334155" }} />
               <Tooltip formatter={(val) => `${val}`} />
-              <Area type="monotone" dataKey="value" stroke="#0f172a" fill={`url(#revGrad-${year})`} strokeWidth={2} />
+              <Area type="monotone" dataKey="value" stroke="#0A0A0A" fill={`url(#revGrad-${year})`} strokeWidth={2} />
             </AreaChart>
           </ResponsiveContainer>
         </div>
@@ -78,7 +78,7 @@ export default function Monthly() {
         </header>
 
         <div className="chart-area">
-          <ResponsiveContainer width="100%" height={320}>
+          <ResponsiveContainer width="100%" height={330}>
             <LineChart data={salesData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
               <CartesianGrid stroke="#e6e7ea" vertical={false} />
               <XAxis dataKey="month" tick={{ fill: "#717182" }} />

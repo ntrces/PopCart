@@ -31,42 +31,12 @@ export default function SignIn() {
     return valid;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (validateForm()) {
-      try {
-        const response = await fetch("http://localhost/popcart-api/signin.php", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password }),
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-          // Store user data in localStorage
-          localStorage.setItem('user', JSON.stringify(data.user));
-
-          // Navigate based on usertype
-          if (data.usertype === "buyer") {
-            navigate("/buyer");
-          } else if (data.usertype === "employee") {
-            navigate("/employee");
-          } else if (data.usertype === "admin") {
-            navigate("/admin");
-          } else {
-            // not registered or invalid usertype
-            setErrors({ ...errors, password: "User not registered." });
-          }
-        } else {
-          setErrors({ ...errors, password: data.message });
-        }
-      } catch (err) {
-        console.error("Error:", err);
-        setErrors({ ...errors, password: "Server error. Please try again." });
-      }
-    }
-  };
+  const handleSubmit = (e) => {
+  e.preventDefault();
+  if (validateForm()) {
+    navigate("/home"); // <-- Redirects to Home page
+  }
+};
 
   return (
     <div className="sign-in">

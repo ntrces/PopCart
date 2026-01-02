@@ -1,91 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../auth/useAuth.jsx";
 import "./OrderE.css";
 import OrderDetails from "./OrderDetails.jsx";
 import Header from "../Header/HeaderE.jsx";
 import Sidebar from "../Sidebar/SidebarE.jsx";
-
-const initialOrders = [
-  {
-    id: "ORD006",
-    status: "PENDING",
-    statusBg: "#fef9c2",
-    statusColor: "#884a00",
-    customer: "John Customer • customer@demo.com",
-    date: "Nov 25, 2025, 07:56 PM",
-    total: "₱47.98",
-    items: [
-      { id: 1, name: "Thriller by Michael Jackson", quantity: 1, price: "$24.99" },
-      { id: 2, name: "Hotel California by Eagles", quantity: 1, price: "$22.99" },
-    ],
-    shippingAddress: "Blk 0 Lot 0 California Heights, California City, USA",
-  },
-  {
-    id: "ORD007",
-    status: "DELIVERED",
-    statusBg: "#d1fae5",
-    statusColor: "#016630",
-    customer: "Jane Customer • jane@demo.com",
-    date: "Nov 24, 2025, 03:15 PM",
-    total: "₱120.00",
-    items: [
-      { id: 1, name: "Abbey Road by The Beatles", quantity: 2, price: "$29.98" },
-    ],
-    shippingAddress: "123 Main St, New York, NY 10001",
-  },
-  {
-    id: "ORD008",
-    status: "PACKING",
-    statusBg: "#e6f0ff",
-    statusColor: "#193bb8",
-    customer: "Alex Customer • alex@demo.com",
-    date: "Nov 23, 2025, 01:20 PM",
-    total: "₱89.50",
-    items: [
-      { id: 1, name: "Dark Side of the Moon by Pink Floyd", quantity: 1, price: "$19.99" },
-    ],
-    shippingAddress: "456 Oak Ave, Los Angeles, CA 90001",
-  },
-  {
-    id: "ORD009",
-    status: "SHIPPED",
-    statusBg: "#f2c1fd",
-    statusColor: "#980ffa",
-    customer: "Sam Customer • sam@demo.com",
-    date: "Nov 22, 2025, 11:05 AM",
-    total: "₱55.00",
-    items: [
-      { id: 1, name: "Rumours by Fleetwood Mac", quantity: 1, price: "$24.99" },
-    ],
-    shippingAddress: "789 Pine Rd, Chicago, IL 60601",
-  },
-  {
-    id: "ORD010",
-    status: "CANCELLED",
-    statusBg: "#ffa1a1",
-    statusColor: "#b91c1c",
-    customer: "Taylor Customer • taylor@demo.com",
-    date: "Nov 21, 2025, 09:40 AM",
-    total: "₱0.00",
-    items: [
-      { id: 1, name: "Legend by Bob Marley", quantity: 1, price: "$18.99" },
-    ],
-    shippingAddress: "321 Elm St, Houston, TX 77001",
-  },
-  {
-    id: "ORD011",
-    status: "APPROVED",
-    statusBg: "#ffefdb",
-    statusColor: "#ff6a00",
-    customer: "Chris Customer • chris@demo.com",
-    date: "Nov 20, 2025, 08:22 AM",
-    total: "₱200.00",
-    items: [
-      { id: 1, name: "The Wall by Pink Floyd", quantity: 1, price: "$24.99" },
-      { id: 2, name: "Boston by Boston", quantity: 1, price: "$19.99" },
-    ],
-    shippingAddress: "555 Maple Dr, Phoenix, AZ 85001",
-  },
-];
 
 const statusSequence = ["PENDING", "APPROVED", "PACKING", "SHIPPED", "DELIVERED"];
 
@@ -109,9 +28,28 @@ const filters = [
 ];
 
 export const Order = () => {
-  const [orders, setOrders] = useState(initialOrders);
+  const navigate = useNavigate();
+  const { logout } = useAuth();
+  const [orders, setOrders] = useState([]);
   const [activeFilter, setActiveFilter] = useState("all");
   const [expandedOrderId, setExpandedOrderId] = useState(null);
+  const [showSignOutModal, setShowSignOutModal] = useState(false);
+
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
+  const fetchOrders = async () => {
+    try {
+      const response = await fetch('http://localhost/popcart-api/get_all_orders.php');
+      const data = await response.json();
+      if (data.success) {
+        setOrders(data.orders);
+      }
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+    }
+  };
 
   const getNextStatus = (currentStatus) => {
     if (currentStatus === "CANCELLED" || currentStatus === "DELIVERED") {
@@ -121,44 +59,46 @@ export const Order = () => {
     return statusSequence[currentIndex + 1];
   };
 
-  const handleStatusChange = (orderId, newStatus) => {
-    setOrders((prevOrders) =>
-      prevOrders.map((order) =>
-        order.id === orderId
-          ? {
-              ...order,
-              status: newStatus,
-              statusBg: statusColors[newStatus].bg,
-              statusColor: statusColors[newStatus].color,
-            }
-          : order
-      )
-    );
+  const handleStatusChange = async (orderId, newStatus) => {
+    try {
+      const response = await fetch('http://localhost/popcart-api/update_order_status.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ order_header_id: orderId, status: newStatus })
+      });
+      const data = await response.json();
+      if (data.success) {
+        fetchOrders();
+      }
+    } catch (error) {
+      console.error('Error updating status:', error);
+    }
   };
 
-  const handleCancel = (orderId) => {
-    setOrders((prevOrders) =>
-      prevOrders.map((order) =>
-        order.id === orderId
-          ? {
-              ...order,
-              status: "CANCELLED",
-              statusBg: statusColors["CANCELLED"].bg,
-              statusColor: statusColors["CANCELLED"].color,
-            }
-          : order
-      )
-    );
+  const handleCancel = async (orderId) => {
+    try {
+      const response = await fetch('http://localhost/popcart-api/update_order_status.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ order_header_id: orderId, status: 'cancelled' })
+      });
+      const data = await response.json();
+      if (data.success) {
+        fetchOrders();
+      }
+    } catch (error) {
+      console.error('Error cancelling order:', error);
+    }
   };
 
   const filterCounts = {
     all: orders.length,
-    pending: orders.filter((o) => o.status === "PENDING").length,
-    approved: orders.filter((o) => o.status === "APPROVED").length,
-    packing: orders.filter((o) => o.status === "PACKING").length,
-    shipped: orders.filter((o) => o.status === "SHIPPED").length,
-    delivered: orders.filter((o) => o.status === "DELIVERED").length,
-    cancelled: orders.filter((o) => o.status === "CANCELLED").length,
+    pending: orders.filter((o) => o.order_status.toLowerCase() === "pending").length,
+    approved: orders.filter((o) => o.order_status.toLowerCase() === "approved").length,
+    packing: orders.filter((o) => o.order_status.toLowerCase() === "packing").length,
+    shipped: orders.filter((o) => o.order_status.toLowerCase() === "shipped").length,
+    delivered: orders.filter((o) => o.order_status.toLowerCase() === "delivered").length,
+    cancelled: orders.filter((o) => o.order_status.toLowerCase() === "cancelled").length,
   };
 
   const filtersWithCounts = filters.map((filter) => ({
@@ -169,14 +109,14 @@ export const Order = () => {
   const visibleOrders =
     activeFilter === "all"
       ? orders
-      : orders.filter((o) => o.status.toLowerCase() === activeFilter);
+      : orders.filter((o) => o.order_status.toLowerCase() === activeFilter);
 
   return (
       <div className="admin-layout">
           <Header className="admin-header" />
           <div className="admin-content-wrapper">
     
-            <Sidebar className="admin-sidebar" />
+            <Sidebar className="admin-sidebar" onSignOutClick={() => setShowSignOutModal(true)} />
     
             <main className="admin-main-content">
     <div className="order-page">
@@ -207,12 +147,12 @@ export const Order = () => {
 
         <div className="order-list">
           {visibleOrders.map((order) => {
-            const nextStatus = getNextStatus(order.status);
-            const isExpanded = expandedOrderId === order.id;
+            const nextStatus = getNextStatus(order.order_status);
+            const isExpanded = expandedOrderId === order.order_header_id;
 
             return (
               <article
-                key={order.id}
+                key={order.order_header_id}
                 className={`order-card ${isExpanded ? "is-expanded" : ""}`}
               >
                 {/* Order Header - Always Visible */}
@@ -220,7 +160,7 @@ export const Order = () => {
                   <div className="order-card-top">
                     <div className="order-info">
                       <div className="order-top-row">
-                        <div className="order-id">{order.id}</div>
+                        <div className="order-id">{order.order_number}</div>
                         <div
                           className="order-status-badge"
                           style={{
@@ -231,7 +171,7 @@ export const Order = () => {
                             className="order-status-text"
                             style={{ color: order.statusColor }}
                           >
-                            {order.status}
+                            {order.order_status}
                           </div>
                         </div>
                       </div>
@@ -245,9 +185,9 @@ export const Order = () => {
                       <button
                         className={`order-expand-btn ${isExpanded ? "is-open" : ""}`}
                         onClick={() =>
-                          setExpandedOrderId(isExpanded ? null : order.id)
+                          setExpandedOrderId(isExpanded ? null : order.order_header_id)
                         }
-                        aria-label={`${isExpanded ? "Collapse" : "Expand"} order ${order.id}`}
+                        aria-label={`${isExpanded ? "Collapse" : "Expand"} order ${order.order_header_id}`}
                         type="button"
                         aria-expanded={isExpanded}
                       >
@@ -277,6 +217,7 @@ export const Order = () => {
                     <OrderDetails order={order} />
 
                     {/* Update Status Section */}
+                    {order.order_status !== 'DELIVERED' && (
                     <div className="order-status-update">
                       <div className="order-update-title">
                         <svg
@@ -315,7 +256,7 @@ export const Order = () => {
                         {nextStatus ? (
                           <button
                             className="status-btn status-btn-action"
-                            onClick={() => handleStatusChange(order.id, nextStatus)}
+                            onClick={() => handleStatusChange(order.order_header_id, nextStatus)}
                             type="button"
                           >
                             Mark As {nextStatus}
@@ -324,13 +265,14 @@ export const Order = () => {
 
                         <button
                           className="status-btn status-btn-cancel"
-                          onClick={() => handleCancel(order.id)}
+                          onClick={() => handleCancel(order.order_header_id)}
                           type="button"
                         >
                           Cancel Order
                         </button>
                       </div>
                     </div>
+                    )}
                   </div>
                 )}
               </article>
@@ -341,6 +283,25 @@ export const Order = () => {
     </div>
             </main>
           </div>
+
+          {showSignOutModal && (
+            <div className="modal-overlay">
+              <div className="signout-modal">
+                <h3>Sign Out</h3>
+                <p>Are you sure you want to sign out?</p>
+
+                <div className="modal-buttons">
+                  <button className="cancel-btn" onClick={() => setShowSignOutModal(false)}>
+                    Cancel
+                  </button>
+
+                  <button className="confirm-btn" onClick={() => { logout(); setShowSignOutModal(false); navigate('/signin'); }}>
+                    Sign Out
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
       </div>
   );
 };

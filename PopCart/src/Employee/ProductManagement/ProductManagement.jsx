@@ -1,14 +1,19 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../auth/useAuth.jsx";
 import "./ProductManagement.css";
 import Modal from "../../Admin/Users/Modal.jsx";
 import AddProduct from "../ProductManagement/AddE.jsx";
 import EditProduct from "../ProductManagement/EditE.jsx";
 import DeleteProduct from "../ProductManagement/DeleteE.jsx";
 import image from "../../assets/image.png";
+import getImageUrl from "../../utils/getImageUrl";
 import Header from "../Header/HeaderE.jsx";
 import Sidebar from "../Sidebar/SidebarE.jsx";
 
 function ProductManagement() {
+  const navigate = useNavigate();
+  const { logout } = useAuth();
   const [searchValue, setSearchValue] = useState("");
   const [selectedGenre, setSelectedGenre] = useState("All Genres");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -17,6 +22,7 @@ function ProductManagement() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [tableData, setTableData] = useState([]);
+  const [showSignOutModal, setShowSignOutModal] = useState(false);
 
   const filteredData = useMemo(() => {
     return tableData.filter(row => {
@@ -104,7 +110,7 @@ function ProductManagement() {
           <Header className="admin-header" />
           <div className="admin-content-wrapper">
     
-            <Sidebar className="admin-sidebar" />
+            <Sidebar className="admin-sidebar" onSignOutClick={() => setShowSignOutModal(true)} />
     
             <main className="admin-main-content">
 
@@ -186,7 +192,7 @@ function ProductManagement() {
               <div className="pm-table-row">
                 {headers.map((header, i) => (
                   <div key={i} className="pm-th">
-                    <div className={`pm-th-text ${header.align === "right" ? "align-right" : ""}`}>
+                    <div className="pm-th-text" style={{ textAlign: header.align }}>
                       {header.label}
                     </div>
                   </div>
@@ -196,10 +202,10 @@ function ProductManagement() {
 
             <div className="pm-table-body">
               {filteredData.map((row) => (
-                <div key={row.product_id} className="pm-table-row">
+                <div key={row.product_id} className={`pm-table-row ${row.stock == 0 ? 'out-of-stock-row' : ''}`}>
                   <div className="pm-table-cell album-cell">
                     {row.album_cover_img ? (
-                      <img src={'http://localhost/' + row.album_cover_img.split(',')[0]} alt={row.album_title} className="pm-album-image" />
+                      <img src={getImageUrl(row.album_cover_img)} alt={row.album_title} className="pm-album-image" />
                     ) : (
                       <img src={image} alt={row.album_title} className="pm-album-image" />
                     )}
@@ -283,7 +289,26 @@ function ProductManagement() {
     </div>
             </main>
           </div>
-        </div>  
+        </div>
+
+        {showSignOutModal && (
+          <div className="modal-overlay">
+            <div className="signout-modal">
+              <h3>Sign Out</h3>
+              <p>Are you sure you want to sign out?</p>
+
+              <div className="modal-buttons">
+                <button className="cancel-btn" onClick={() => setShowSignOutModal(false)}>
+                  Cancel
+                </button>
+
+                <button className="confirm-btn" onClick={() => { logout(); setShowSignOutModal(false); navigate('/signin'); }}>
+                  Sign Out
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
   );
 }
 

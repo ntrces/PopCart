@@ -8,7 +8,7 @@ import AdminDashboard from "./Admin/Dashboard/Dashboard.jsx";
 ReactDOM.createRoot(document.getElementById("root")).render(
   <BrowserRouter>
     <AuthProvider>
-      <AdminDashboard />
+      <App />
     </AuthProvider>
   </BrowserRouter>
 );

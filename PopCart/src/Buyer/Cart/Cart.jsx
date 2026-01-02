@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Cart.css";
 import { Link } from "react-router-dom";
 
@@ -10,7 +10,343 @@ export default function Cart() {
   const [showSignOutModal, setShowSignOutModal] = useState(false);
   const [showCheckoutModal, setShowCheckoutModal] = useState(false);
   const [showModal, setShowModal] = useState(false); // ✅ FOR ADD ADDRESS MODAL
-  
+  const [showChangeAddressModal, setShowChangeAddressModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
+  const [cartItems, setCartItems] = useState([]);
+  const [user, setUser] = useState(null);
+  const [selectedItems, setSelectedItems] = useState([]);
+  const [addresses, setAddresses] = useState([]);
+  const [customerName, setCustomerName] = useState('');
+  const [email, setEmail] = useState('');
+  const [contact, setContact] = useState('');
+  const [addressLabel, setAddressLabel] = useState('');
+  const [postalCode, setPostalCode] = useState('1000');
+  const [streetAddress, setStreetAddress] = useState('');
+  const [cityMunicipality, setCityMunicipality] = useState('');
+  const [province, setProvince] = useState('');
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        const userData = JSON.parse(storedUser);
+        try {
+          const response = await fetch(`http://localhost/popcart-api/get_user.php?user_id=${userData.user_id}`);
+          const data = await response.json();
+          if (data.success) {
+            setUser(data.user);
+            setCustomerName(`${data.user.lastname}, ${data.user.firstname}`);
+            setEmail(data.user.email);
+            setContact(data.user.contact_number || '09');
+          }
+        } catch (error) {
+          console.error('Error fetching user:', error);
+        }
+      }
+    };
+    fetchUser();
+
+    const storedCart = localStorage.getItem('cart');
+    if (storedCart) {
+      const parsedCart = JSON.parse(storedCart);
+      // Initialize lastModified if not present
+      const updatedCart = parsedCart.map(item => ({
+        ...item,
+        lastModified: item.lastModified || 0
+      }));
+      setCartItems(updatedCart);
+      setSelectedItems(updatedCart.map(item => item.product_id));
+    }
+
+    const storedSelected = localStorage.getItem('selectedItems');
+    if (storedSelected) {
+      setSelectedItems(JSON.parse(storedSelected));
+    }
+
+    fetchAddresses();
+
+    // Fetch products to filter cart
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch('http://localhost/popcart-api/get_products.php');
+        const data = await res.json();
+        if (data && data.success && Array.isArray(data.products)) {
+          const productIds = data.products.map(p => Number(p.product_id));
+          setCartItems(prevCart => {
+            const filtered = prevCart.filter(item => productIds.includes(Number(item.product_id)));
+            // Update cart items with latest product data
+            const updatedCart = filtered.map(item => {
+              const prod = data.products.find(p => Number(p.product_id) === Number(item.product_id));
+              if (prod) {
+                return { ...item, ...prod };
+              }
+              return item;
+            });
+            if (updatedCart.length !== prevCart.length || updatedCart.some((item, i) => item !== filtered[i])) {
+              localStorage.setItem('cart', JSON.stringify(updatedCart));
+              setSelectedItems(prevSelected => prevSelected.filter(id => productIds.includes(Number(id))));
+            }
+            return updatedCart;
+          });
+        }
+      } catch (err) {
+        console.error('Error fetching products:', err);
+      }
+    };
+    fetchProducts();
+  }, []);
+
+  const handleContactChange = (e) => {
+    let value = e.target.value;
+    // Ensure it starts with '09'
+    if (!value.startsWith('09')) {
+      value = '09' + value.replace(/^09/, '');
+    }
+    // Limit to 11 characters
+    if (value.length > 11) {
+      value = value.slice(0, 11);
+    }
+    setContact(value);
+  };
+
+  const fetchAddresses = async () => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      const userData = JSON.parse(storedUser);
+      try {
+        const response = await fetch(`http://localhost/popcart-api/get_addresses.php?user_id=${userData.user_id}`);
+        const data = await response.json();
+        if (data.success) {
+          const sorted = data.addresses.sort((a, b) => {
+            if (a.status === 'default') return -1;
+            if (b.status === 'default') return 1;
+            return 0;
+          });
+          setAddresses(sorted);
+        }
+      } catch (error) {
+        console.error('Error fetching addresses:', error);
+      }
+    }
+  };
+
+  const handleAddAddress = async (e) => {
+    e.preventDefault();
+    const storedUser = localStorage.getItem('user');
+    if (!storedUser) {
+      alert('User not logged in.');
+      return;
+    }
+    const userData = JSON.parse(storedUser);
+
+    try {
+      const response = await fetch('http://localhost/popcart-api/add_address.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: userData.user_id,
+          address_label: addressLabel,
+          postal_code: postalCode,
+          street_address: streetAddress,
+          city_municipality: cityMunicipality,
+          province: province,
+          status: 'default'
+        })
+      });
+      const data = await response.json();
+      if (data.success) {
+        alert('Address added successfully!');
+        fetchAddresses();
+        setShowModal(false);
+        // Reset form
+        setAddressLabel('');
+        setPostalCode('1000');
+        setStreetAddress('');
+        setCityMunicipality('');
+        setProvince('');
+      } else {
+        alert('Failed to add address.');
+      }
+    } catch (error) {
+      console.error('Error adding address:', error);
+      alert('Error adding address.');
+    }
+  };
+
+  const handleSetDefault = async (addressId) => {
+    const storedUser = localStorage.getItem('user');
+    if (!storedUser) return;
+    const userData = JSON.parse(storedUser);
+    try {
+      const response = await fetch('http://localhost/popcart-api/update_address_status.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: userData.user_id,
+          shipping_address_id: addressId
+        })
+      });
+      const data = await response.json();
+      if (data.success) {
+        alert('Default address updated!');
+        fetchAddresses();
+        setShowChangeAddressModal(false);
+      } else {
+        alert('Failed to update address.');
+      }
+    } catch (error) {
+      console.error('Error updating address:', error);
+    }
+  };
+
+  useEffect(() => {
+    localStorage.setItem('selectedItems', JSON.stringify(selectedItems));
+  }, [selectedItems]);
+
+  const handleItemSelect = (productId) => {
+    setSelectedItems(prev => 
+      prev.includes(productId) 
+        ? prev.filter(id => id !== productId) 
+        : [...prev, productId]
+    );
+  };
+
+  const handleSelectAll = () => {
+    if (selectedItems.length === cartItems.length) {
+      setSelectedItems([]);
+    } else {
+      setSelectedItems(cartItems.map(item => item.product_id));
+    }
+  };
+
+  const selectedCount = selectedItems.length;
+
+  const handleIncreaseQuantity = (productId) => {
+    setCartItems(prevCart => {
+      const updatedCart = prevCart.map(item => {
+        if (item.product_id === productId) {
+          if (item.quantity >= item.stock) {
+            alert('Maximum quantity reached based on available stock.');
+            return item;
+          }
+          return { ...item, quantity: item.quantity + 1, lastModified: Date.now() };
+        }
+        return item;
+      });
+      localStorage.setItem('cart', JSON.stringify(updatedCart));
+      return updatedCart;
+    });
+  };
+
+  const handleDecreaseQuantity = (productId) => {
+    const updatedCart = cartItems.map(item => {
+      if (item.product_id === productId) {
+        if (item.quantity > 1) {
+          return { ...item, quantity: item.quantity - 1, lastModified: Date.now() };
+        } else {
+          setItemToDelete(item);
+          setShowDeleteModal(true);
+          return item;
+        }
+      }
+      return item;
+    });
+    setCartItems(updatedCart);
+    localStorage.setItem('cart', JSON.stringify(updatedCart));
+  };
+
+  const handleDeleteItem = () => {
+    const updatedCart = cartItems.filter(item => item.product_id !== itemToDelete.product_id);
+    setCartItems(updatedCart);
+    setSelectedItems(prev => prev.filter(id => id !== itemToDelete.product_id));
+    localStorage.setItem('cart', JSON.stringify(updatedCart));
+    setShowDeleteModal(false);
+    setItemToDelete(null);
+  };
+
+  const handleDeleteClick = (item) => {
+    setItemToDelete(item);
+    setShowDeleteModal(true);
+  };
+
+  const handlePlaceOrder = async () => {
+    if (selectedItems.length === 0) {
+      alert('Please select items to order.');
+      return;
+    }
+    if (addresses.length === 0) {
+      alert('Please add a shipping address.');
+      return;
+    }
+
+    const defaultAddress = addresses.find(addr => addr.status === 'default');
+    if (!defaultAddress) {
+      alert('No default shipping address set. Please set a default address.');
+      return;
+    }
+
+    const storedUser = localStorage.getItem('user');
+    if (!storedUser) {
+      alert('User not logged in.');
+      return;
+    }
+    const userData = JSON.parse(storedUser);
+
+    // Place order
+    const orderItems = cartItems.filter(item => selectedItems.includes(item.product_id)).map(item => ({
+      product_id: item.product_id,
+      quantity: item.quantity,
+      price: item.price
+    }));
+
+    try {
+      const orderResponse = await fetch('http://localhost/popcart-api/place_order.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: userData.user_id,
+          shipping_address_id: defaultAddress.shipping_address_id,
+          items: orderItems
+        })
+      });
+      const orderData = await orderResponse.json();
+      if (orderData.success) {
+        alert('Order placed successfully!');
+        // Update contact if editable and changed
+        if (user && !user.contact_number && contact.trim()) {
+          try {
+            const updateResponse = await fetch('http://localhost/popcart-api/update_user.php', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ user_id: userData.user_id, contact_number: contact.trim() })
+            });
+            const updateData = await updateResponse.json();
+            if (!updateData.success) {
+              alert('Failed to update contact.');
+            }
+          } catch (error) {
+            console.error('Error updating contact:', error);
+            alert('Error updating contact.');
+          }
+        }
+        // Remove ordered items from cart
+        const updatedCart = cartItems.filter(item => !selectedItems.includes(item.product_id));
+        setCartItems(updatedCart);
+        localStorage.setItem('cart', JSON.stringify(updatedCart));
+        // Clear selected items and close modal
+        setSelectedItems([]);
+        setShowCheckoutModal(false);
+        // Optionally clear cart or update
+      } else {
+        alert('Failed to place order.');
+      }
+    } catch (error) {
+      console.error('Error placing order:', error);
+      alert('Error placing order.');
+    }
+  };
+
 
 
 
@@ -54,8 +390,8 @@ export default function Cart() {
                      </Link>
 
           <Link to="/buyer/profile" className="profile">
-                                <div className="avatar">A</div>
-                                <p>Althea</p>
+                                <div className="avatar">{user?.firstname?.charAt(0).toUpperCase() || 'U'}</div>
+                                <p>{user?.firstname || 'User'}</p>
                               </Link>
         </div>
       </div>
@@ -126,8 +462,27 @@ Home</button> </Link>
           Cancel
         </button>
 
-        <button className="confirm-btn">
+        <button className="confirm-btn" onClick={() => { localStorage.removeItem('user'); setShowSignOutModal(false); navigate('/signin'); }}>
           Sign Out
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+{showDeleteModal && (
+  <div className="modal-overlay">
+    <div className="delete-modal">
+      <h3>Remove Item</h3>
+      <p>Do you want to remove this item from your cart?</p>
+
+      <div className="modal-buttons">
+        <button className="cancel-btn" onClick={() => setShowDeleteModal(false)}>
+          Cancel
+        </button>
+
+        <button className="delete-confirm-btn" onClick={handleDeleteItem}>
+          Delete
         </button>
       </div>
     </div>
@@ -138,75 +493,51 @@ Home</button> </Link>
        <main className="main-content">
 
         <div className="cart-header">
-  <h2>Shopping Cart (2 items)</h2>
-  <span className="selected-text">1 selected</span>
+  <h2>Shopping Cart ({cartItems.length} items)</h2>
+  <span className="selected-text">{selectedCount} selected</span>
 </div>
 
   {/* SELECT ALL */}
  <div className="cart-select-all">
 
   <div className="cart-select-all-left">
-    <input type="checkbox" />
-    <span>Select All Items</span>
+    <input type="checkbox" checked={selectedCount === cartItems.length && cartItems.length > 0} onChange={handleSelectAll} />
+    <span>{selectedCount === cartItems.length ? "Deselect All Items" : "Select All Items"}</span>
   </div>
 
-  <span className="selected-count">1 selected</span>
+  <span className="selected-count">{selectedCount} selected</span>
 </div>
 
-  {/* ITEM 1 (SELECTED) */}
-  <div className="cart-item selected">
-    <div className="left-side">
-      <input type="checkbox" checked readOnly />
+  {cartItems.sort((a, b) => b.lastModified - a.lastModified).map((item, index) => (
+    <div key={item.product_id} className={`cart-item ${selectedItems.includes(item.product_id) ? 'selected' : ''}`}>
+      <div className="left-side">
+        <input type="checkbox" checked={selectedItems.includes(item.product_id)} onChange={() => handleItemSelect(item.product_id)} />
 
-      <div className="item-info">
-        <h3>Come Closer</h3>
-        <p className="artist">LEO</p>
-        <p className="genre">R&B</p>
-      </div>
-    </div>
-
-    <div className="actions">
-      <div className="qty-box">
-        <button>-</button>
-        <span>1</span>
-        <button>+</button>
+        <div className="item-info">
+          <h3>{item.album_title}</h3>
+          <p className="artist">{item.artist}</p>
+          <p className="genre">{item.genre}</p>
+        </div>
       </div>
 
-      <p className="price">₱799.00</p>
+      <div className="actions">
+        <div className="qty-box">
+          <button onClick={() => handleDecreaseQuantity(item.product_id)}>-</button>
+          <span>{item.quantity}</span>
+          <button onClick={() => handleIncreaseQuantity(item.product_id)}>+</button>
+        </div>
 
-      <button className="delete-btn">🗑</button>
-    </div>
-  </div>
+        <p className="price">₱{item.price}</p>
 
-  {/* ITEM 2 */}
-  <div className="cart-item">
-    <div className="left-side">
-      <input type="checkbox" />
-
-      <div className="item-info">
-        <h3>One Look</h3>
-        <p className="artist">LEO</p>
-        <p className="genre">Pop</p>
+        <button className="delete-btn" onClick={() => handleDeleteClick(item)}>🗑</button>
       </div>
     </div>
-
-    <div className="actions">
-      <div className="qty-box">
-        <button>-</button>
-        <span>1</span>
-        <button>+</button>
-      </div>
-
-      <p className="price">₱899.00</p>
-
-      <button className="delete-btn">🗑</button>
-    </div>
-  </div>
+  ))}
 
   {/* TOTAL */}
   <div className="cart-total">
-    <p>Total (1 item)</p>
-    <h2>₱799.00</h2>
+    <p>Total ({selectedCount} item{selectedCount !== 1 ? 's' : ''})</p>
+    <h2>₱{cartItems.filter(item => selectedItems.includes(item.product_id)).reduce((total, item) => total + (item.price * item.quantity), 0).toFixed(2)}</h2>
   </div>
 
   {/* CHECKOUT */}
@@ -214,7 +545,7 @@ Home</button> </Link>
   className="checkout-btn"
   onClick={() => setShowCheckoutModal(true)}
 >
-  Proceed to Checkout (1)
+  Proceed to Checkout ({selectedCount})
 </button>
 {/* CHECKOUT MODAL */}
 {showCheckoutModal && (
@@ -240,21 +571,21 @@ Back to Cart
       <div className="checkout-section">
         <div className="checkout-section-header">
           <p className="checkout-section-title">Shipping Address *</p>
-          <button className="checkout-add-btn" onClick={() => setShowModal(true)}> <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <button className="checkout-add-btn" onClick={() => addresses.length > 0 && addresses.some(addr => addr.status === 'default') ? setShowChangeAddressModal(true) : setShowModal(true)}> <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M13.3334 6.66666C13.3334 9.99533 9.64075 13.462 8.40075 14.5327C8.28523 14.6195 8.14461 14.6665 8.00008 14.6665C7.85555 14.6665 7.71493 14.6195 7.59941 14.5327C6.35941 13.462 2.66675 9.99533 2.66675 6.66666C2.66675 5.25217 3.22865 3.89562 4.22885 2.89543C5.22904 1.89523 6.58559 1.33333 8.00008 1.33333C9.41457 1.33333 10.7711 1.89523 11.7713 2.89543C12.7715 3.89562 13.3334 5.25217 13.3334 6.66666Z" stroke="#6B7280" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M8 8.66667C9.10457 8.66667 10 7.77124 10 6.66667C10 5.5621 9.10457 4.66667 8 4.66667C6.89543 4.66667 6 5.5621 6 6.66667C6 7.77124 6.89543 8.66667 8 8.66667Z" stroke="#6B7280" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
- Add Address</button>
+ {addresses.length > 0 && addresses.some(addr => addr.status === 'default') ? 'Change Default Address' : 'Add Address'}</button>
         </div>
 
         <div className="checkout-address-card">
           <div className="checkout-address-top">
             <span className="checkout-home-icon">🏠</span>
-            <span className="checkout-address-type">Home</span>
+            <span className="checkout-address-type">{addresses.length > 0 ? addresses[0].address_label : 'Home'}</span>
             <span className="checkout-default-label">Default</span>
           </div>
           <p className="checkout-full-address">
-            Blk 0 Lot 0 Parfum Homes TANZA, CAVITE 2755, Philippines
+            {addresses.length > 0 ? `${addresses[0].street_address}, ${addresses[0].city_municipality}, ${addresses[0].province} ${addresses[0].postal_code}, Philippines` : 'No address available'}
           </p>
         </div>
       </div>
@@ -264,34 +595,34 @@ Back to Cart
         <div className="add-address-overlay">
           <div className="add-address-modal">
             <h3>Add Address</h3>
-            <form className="address-form">
+            <form className="address-form" onSubmit={handleAddAddress}>
               <div className="form-group">
                 <label>Address Label *</label>
-                <input placeholder="Home, Office, etc." />
+                <input placeholder="Home, Office, etc." value={addressLabel} onChange={(e) => setAddressLabel(e.target.value)} required />
               </div>
 
               <div className="form-group">
                 <label>Postal Code</label>
-                <input defaultValue="1000" />
+                <input value={postalCode} onChange={(e) => setPostalCode(e.target.value)} />
               </div>
 
               <div className="form-group">
                 <label>Street Address *</label>
-                <input placeholder="House number, street name, barangay" />
+                <input placeholder="House number, street name, barangay" value={streetAddress} onChange={(e) => setStreetAddress(e.target.value)} required />
               </div>
 
               <div className="form-group">
                 <label>City/Municipality *</label>
-                <input placeholder="Manila, Quezon City, etc." />
+                <input placeholder="Manila, Quezon City, etc." value={cityMunicipality} onChange={(e) => setCityMunicipality(e.target.value)} required />
               </div>
 
               <div className="form-group">
                 <label>Province</label>
-                <input placeholder="Metro Manila, Cebu, etc." />
+                <input placeholder="Metro Manila, Cebu, etc." value={province} onChange={(e) => setProvince(e.target.value)} />
               </div>
 
               <div className="checkbox-row">
-                <input type="checkbox" />
+                <input type="checkbox" checked={true} disabled />
                 <span>Set as default address</span>
               </div>
 
@@ -310,31 +641,48 @@ Back to Cart
         </div>
       )}
 
+      {/* CHANGE ADDRESS MODAL */}
+      {showChangeAddressModal && (
+        <div className="add-address-overlay">
+          <div className="add-address-modal">
+            <h3>Change Default Address</h3>
+            <div className="address-list">
+              {addresses.filter(addr => addr.status !== 'default').map(addr => (
+                <div key={addr.shipping_address_id} className="address-item">
+                  <p><strong>{addr.address_label}:</strong> {addr.street_address}, {addr.city_municipality}, {addr.province} {addr.postal_code}</p>
+                  <button onClick={() => handleSetDefault(addr.shipping_address_id)} className="mp-save-btn">Set as Default</button>
+                </div>
+              ))}
+            </div>
+            <div className="modal-actions">
+              <button type="button" className="mp-cancel-btn" onClick={() => setShowChangeAddressModal(false)}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* CUSTOMER INFO */}
       <div className="checkout-section">
         <p className="checkout-section-title">Customer Information:</p>
-        <input className="checkout-input-field" placeholder="Last Name, First Name" />
-        <input className="checkout-input-field" placeholder="Email Address" />
-        <input className="checkout-input-field" placeholder="Contact Number" />
+        <input className="checkout-input-field" placeholder="Last Name, First Name" value={customerName} readOnly />
+        <input className="checkout-input-field" placeholder="Email Address" value={email} readOnly />
+        <input className="checkout-input-field" placeholder="Contact Number" value={contact} onChange={handleContactChange} maxLength="11" readOnly={user && user.contact_number} />
       </div>
 
       {/* ORDER SUMMARY */}
       <div className="checkout-section">
         <p className="checkout-section-title">Order Summary</p>
 
-        <div className="checkout-summary-item">
-          <span>Thriller x 1</span>
-          <span>P24.99</span>
-        </div>
-
-        <div className="checkout-summary-item">
-          <span>Hotel California x 1</span>
-          <span>P22.99</span>
-        </div>
+        {cartItems.filter(item => selectedItems.includes(item.product_id)).map((item) => (
+          <div key={item.product_id} className="checkout-summary-item">
+            <span>{item.album_title} x {item.quantity}</span>
+            <span>₱{(item.price * item.quantity).toFixed(2)}</span>
+          </div>
+        ))}
 
         <div className="checkout-summary-total">
           <strong>Total</strong>
-          <strong>P47.98</strong>
+          <strong>₱{cartItems.filter(item => selectedItems.includes(item.product_id)).reduce((total, item) => total + (item.price * item.quantity), 0).toFixed(2)}</strong>
         </div>
       </div>
 
@@ -352,7 +700,7 @@ Back to Cart
       </div>
 
       {/* ORDER BUTTON */}
-      <button className="checkout-place-order-btn">
+      <button className="checkout-place-order-btn" onClick={handlePlaceOrder}>
         Place Order
       </button>
 

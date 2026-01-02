@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./Home.css";
 import { Link, useNavigate } from "react-router-dom";
+import getImageUrl from "../../utils/getImageUrl";
 
 
 export default function Home() {
@@ -10,6 +11,11 @@ export default function Home() {
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
   const [showSignOutModal, setShowSignOutModal] = useState(false);
+  const [products, setProducts] = useState([]);
+  const [showAddCartModal, setShowAddCartModal] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
+  const [selectedAlbum, setSelectedAlbum] = useState(null);
+  const [orderStats, setOrderStats] = useState({ total: 0, pending: 0, completed: 0 });
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -21,14 +27,75 @@ export default function Home() {
           const data = await response.json();
           if (data.success) {
             setUser(data.user);
+            // Fetch order stats
+            const statsResponse = await fetch(`http://localhost/popcart-api/get_order_stats.php?user_id=${userData.user_id}`);
+            const statsData = await statsResponse.json();
+            if (statsData.success) {
+              setOrderStats({
+                total: statsData.stats.total_orders,
+                pending: statsData.stats.pending_orders,
+                completed: statsData.stats.completed_orders
+              });
+            }
           }
         } catch (error) {
-          console.error('Error fetching user:', error);
+          console.error('Error fetching user or stats:', error);
         }
       }
     };
     fetchUser();
+    // Fetch products for the home albums list
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch('http://localhost/popcart-api/get_products.php');
+        const data = await res.json();
+        if (data && data.success && Array.isArray(data.products)) {
+          const mapped = data.products.map(p => ({
+            product_id: Number(p.product_id) || Number(p.id) || 0,
+            album_title: p.album_title || p.title || '',
+            artist: p.artist || '',
+            price: (p.price !== null && p.price !== undefined) ? Number(p.price) : 0,
+            stock: (p.stock !== null && p.stock !== undefined) ? Number(p.stock) : 0,
+            genre: p.genre || '',
+            released_year: p.released_year || '',
+            album_cover_img: p.album_cover_img || p.image || '',
+            description: p.description || ''
+          }));
+          setProducts(mapped);
+        }
+      } catch (err) {
+        console.error('Error fetching products:', err);
+      }
+    };
+
+    fetchProducts();
   }, []);
+
+  const addToCart = (product) => {
+    if (product.stock <= 0) {
+      alert('This product is out of stock.');
+      return;
+    }
+    try {
+      const stored = localStorage.getItem('cart');
+      const cart = stored ? JSON.parse(stored) : [];
+      const existing = cart.find(i => Number(i.product_id) === Number(product.product_id));
+      let updated;
+      if (!existing) {
+        updated = [...cart, { ...product, quantity: 1, lastModified: Date.now() }];
+      } else {
+        if (existing.quantity >= product.stock) {
+          alert('Maximum quantity reached based on available stock.');
+          return;
+        }
+        updated = cart.map(i => i.product_id === product.product_id ? { ...i, quantity: i.quantity + 1, lastModified: Date.now() } : i);
+      }
+      localStorage.setItem('cart', JSON.stringify(updated));
+      setShowAddCartModal(true);
+    } catch (err) {
+      console.error('addToCart error', err);
+    }
+  };
 
 
   return (
@@ -145,7 +212,7 @@ Home</button> </Link>
           Cancel
         </button>
 
-        <button className="confirm-btn" onClick={() => { localStorage.removeItem('user'); setShowSignOutModal(false); navigate('/'); }}>
+        <button className="confirm-btn" onClick={() => { localStorage.removeItem('user'); setShowSignOutModal(false); navigate('/signin'); }}>
           Sign Out
         </button>
       </div>
@@ -166,17 +233,17 @@ Home</button> </Link>
           <div className="stats-grid">
             <div className="stat-card">
               <p>Total Orders</p>
-              <h3>0</h3>
+              <h3>{orderStats.total}</h3>
               <span>All time purchases</span>
             </div>
             <div className="stat-card">
               <p>Pending Orders</p>
-              <h3>0</h3>
+              <h3>{orderStats.pending}</h3>
               <span>In progress</span>
             </div>
             <div className="stat-card">
               <p>Completed</p>
-              <h3>0</h3>
+              <h3>{orderStats.completed}</h3>
               <span>Successfully delivered</span>
             </div>
           </div>
@@ -192,52 +259,105 @@ Home</button> </Link>
 
 
 <div className="album-list">
-  {[1, 2, 3].map((item) => (
-    <div className="album-card" key={item}>
-      <div className="album-img"></div>
+  {products.slice(0, 4).map((product) => (
+    <div key={product.product_id} className={`album-card ${product.stock === 0 ? 'out-of-stock' : ''}`}>
+      <div className="album-img">
+        {product.stock === 0 && <div className="out-of-stock-label">Out of Stock</div>}
+        <img src={getImageUrl(product.album_cover_img)} className="mp-album-img" />
+      </div>
 
       <div className="album-info">
-        <h4>Album {item}</h4>
-        <p>Artist Name</p>
+        <h4>{product.album_title} <span className="stock-count">({product.stock} left)</span></h4>
+        <p>{product.artist}</p>
+
 
         <div className="price-details-box">
           <div className="price-details-row">
-            <p className="price">₱398.97</p>
+            <p className="price">₱{Number(product.price).toFixed(2)}</p>
 
-            <button className="details-btn">
+            <button className="details-btn" onClick={() => { setSelectedAlbum(product); setShowDetails(true); }}>
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M1.20284 7.203C1.15423 7.07203 1.15423 6.92796 1.20284 6.797C1.67634 5.64891 2.48006 4.66727 3.51213 3.97652C4.54419 3.28577 5.75812 2.91702 7.00001 2.91702C8.2419 2.91702 9.45583 3.28577 10.4879 3.97652C11.52 4.66727 12.3237 5.64891 12.7972 6.797C12.8458 6.92796 12.8458 7.07203 12.7972 7.203C12.3237 8.35108 11.52 9.33272 10.4879 10.0235C9.45583 10.7142 8.2419 11.083 7.00001 11.083C5.75812 11.083 4.54419 10.7142 3.51213 10.0235C2.48006 9.33272 1.67634 8.35108 1.20284 7.203Z" stroke="#717182" stroke-width="1.16667" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M7 8.75C7.9665 8.75 8.75 7.9665 8.75 7C8.75 6.0335 7.9665 5.25 7 5.25C6.0335 5.25 5.25 6.0335 5.25 7C5.25 7.9665 6.0335 8.75 7 8.75Z" stroke="#717182" stroke-width="1.16667" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
-
+                <path d="M1.20284 7.203C1.15423 7.07203 1.15423 6.92796 1.20284 6.797C1.67634 5.64891 2.48006 4.66727 3.51213 3.97652C4.54419 3.28577 5.75812 2.91702 7.00001 2.91702C8.2419 2.91702 9.45583 3.28577 10.4879 3.97652C11.52 4.66727 12.3237 5.64891 12.7972 6.797C12.8458 6.92796 12.8458 7.07203 12.7972 7.203C12.3237 8.35108 11.52 9.33272 10.4879 10.0235C9.45583 10.7142 8.2419 11.083 7.00001 11.083C5.75812 11.083 4.54419 10.7142 3.51213 10.0235C2.48006 9.33272 1.67634 8.35108 1.20284 7.203Z" stroke="#717182" stroke-width="1.16667" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 8.75C7.9665 8.75 8.75 7.9665 8.75 7C8.75 6.0335 7.9665 5.25 7 5.25C6.0335 5.25 5.25 6.0335 5.25 7C5.25 7.9665 6.0335 8.75 7 8.75Z" stroke="#717182" stroke-width="1.16667" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
               Details
             </button>
           </div>
         </div>
 
-        <button className="cart-btn">
-         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g clip-path="url(#clip0_50_2259)">
-<path d="M5.33329 14.6667C5.70148 14.6667 5.99996 14.3682 5.99996 14C5.99996 13.6318 5.70148 13.3333 5.33329 13.3333C4.9651 13.3333 4.66663 13.6318 4.66663 14C4.66663 14.3682 4.9651 14.6667 5.33329 14.6667Z" stroke="white" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M12.6667 14.6667C13.0349 14.6667 13.3333 14.3682 13.3333 14C13.3333 13.6318 13.0349 13.3333 12.6667 13.3333C12.2985 13.3333 12 13.6318 12 14C12 14.3682 12.2985 14.6667 12.6667 14.6667Z" stroke="white" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M1.3667 1.36667H2.70003L4.47337 9.64667C4.53842 9.94991 4.70715 10.221 4.95051 10.4132C5.19387 10.6055 5.49664 10.7069 5.8067 10.7H12.3267C12.6301 10.6995 12.9244 10.5955 13.1607 10.4052C13.3971 10.2149 13.5615 9.94969 13.6267 9.65333L14.7267 4.7H3.41337" stroke="white" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
-</g>
-<defs>
-<clipPath id="clip0_50_2259">
-<rect width="16" height="16" fill="white"/>
-</clipPath>
-</defs>
-</svg>
-
-          Add to Cart
+        <button className="album-add-cart-btn" disabled={product.stock === 0} onClick={() => { addToCart(product); }}>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g clipPath="url(#clip0_50_2259)">
+              <path d="M5.33329 14.6667C5.70148 14.6667 5.99996 14.3682 5.99996 14C5.99996 13.6318 5.70148 13.3333 5.33329 13.3333C4.9651 13.3333 4.66663 13.6318 4.66663 14C4.66663 14.3682 4.9651 14.6667 5.33329 14.6667Z" stroke="white" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M12.6667 14.6667C13.0349 14.6667 13.3333 14.3682 13.3333 14C13.3333 13.6318 13.0349 13.3333 12.6667 13.3333C12.2985 13.3333 12 13.6318 12 14C12 14.3682 12.2985 14.6667 12.6667 14.6667Z" stroke="white" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M1.3667 1.36667H2.70003L4.47337 9.64667C4.53842 9.94991 4.70715 10.221 4.95051 10.4132C5.19387 10.6055 5.49664 10.7069 5.8067 10.7H12.3267C12.6301 10.6995 12.9244 10.5955 13.1607 10.4052C13.3971 10.2149 13.5615 9.94969 13.6267 9.65333L14.7267 4.7H3.41337" stroke="white" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
+            </g>
+            <defs>
+              <clipPath id="clip0_50_2259">
+                <rect width="16" height="16" fill="white"/>
+              </clipPath>
+            </defs>
+          </svg>
+          {product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
         </button>
       </div>
     </div>
-    
-              ))}
+  ))}
+</div>
+          {showDetails && selectedAlbum && (
+            <div className="details-modal-overlay">
+              <div className="details-modal">
 
-            
+                <div className="details-modal-header">
+                  <button className="back-btn" onClick={() => setShowDetails(false)}>←</button>
+                  <h2>Album Details</h2>
+                  <button className="close-btn" onClick={() => setShowDetails(false)}>×</button>
+                </div>
+
+                <div className="details-modal-body">
+                  <div className="details-left">
+                    <div className="album-main-img">
+                      <img src={getImageUrl(selectedAlbum.album_cover_img)} className="de-album-img" />
+                    </div>
+                  </div>
+
+                  <div className="details-right">
+                    <h1 className="album-title">{selectedAlbum.album_title}</h1>
+                    <p className="album-subtitle">{selectedAlbum.artist}</p>
+                    <div className="album-tags">
+                      <span className="tag">{selectedAlbum.genre}</span>
+                    </div>
+                    <p className="album-price">₱{Number(selectedAlbum.price).toFixed(2)}</p>
+                    <p className="album-stock">Stock: {selectedAlbum.stock}</p>
+                    <div className="album-description">
+                      <h3>Description</h3>
+                      <p>{selectedAlbum.description || 'No description available.'}</p>
+                    </div>
+
+                    <button className="album-add-cart-btn" disabled={selectedAlbum.stock === 0} onClick={() => { addToCart(selectedAlbum); setShowDetails(false); }}>
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M1.3667 1.36667H2.70003L4.47337 9.64667C4.53842 9.94991 4.70715 10.221 4.95051 10.4132C5.19387 10.6055 5.49664 10.7069 5.8067 10.7H12.3267C12.6301 10.6995 12.9244 10.5955 13.1607 10.4052C13.3971 10.2149 13.5615 9.94969 13.6267 9.65333L14.7267 4.7H3.41337" stroke="white" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                      {selectedAlbum.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
+          )}
+
+          {showAddCartModal && (
+            <div className="modal-overlay">
+              <div className="modal-container">
+                <h2>Added to Cart</h2>
+                <p>Your item has been successfully added to your cart.</p>
+                <div className="modal-actions">
+                  <button onClick={() => setShowAddCartModal(false)} className="close-btn">Close</button>
+                  <Link to="/buyer/cart"><button className="go-to-cart-btn">Go to Cart</button></Link>
+                </div>
+              </div>
+            </div>
+          )}
           </div>
         </main>
       </div>

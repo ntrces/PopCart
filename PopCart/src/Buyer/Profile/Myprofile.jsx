@@ -339,7 +339,7 @@ Home</button> </Link>
           Cancel
         </button>
 
-        <button className="confirm-btn" onClick={() => { localStorage.removeItem('user'); setShowSignOutModal(false); navigate('/'); }}>
+        <button className="confirm-btn" onClick={() => { localStorage.removeItem('user'); setShowSignOutModal(false); navigate('/signin'); }}>
           Sign Out
         </button>
       </div>

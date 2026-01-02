@@ -5,6 +5,7 @@ import AddProduct from "./AddProduct.jsx";
 import EditProduct from "./EditProduct.jsx";
 import DeleteProduct from "./DeleteProduct.jsx";
 import image from "../../assets/image.png";
+import getImageUrl from "../../utils/getImageUrl";
 import Header from "../Header/HeaderA.jsx";
 import Sidebar from "../Sidebar/SidebarA.jsx";
 
@@ -196,10 +197,10 @@ function ProductManagement() {
 
             <div className="pm-table-body">
               {filteredData.map((row) => (
-                <div key={row.product_id} className="pm-table-row">
+                <div key={row.product_id} className={`pm-table-row ${row.stock == 0 ? 'out-of-stock-row' : ''}`}>
                   <div className="pm-table-cell album-cell">
                     {row.album_cover_img ? (
-                      <img src={'http://localhost/' + row.album_cover_img.split(',')[0]} alt={row.album_title} className="pm-album-image" />
+                      <img src={getImageUrl(row.album_cover_img)} alt={row.album_title} className="pm-album-image" />
                     ) : (
                       <img src={image} alt={row.album_title} className="pm-album-image" />
                     )}

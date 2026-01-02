@@ -5,6 +5,7 @@ import AddProduct from "./AddE.jsx";
 import EditProduct from "./EditE.jsx";
 import DeleteProduct from "./DeleteE.jsx";
 import image from "../../assets/image.png";
+import getImageUrl from "../../utils/getImageUrl";
 import Header from "../Header/HeaderE.jsx";
 import Sidebar from "../Sidebar/SidebarE.jsx";
 
@@ -199,7 +200,7 @@ function ProductE() {
                 <div key={row.product_id} className="pm-table-row">
                   <div className="pm-table-cell album-cell">
                     {row.album_cover_img ? (
-                      <img src={'http://localhost/' + row.album_cover_img.split(',')[0]} alt={row.album_title} className="pm-album-image" />
+                      <img src={getImageUrl(row.album_cover_img)} alt={row.album_title} className="pm-album-image" />
                     ) : (
                       <img src={image} alt={row.album_title} className="pm-album-image" />
                     )}

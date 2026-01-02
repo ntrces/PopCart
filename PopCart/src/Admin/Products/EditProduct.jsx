@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./EditProduct.css";
+import getImageUrl from "../../utils/getImageUrl";
 
 function EditProduct({ product, onClose, onUpdate }) {
   const [formData, setFormData] = useState({
@@ -9,11 +10,12 @@ function EditProduct({ product, onClose, onUpdate }) {
     stockQuantity: "",
     genre: "",
     releasedYear: "",
-    albumCoverImages: null,
+    albumCoverImage: null,
     description: "",
   });
   const [showFileInput, setShowFileInput] = useState(false);
-  const [selectedFiles, setSelectedFiles] = useState([]);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [currentProduct, setCurrentProduct] = useState(null);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -22,6 +24,7 @@ function EditProduct({ product, onClose, onUpdate }) {
         const data = await response.json();
         if (data.success) {
           const p = data.product;
+          setCurrentProduct(p);
           setFormData({
             albumTitle: p.album_title,
             artist: p.artist,
@@ -36,10 +39,10 @@ function EditProduct({ product, onClose, onUpdate }) {
         console.error('Error fetching product:', error);
       }
     };
-    if (product.product_id) {
+    if (product?.product_id) {
       fetchProduct();
     }
-  }, [product.product_id]);
+  }, [product?.product_id]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -50,30 +53,22 @@ function EditProduct({ product, onClose, onUpdate }) {
   };
 
   const handleFileChange = (e) => {
-    const files = Array.from(e.target.files);
+    const file = e.target.files[0];
     setFormData((prev) => ({
       ...prev,
-      albumCoverImages: files,
+      albumCoverImage: file,
     }));
-    setSelectedFiles(files);
-    setShowFileInput(true);
+    setSelectedFile(file);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     const data = new FormData();
     data.append('product_id', product.product_id);
-    data.append('album_title', formData.albumTitle);
-    data.append('artist', formData.artist);
     data.append('price', formData.price);
     data.append('stock', formData.stockQuantity);
-    data.append('genre', formData.genre);
-    data.append('released_year', formData.releasedYear);
-    data.append('description', formData.description);
-    if (formData.albumCoverImages) {
-      for (let i = 0; i < formData.albumCoverImages.length; i++) {
-        data.append('album_cover_img[]', formData.albumCoverImages[i]);
-      }
+    if (formData.albumCoverImage) {
+      data.append('album_cover_img[]', formData.albumCoverImage);
     }
     try {
       const response = await fetch('http://localhost/popcart-api/update_product.php', {
@@ -124,9 +119,7 @@ function EditProduct({ product, onClose, onUpdate }) {
               id="albumTitle"
               name="albumTitle"
               value={formData.albumTitle}
-              onChange={handleInputChange}
-              placeholder="e.g., Abbey Road"
-              required
+              disabled
               className="ap-input"
             />
           </div>
@@ -138,9 +131,7 @@ function EditProduct({ product, onClose, onUpdate }) {
               id="artist"
               name="artist"
               value={formData.artist}
-              onChange={handleInputChange}
-              placeholder="e.g., The Beatles"
-              required
+              disabled
               className="ap-input"
             />
           </div>
@@ -186,8 +177,7 @@ function EditProduct({ product, onClose, onUpdate }) {
                 id="genre"
                 name="genre"
                 value={formData.genre}
-                onChange={handleInputChange}
-                required
+                disabled
                 className="ap-select"
               >
                 <option value="">Select genre</option>
@@ -210,8 +200,7 @@ function EditProduct({ product, onClose, onUpdate }) {
                 id="releasedYear"
                 name="releasedYear"
                 value={formData.releasedYear}
-                onChange={handleInputChange}
-                required
+                disabled
                 className="ap-select"
               >
                 <option value="">Select year</option>
@@ -224,18 +213,69 @@ function EditProduct({ product, onClose, onUpdate }) {
         </div>
 
         <div className="ap-field">
-          <label htmlFor="albumCoverImages" className="ap-label">Album Cover Images *</label>
-          <input
-            type="file"
-            id="albumCoverImages"
-            name="albumCoverImages"
-            onChange={handleFileChange}
-            accept="image/*"
-            multiple
-            required
-            className="ap-file-input"
-          />
-          <p className="ap-help">Upload at least 2 images of the album (front cover, back cover, etc.)</p>
+          <label className="ap-label">Current Album Cover Image</label>
+          {currentProduct && currentProduct.album_cover_img && (
+            <img src={getImageUrl(currentProduct.album_cover_img)} alt="Current Album Cover" style={{ maxWidth: '200px', maxHeight: '200px' }} />
+          )}
+        </div>
+
+        <div className="ap-field">
+          <label className="ap-label">Album Cover Image Path</label>
+          {!showFileInput ? (
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <input
+                type="text"
+                value={currentProduct ? currentProduct.album_cover_img : ''}
+                readOnly
+                className="ap-input"
+                style={{ flex: 1 }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowFileInput(true)}
+                style={{ marginLeft: '10px', background: 'none', border: 'none', cursor: 'pointer' }}
+                aria-label="Remove image"
+              >
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M6.66675 7.33331V11.3333" stroke="#E7000B" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M9.33325 7.33331V11.3333" stroke="#E7000B" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M12.6666 4V13.3333C12.6666 13.687 12.5261 14.0261 12.2761 14.2761C12.026 14.5262 11.6869 14.6667 11.3333 14.6667H4.66659C4.31296 14.6667 3.97382 14.5262 3.72378 14.2761C3.47373 14.0261 3.33325 13.687 3.33325 13.3333V4" stroke="#E7000B" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M2 4H14" stroke="#E7000B" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M5.33325 3.99998V2.66665C5.33325 2.31302 5.47373 1.97389 5.72378 1.72384C5.97383 1.47379 6.31296 1.33331 6.66659 1.33331H9.33325C9.68687 1.33331 10.026 1.47379 10.2761 1.72384C10.5261 1.97389 10.6666 2.31302 10.6666 2.66665V3.99998" stroke="#E7000B" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+            </div>
+          ) : !selectedFile ? (
+            <input
+              type="file"
+              id="albumCoverImage"
+              name="albumCoverImage"
+              onChange={handleFileChange}
+              accept="image/*"
+              className="ap-file-input"
+            />
+          ) : (
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <span style={{ flex: 1 }}>{selectedFile.name}</span>
+              <button
+                type="button"
+                onClick={() => {
+                  setSelectedFile(null);
+                  setFormData((prev) => ({ ...prev, albumCoverImage: null }));
+                }}
+                style={{ marginLeft: '10px', background: 'none', border: 'none', cursor: 'pointer' }}
+                aria-label="Remove image"
+              >
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M6.66675 7.33334V11.3333" stroke="#E7000B" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M9.33325 7.33334V11.3333" stroke="#E7000B" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M12.6666 4V13.3333C12.6666 13.687 12.5261 14.0261 12.2761 14.2761C12.026 14.5262 11.6869 14.6667 11.3333 14.6667H4.66659C4.31296 14.6667 3.97382 14.5262 3.72378 14.2761C3.47373 14.0261 3.33325 13.687 3.33325 13.3333V4" stroke="#E7000B" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M2 4H14" stroke="#E7000B" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M5.33325 4V2.66667C5.33325 2.31304 5.47373 1.9739 5.72378 1.72386C5.97383 1.47381 6.31296 1.33333 6.66659 1.33333H9.33325C9.68687 1.33333 10.026 1.47381 10.2761 1.72386C10.5261 1.9739 10.6666 2.31304 10.6666 2.66667V4" stroke="#E7000B" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+            </div>
+          )}
         </div>
 
         <div className="ap-field">
@@ -244,10 +284,7 @@ function EditProduct({ product, onClose, onUpdate }) {
             id="description"
             name="description"
             value={formData.description}
-            onChange={handleInputChange}
-            placeholder="Describe the album's condition, any special features, etc. (minimum 25 characters)"
-            minLength={25}
-            required
+            disabled
             rows={4}
             className="ap-textarea"
           />

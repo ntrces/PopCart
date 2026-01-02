@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../auth/useAuth.jsx";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Cell, Legend, Tooltip, ResponsiveContainer } from "recharts";
 import "./Dashboard.css";
 import Monthly from "./Monthly.jsx";
@@ -8,8 +10,11 @@ import Sidebar from "../Sidebar/SidebarA.jsx";
 import Header from "../Header/HeaderA.jsx";
 
 export const Dashboard = () => {
+  const navigate = useNavigate();
+  const { logout } = useAuth();
   const [totalUsers, setTotalUsers] = useState("5");
   const [totalProducts, setTotalProducts] = useState("5");
+  const [showSignOutModal, setShowSignOutModal] = useState(false);
 
   useEffect(() => {
     const fetchUserCount = async () => {
@@ -187,7 +192,7 @@ export const Dashboard = () => {
       <Header className="admin-header" />
       <div className="admin-content-wrapper">
 
-        <Sidebar className="admin-sidebar" />
+        <Sidebar className="admin-sidebar" onSignOutClick={() => setShowSignOutModal(true)} />
 
         <main className="admin-main-content">
     <div className="dashboard-container">
@@ -275,6 +280,25 @@ export const Dashboard = () => {
     </div>
     </main>
       </div>
+
+      {showSignOutModal && (
+        <div className="modal-overlay">
+          <div className="signout-modal">
+            <h3>Sign Out</h3>
+            <p>Are you sure you want to sign out?</p>
+
+            <div className="modal-buttons">
+              <button className="cancel-btn" onClick={() => setShowSignOutModal(false)}>
+                Cancel
+              </button>
+
+              <button className="confirm-btn" onClick={() => { logout(); setShowSignOutModal(false); navigate('/signin'); }}>
+                Sign Out
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

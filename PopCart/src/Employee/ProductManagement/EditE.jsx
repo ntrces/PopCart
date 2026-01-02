@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./EditE.css";
+import getImageUrl from "../../utils/getImageUrl";
 
 function EditE({ product, onClose, onUpdate }) {
   const [formData, setFormData] = useState({
@@ -214,7 +215,7 @@ function EditE({ product, onClose, onUpdate }) {
         <div className="ap-field">
           <label className="ap-label">Current Album Cover Image</label>
           {currentProduct && currentProduct.album_cover_img && (
-            <img src={`http://localhost/${currentProduct.album_cover_img}`} alt="Current Album Cover" style={{ maxWidth: '200px', maxHeight: '200px' }} />
+            <img src={getImageUrl(currentProduct.album_cover_img)} alt="Current Album Cover" style={{ maxWidth: '200px', maxHeight: '200px' }} />
           )}
         </div>
 

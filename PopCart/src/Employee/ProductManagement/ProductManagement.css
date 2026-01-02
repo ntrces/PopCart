@@ -372,3 +372,7 @@ body {
   text-overflow: ellipsis;
   max-width: 100%;
 }
+
+.out-of-stock-row {
+  color: red;
+}

@@ -1,11 +1,12 @@
 // ...existing code...
 import React from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/useAuth.jsx";
 import "./SidebarA.css";
 
-export default function SidebarA() {
+export default function SidebarA({ onSignOutClick }) {
   const location = useLocation();
+  const navigate = useNavigate();
   const { logout } = useAuth();
 
   const navigationItems = [
@@ -44,10 +45,7 @@ export default function SidebarA() {
 
       <div className="sidebar-footer">
         <button
-          onClick={() => {
-            logout();
-            window.location.href = "/signin";
-          }}
+          onClick={onSignOutClick}
           className="sidebar-signout-btn"
           aria-label="Sign out"
         >
@@ -59,6 +57,7 @@ export default function SidebarA() {
           <span>Sign Out</span>
         </button>
       </div>
+
     </aside>
   );
 }

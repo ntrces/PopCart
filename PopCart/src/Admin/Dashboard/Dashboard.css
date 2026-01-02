@@ -266,10 +266,21 @@ body {
 }
 
 .chart-render-area {
-
-  width: 80%;
-  padding-right: 8px;
-  margin: auto;
-  
+  width: 100%;
+  display: flex;
+  justify-content: center;
 }
+
+.chart-area { display: flex; gap: 16px; width: 80%; align-items: flex-start; }
+.chart-card { flex: 1; background: #ffffff; border-radius:8px; padding:12px; box-sizing:border-box; }
+.chart-card-title { margin: 6px 0 8px 4px; font-size:14px; color:#0f172a; font-weight:600; }
+
+@media (max-width:900px) {
+  .chart-area { flex-direction: column; width: 100%; }
+  .chart-card { width: 100%; }
+}
+
+/* Ensure Recharts legend text is visible inside chart-cards */
+.chart-card .recharts-legend-wrapper { color: #0f172a; }
+.chart-card .recharts-legend-item text { fill: #0f172a !important; }
 

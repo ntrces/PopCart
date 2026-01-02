@@ -27,21 +27,36 @@ export default function Yearly() {
   return (
     <section className="yearly-wrapper">
       <header className="analytics-header">
-        <h2 className="analytics-title">Yearly Overview (Revenue vs Sales)</h2>
+        <h2 className="analytics-title">Yearly Overview</h2>
       </header>
-
       <div className="chart-area">
-        <ResponsiveContainer width="100%" height={330}>
-          <BarChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
-            <CartesianGrid stroke="#e6e7ea" vertical={false} />
-            <XAxis dataKey="year" tick={{ fill: "#334155" }} />
-            <YAxis tick={{ fill: "#334155" }} />
-            <Tooltip formatter={(v) => v} />
-            <Legend />
-            <Bar dataKey="Revenue" fill="#0a0a0a" barSize={36} />
-            <Bar dataKey="Sales" fill="#717182" barSize={36} />
-          </BarChart>
-        </ResponsiveContainer>
+        <div className="chart-card">
+          <h3 className="chart-card-title">Revenue</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={data} margin={{ top: 10, right: 12, left: 0, bottom: 0 }}>
+              <CartesianGrid stroke="#e6e7ea" vertical={false} />
+              <XAxis dataKey="year" tick={{ fill: "#334155" }} />
+              <YAxis tick={{ fill: "#334155" }} />
+              <Tooltip formatter={(v) => v} />
+              <Legend layout="horizontal" verticalAlign="bottom" align="center" iconType="square" wrapperStyle={{ color: '#0f172a' }} />
+              <Bar dataKey="Revenue" fill="#0a0a0a" barSize={36} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+
+        <div className="chart-card">
+          <h3 className="chart-card-title">Sales</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={data} margin={{ top: 10, right: 12, left: 0, bottom: 0 }}>
+              <CartesianGrid stroke="#e6e7ea" vertical={false} />
+              <XAxis dataKey="year" tick={{ fill: "#334155" }} />
+              <YAxis tick={{ fill: "#334155" }} />
+              <Tooltip formatter={(v) => v} />
+              <Legend layout="horizontal" verticalAlign="bottom" align="center" iconType="square" wrapperStyle={{ color: '#0f172a' }} />
+              <Bar dataKey="Sales" fill="#717182" barSize={36} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
       </div>
     </section>
   );

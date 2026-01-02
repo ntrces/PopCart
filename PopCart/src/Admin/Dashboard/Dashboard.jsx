@@ -257,20 +257,41 @@ export const Dashboard = () => {
         {/* Conditional charts */}
         <div className="chart-render-area">
           {selectedPeriod === "Today" && (
-            <ResponsiveContainer width="100%" height={350}>
-              <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip formatter={(Today) => `${Today}%`} />
-                <Legend />
-                <Bar dataKey="Today" barSize={150}>
-                  {chartData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.fill} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+            <div className="chart-area">
+              <div className="chart-card">
+                <h3 className="chart-card-title">Sales</h3>
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart
+                    data={[{ name: "Sales", value: chartData.find((d) => d.name === "Sales")?.Today || 0 }]}
+                    margin={{ top: 20, right: 10, left: 0, bottom: 5 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip formatter={(v) => `${v}%`} />
+                    <Legend layout="horizontal" verticalAlign="bottom" align="center" iconType="square" wrapperStyle={{ color: '#0f172a' }} />
+                    <Bar name="Sales" dataKey="value" barSize={80} fill={chartData.find((d) => d.name === "Sales")?.fill || '#717182'} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+
+              <div className="chart-card">
+                <h3 className="chart-card-title">Revenue</h3>
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart
+                    data={[{ name: "Revenue", value: chartData.find((d) => d.name === "Revenue")?.Today || 0 }]}
+                    margin={{ top: 20, right: 10, left: 0, bottom: 5 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip formatter={(v) => `${v}%`} />
+                    <Legend layout="horizontal" verticalAlign="bottom" align="center" iconType="square" wrapperStyle={{ color: '#0f172a' }} />
+                    <Bar name="Revenue" dataKey="value" barSize={80} fill={chartData.find((d) => d.name === "Revenue")?.fill || '#0A0A0A'} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
           )}
           {selectedPeriod === "Weekly" && <Weekly />}
           {selectedPeriod === "Monthly" && <Monthly />}

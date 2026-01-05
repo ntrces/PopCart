@@ -4,8 +4,44 @@ import "./OrderD.css";
 const OrderDetails = ({ order }) => {
   return (
     <div className="od-container">
-      {/* Items and Shipping Section */}
+      {/* User and Shipping Section */}
       <div className="od-main-section">
+        {/* User Info Column */}
+        <div className="od-column">
+          <div className="od-header">
+            <div className="od-icon" role="img" aria-label="User icon">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M8 8C10.2091 8 12 6.20914 12 4C12 1.79086 10.2091 0 8 0C5.79086 0 4 1.79086 4 4C4 6.20914 5.79086 8 8 8Z"
+                  stroke="#0A0A0A"
+                  strokeWidth="1.33333"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M8 10C5.79086 10 4 11.7909 4 14H12C12 11.7909 10.2091 10 8 10Z"
+                  stroke="#0A0A0A"
+                  strokeWidth="1.33333"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </div>
+            <h2 className="od-title">Customer Information</h2>
+          </div>
+          <div className="od-user-info">
+            <p><strong>Name:</strong> {order.user?.name || 'N/A'}</p>
+            <p><strong>Email:</strong> {order.user?.email || 'N/A'}</p>
+            <p><strong>Contact:</strong> {order.user?.contact || 'N/A'}</p>
+          </div>
+        </div>
+
         {/* Items Column */}
         <div className="od-column">
           <div className="od-header">
@@ -78,7 +114,7 @@ const OrderDetails = ({ order }) => {
           <div className="od-header">
             <h2 className="od-title">Shipping Address</h2>
           </div>
-          <address className="od-address">{order.shippingAddress}</address>
+          <address className="od-address">{order.shipping_address}</address>
         </div>
       </div>
     </div>

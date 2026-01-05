@@ -171,6 +171,16 @@
   justify-content: space-between;
 }
 
+.delete-modal {
+  width: 320px;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
 .signout-modal h3 {
   font-size: 18px;
   font-weight: 700;
@@ -190,7 +200,8 @@
 }
 
 .cancel-btn,
-.confirm-btn {
+.confirm-btn,
+.delete-confirm-btn {
   background: none;
   border: none;
   font-size: 14px;
@@ -200,7 +211,8 @@
 }
 
 .cancel-btn:hover,
-.confirm-btn:hover {
+.confirm-btn:hover,
+.delete-confirm-btn:hover {
   background: #000;
   color: #fff;
   border-radius: 5px;

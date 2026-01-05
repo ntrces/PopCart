@@ -1,14 +1,48 @@
 import React from "react";
 import "./Delete.css";
 
-export default function Delete ({ onClose }) {
+export default function Delete ({ onClose, user, onSuccess }) {
   const handleCancel = () => {
     console.log("Cancel clicked");
     onClose();
   };
 
-  const handleDelete = () => {
-    console.log("Delete clicked");
+  const handleDelete = async () => {
+    if (user.usertype === 'admin') {
+      // Check active admin count
+      try {
+        const response = await fetch('http://localhost/popcart-api/get_user_counts.php');
+        const data = await response.json();
+        if (data.success && data.counts.admin <= 1) {
+          alert('Cannot delete: At least one active admin must remain.');
+          return;
+        }
+      } catch (error) {
+        console.error('Error checking admin count:', error);
+        alert('Failed to verify admin count.');
+        return;
+      }
+    }
+    const data = new FormData();
+    data.append('user_id', user.user_id);
+    data.append('status', 'inactive');
+    try {
+      const response = await fetch('http://localhost/popcart-api/update_user_status.php', {
+        method: 'POST',
+        body: data
+      });
+      const result = await response.json();
+      if (result.success) {
+        alert('User deactivated successfully');
+        if (onSuccess) onSuccess();
+        onClose();
+      } else {
+        alert('Error: ' + result.message);
+      }
+    } catch (error) {
+      console.error('Error deactivating user:', error);
+      alert('Failed to deactivate user');
+    }
   };
 
   return (
@@ -21,11 +55,11 @@ export default function Delete ({ onClose }) {
       <div className="delete-content">
         <header className="delete-header">
           <h1 id="dialog-title" className="delete-title">
-            Delete Account
+            Deactivate Account
           </h1>
 
           <p id="dialog-description" className="delete-description">
-            Are you sure you want to delete this account?
+            Are you sure you want to deactivate this account? The user will no longer have access.
           </p>
         </header>
 
@@ -42,7 +76,7 @@ export default function Delete ({ onClose }) {
           <button
             onClick={handleDelete}
             type="button"
-            aria-label="Confirm deletion"
+            aria-label="Confirm deactivation"
             className="delete-confirm-btn"
           >
             <div className="delete-icon" aria-hidden="true">
@@ -55,7 +89,7 @@ export default function Delete ({ onClose }) {
               </svg>
             </div>
 
-            <span className="delete-btn-text">Delete</span>
+            <span className="delete-btn-text">Deactivate</span>
           </button>
         </div>
       </div>

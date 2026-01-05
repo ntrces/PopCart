@@ -1,34 +1,40 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { Tooltip, ResponsiveContainer, AreaChart, CartesianGrid, XAxis, YAxis, 
           Area, LineChart, Line, Legend } from "recharts";
 import "./Monthly.css";
 
 const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
-const revenueByYear = {
-  2022: [30, 45, 40, 55, 70, 60, 75, 95, 85, 100, 120, 110],
-  2023: [38, 52, 48, 70, 85, 72, 90, 105, 98, 118, 135, 128],
-  2024: [45, 60, 50, 75, 90, 80, 95, 110, 98, 120, 140, 130],
-};
-
-const salesByYear = {
-  2022: [20, 30, 28, 40, 50, 45, 58, 70, 66, 80, 95, 88],
-  2023: [25, 35, 33, 48, 60, 52, 68, 85, 78, 96, 110, 102],
-  2024: [30, 40, 35, 55, 65, 60, 72, 88, 82, 96, 110, 105],
-};
-
 export default function Monthly() {
-  const [year, setYear] = useState(2024);
-  const years = [2024, 2023, 2022];
+  const [year, setYear] = useState(2026);
+  const years = [2025, 2026];
+  const [monthlyRevenue, setMonthlyRevenue] = useState([]);
+  const [monthlySales, setMonthlySales] = useState([]);
+
+  useEffect(() => {
+    const fetchMonthlyStats = async () => {
+      try {
+        const response = await fetch(`http://localhost/popcart-api/get_monthly_stats.php?year=${year}`);
+        const data = await response.json();
+        if (data.success) {
+          setMonthlyRevenue(data.revenue);
+          setMonthlySales(data.sales);
+        }
+      } catch (error) {
+        console.error('Error fetching monthly stats:', error);
+      }
+    };
+    fetchMonthlyStats();
+  }, [year]);
 
   const revenueData = useMemo(
-    () => MONTHS.map((m, i) => ({ month: m, value: revenueByYear[year][i] })),
-    [year]
+    () => MONTHS.map((m, i) => ({ month: m, value: monthlyRevenue[i] || 0 })),
+    [monthlyRevenue]
   );
 
   const salesData = useMemo(
-    () => MONTHS.map((m, i) => ({ month: m, value: salesByYear[year][i] })),
-    [year]
+    () => MONTHS.map((m, i) => ({ month: m, value: monthlySales[i] || 0 })),
+    [monthlySales]
   );
 
   return (
@@ -64,10 +70,14 @@ export default function Monthly() {
               <CartesianGrid stroke="#e6e7ea" vertical={false} />
               <XAxis dataKey="month" tick={{ fill: "#334155" }} />
               <YAxis tick={{ fill: "#334155" }} />
-              <Tooltip formatter={(val) => `${val}`} />
+              <Tooltip formatter={(val) => `₱${val.toLocaleString()}`} />
               <Area type="monotone" dataKey="value" stroke="#0A0A0A" fill={`url(#revGrad-${year})`} strokeWidth={2} />
             </AreaChart>
           </ResponsiveContainer>
+        </div>
+
+        <div className="total-display" style={{ marginTop: '20px' }}>
+          <strong>Total Revenue {year}: ₱{monthlyRevenue.reduce((a, b) => a + b, 0).toLocaleString()}</strong>
         </div>
       </section>
 
@@ -88,6 +98,10 @@ export default function Monthly() {
               <Legend />
             </LineChart>
           </ResponsiveContainer>
+        </div>
+
+        <div className="total-display">
+          <strong>Total Sales {year}: {monthlySales.reduce((a, b) => a + b, 0).toLocaleString()}</strong>
         </div>
       </section>
     </div>

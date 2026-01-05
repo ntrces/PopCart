@@ -1,13 +1,79 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./MyOrder.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 
 export default function MyOrder() {
+  const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
   const [showSignOutModal, setShowSignOutModal] = useState(false);
+  const [user, setUser] = useState(null);
+  const [orders, setOrders] = useState([]);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        const userData = JSON.parse(storedUser);
+        try {
+          const response = await fetch(`http://localhost/popcart-api/get_user.php?user_id=${userData.user_id}`);
+          const data = await response.json();
+          if (data.success) {
+            setUser(data.user);
+          }
+        } catch (error) {
+          console.error('Error fetching user:', error);
+        }
+      }
+    };
+    fetchUser();
+  }, []);
+
+  useEffect(() => {
+    if (user) {
+      const fetchOrders = async () => {
+        try {
+          const response = await fetch(`http://localhost/popcart-api/get_orders.php?user_id=${user.user_id}`);
+          const data = await response.json();
+          if (data.success) {
+            // For each order, fetch its items (album_title, artist, qty)
+            const ordersWithItems = await Promise.all(data.orders.map(async (order) => {
+              try {
+                const r = await fetch(`http://localhost/popcart-api/get_order_products.php?order_header_id=${order.order_header_id}`);
+                const d = await r.json();
+                if (d.success) {
+                  // Normalize items to expected front-end shape
+                  order.items = d.items.map(it => ({
+                    album_title: it.album_title,
+                    artist: it.artist,
+                    price: it.price,
+                    quantity: it.quantity,
+                    total: it.total
+                  }));
+                  // Calculate total for the order
+                  order.total = order.items.reduce((sum, item) => sum + item.total, 0);
+                } else {
+                  order.items = [];
+                  order.total = 0;
+                }
+              } catch (err) {
+                console.error('Error fetching order items', err);
+                order.items = [];
+              }
+              return order;
+            }));
+
+            setOrders(ordersWithItems);
+          }
+        } catch (error) {
+          console.error('Error fetching orders:', error);
+        }
+      };
+      fetchOrders();
+    }
+  }, [user]);
 
 
   return (
@@ -49,9 +115,9 @@ export default function MyOrder() {
          </svg>
                     </Link>
 
-          <Link to="/buyer/myprofile" className="profile">
-                      <div className="avatar">A</div>
-                      <p>Althea</p>
+          <Link to="/buyer/profile" className="profile">
+                      <div className="avatar">{user?.firstname?.charAt(0).toUpperCase() || 'U'}</div>
+                      <p>{user?.firstname}</p>
                     </Link>
         </div>
       </div>
@@ -122,7 +188,7 @@ Home</button> </Link>
           Cancel
         </button>
 
-        <button className="confirm-btn">
+        <button className="confirm-btn" onClick={() => { localStorage.removeItem('user'); setShowSignOutModal(false); navigate('/signin'); }}>
           Sign Out
         </button>
       </div>
@@ -147,7 +213,7 @@ Home</button> </Link>
         <p>Track your purchases</p>
       </div>
     </div>
-    <div className="order-count">1 order</div>
+    <div className="order-count">{orders.length} order{orders.length !== 1 ? 's' : ''}</div>
   </div>
 
   {/* ORDER HISTORY CARD */}
@@ -155,14 +221,20 @@ Home</button> </Link>
     <h2>Order History</h2>
     <p className="sub">View all your orders and their status</p>
 
-    {/* INNER ORDER CARD */}
-    <div className="order-card">
+    {/* ORDER CARDS */}
+    {orders.length === 0 ? (
+      <div className="no-orders">
+        <p>You have no orders yet.</p>
+      </div>
+    ) : (
+      orders.map((order) => (
+        <div key={order.order_header_id} className="order-card">
 
       {/* Order Header */}
       <div className="order-card-header">
         <div>
-          <h3>Order ORD006</h3>
-          <p className="date">November 25, 2025 00:00:00</p>
+          <h3>{order.order_number}</h3>
+          <p className="date">{new Date(order.order_datetime).toLocaleString()}</p>
         </div>
 
         <div className="status-pill">
@@ -173,7 +245,7 @@ Home</button> </Link>
     </svg>
   </span>
 
-  <span className="pending">PENDING</span>
+  <span className={order.order_status.toLowerCase()}>{order.order_status}</span>
 </div>
 
       </div>
@@ -181,36 +253,42 @@ Home</button> </Link>
       {/* Customer Info */}
       <div className="section">
         <h4>Customer Information:</h4>
-        <p>Last Name, First Name</p>
-        <p>Email Address</p>
-        <p>Contact Number</p>
+        <p>{order.customer.lastname}, {order.customer.firstname}</p>
+        <p>{order.customer.email}</p>
+        <p>{order.customer.contact_number}</p>
       </div>
 
       {/* Items */}
       <div className="section">
-        <h4>Items</h4>
-        <div className="item-row">
-          <span>Thriller by Michael Jackson x 1</span>
-          <span className="price-myorder">₱24.99</span>
+    <h4>Items</h4>
+    {order.items.map((item, index) => (
+        <div key={index} className="item-row">
+            {/* Displaying album_title, artist, quantity, and price */}
+            <span>{item.album_title} by {item.artist} x {item.quantity} @ ₱{item.price.toFixed(2)}</span> 
+            
+            {/* Displaying the calculated total price for this item line */}
+            <span className="price-myorder">₱{item.total.toFixed(2)}</span>
         </div>
-        <div className="item-row">
-          <span>Hotel California by Eagles x 1</span>
-          <span className="price-myorder">₱22.99</span>
-        </div>
-      </div>
+    ))}
+</div>
 
       {/* Shipping */}
       <div className="section">
         <h4>Shipping Address:</h4>
-        <p>Blk 0 Lot 0 California Heights, California City, USA</p>
+        <p>
+          {order.shipping_address.address_label ? `${order.shipping_address.address_label}: ` : ''}
+          {order.shipping_address.street_address}, {order.shipping_address.city_municipality}, {order.shipping_address.province}, {order.shipping_address.postal_code}
+        </p>
       </div>
 
       {/* Total */}
       <div className="total-section">
         <div className="line"></div>
-        <div className="total-amount">₱47.98</div>
+        <div className="total-amount">₱{order.total.toFixed(2)}</div>
       </div>
-    </div>
+        </div>
+      ))
+    )}
   </div>
         </main>
       </div>

@@ -1,7 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import "./LandingPage.css";
+import SignIn from "./SignIn.jsx";
+import SignUpBuyer from "./SignUpBuyer.jsx";
 
 export const LandingPage = () => {
+  const [showSignInModal, setShowSignInModal] = useState(false);
+  const [showSignUpModal, setShowSignUpModal] = useState(false);
   const benefits = [
     {
       id: 1,
@@ -109,8 +113,8 @@ export const LandingPage = () => {
         </div>
 
         <nav className="auth-nav" aria-label="User authentication">
-          <button className="btn btn-ghost">Sign In</button>
-          <button className="btn btn-primary">Sign Up</button>
+          <button className="btn btn-ghost" onClick={() => setShowSignInModal(true)}>Sign In</button>
+          <button className="btn btn-primary" onClick={() => setShowSignUpModal(true)}>Sign Up</button>
         </nav>
       </header>
 
@@ -184,7 +188,7 @@ export const LandingPage = () => {
           <h2>Start Your Collection Today</h2>
           <p>Join thousands of music lovers and build your perfect album library</p>
           <div className="cta-actions">
-            <button className="cta-btn">Sign Up Now</button>
+            <button className="cta-btn" onClick={() => setShowSignUpModal(true)}>Sign Up Now</button>
           </div>
         </div>
       </section>
@@ -221,6 +225,25 @@ export const LandingPage = () => {
         </div>
       </footer>
 
+      {/* Sign In Modal */}
+      {showSignInModal && (
+        <div className="modal-overlay" onClick={() => setShowSignInModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close" onClick={() => setShowSignInModal(false)}>×</button>
+            <SignIn />
+          </div>
+        </div>
+      )}
+
+      {/* Sign Up Modal */}
+      {showSignUpModal && (
+        <div className="modal-overlay" onClick={() => setShowSignUpModal(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <button className="modal-close" onClick={() => setShowSignUpModal(false)}>×</button>
+            <SignUpBuyer />
+          </div>
+        </div>
+      )}
     
     </div>
   );

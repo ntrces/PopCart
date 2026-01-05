@@ -1,0 +1,124 @@
+.delete-dialog {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  position: relative;
+  background-color: white;
+}
+
+.delete-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 24px;
+  position: relative;
+  width: 100%;
+}
+
+.delete-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  position: relative;
+  width: 100%;
+}
+
+.delete-title {
+  font-family: "Inter-Bold", Helvetica;
+  font-weight: bold;
+  color: #0f0f0f;
+  font-size: 18px;
+  line-height: 21.6px;
+  letter-spacing: 0;
+  margin: 0;
+}
+
+.delete-description {
+  font-family: "Inter-Regular", Helvetica;
+  font-weight: normal;
+  color: #717182;
+  font-size: 14px;
+  line-height: 16.8px;
+  letter-spacing: 0;
+  margin: 0;
+}
+
+.delete-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  position: relative;
+  width: 100%;
+}
+
+.delete-cancel-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  padding: 8px 16px;
+  border: 1px solid #e5e5e5;
+  border-radius: 6px;
+  background-color: transparent;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.delete-cancel-btn:hover {
+  background-color: #f3f4f6;
+}
+
+.delete-cancel-btn:focus {
+  outline: 2px solid #6b7280;
+  outline-offset: 2px;
+}
+
+.delete-cancel-btn span {
+  font-family: "Inter-Medium", Helvetica;
+  font-weight: 500;
+  color: #717182;
+  font-size: 14px;
+  line-height: 16.8px;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+.delete-confirm-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  background-color: #d4183d;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.delete-confirm-btn:hover {
+  background-color: #b91435;
+}
+
+.delete-confirm-btn:focus {
+  outline: 2px solid #d4183d;
+  outline-offset: 2px;
+}
+
+.delete-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.delete-btn-text {
+  font-family: "Arimo-Regular", Helvetica;
+  font-weight: normal;
+  color: white;
+  font-size: 14px;
+  line-height: 20px;
+  text-align: center;
+  letter-spacing: 0;
+  white-space: nowrap;
+}

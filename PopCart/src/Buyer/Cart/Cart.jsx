@@ -1,16 +1,376 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Cart.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 
 export default function Cart() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const navigate = useNavigate();
+
+  const getCartKey = () => {
+    try {
+      const s = localStorage.getItem('user');
+      if (s) return `cart_${JSON.parse(s).user_id}`;
+    } catch (e) {}
+    return 'cart';
+  };
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
   const [showSignOutModal, setShowSignOutModal] = useState(false);
   const [showCheckoutModal, setShowCheckoutModal] = useState(false);
   const [showModal, setShowModal] = useState(false); // ✅ FOR ADD ADDRESS MODAL
-  
+  const [showChangeAddressModal, setShowChangeAddressModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState(null);
+  const [cartItems, setCartItems] = useState([]);
+  const [user, setUser] = useState(() => {
+    try { const s = localStorage.getItem('user'); return s ? JSON.parse(s) : null; } catch (e) { return null; }
+  });
+  const [selectedItems, setSelectedItems] = useState([]);
+  const [addresses, setAddresses] = useState([]);
+  const [customerName, setCustomerName] = useState('');
+  const [email, setEmail] = useState('');
+  const [contact, setContact] = useState('');
+  const [addressLabel, setAddressLabel] = useState('');
+  const [postalCode, setPostalCode] = useState('1000');
+  const [streetAddress, setStreetAddress] = useState('');
+  const [cityMunicipality, setCityMunicipality] = useState('');
+  const [province, setProvince] = useState('');
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        const userData = JSON.parse(storedUser);
+        try {
+          const response = await fetch(`http://localhost/popcart-api/get_user.php?user_id=${userData.user_id}`);
+          const data = await response.json();
+          if (data.success) {
+            setUser(data.user);
+            setCustomerName(`${data.user.lastname}, ${data.user.firstname}`);
+            setEmail(data.user.email);
+            setContact(data.user.contact_number || '09');
+          }
+        } catch (error) {
+          console.error('Error fetching user:', error);
+        }
+      }
+    };
+    fetchUser();
+
+    const storedCart = localStorage.getItem(getCartKey());
+    if (storedCart) {
+      const parsedCart = JSON.parse(storedCart);
+      // Initialize lastModified if not present
+      const updatedCart = parsedCart.map(item => ({
+        ...item,
+        lastModified: item.lastModified || 0
+      }));
+      setCartItems(updatedCart);
+      setSelectedItems(updatedCart.map(item => item.product_id));
+    }
+
+    const storedSelected = localStorage.getItem('selectedItems');
+    if (storedSelected) {
+      setSelectedItems(JSON.parse(storedSelected));
+    }
+
+    fetchAddresses();
+
+    // Fetch products to filter cart
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch('http://localhost/popcart-api/get_products.php');
+        const data = await res.json();
+        if (data && data.success && Array.isArray(data.products)) {
+          const productIds = data.products.map(p => Number(p.product_id));
+          setCartItems(prevCart => {
+            const filtered = prevCart.filter(item => productIds.includes(Number(item.product_id)));
+            // Update cart items with latest product data
+            const updatedCart = filtered.map(item => {
+              const prod = data.products.find(p => Number(p.product_id) === Number(item.product_id));
+              if (prod) {
+                return { ...item, ...prod };
+              }
+              return item;
+            });
+            if (updatedCart.length !== prevCart.length || updatedCart.some((item, i) => item !== filtered[i])) {
+              localStorage.setItem(getCartKey(), JSON.stringify(updatedCart));
+              setSelectedItems(prevSelected => prevSelected.filter(id => productIds.includes(Number(id))));
+            }
+            return updatedCart;
+          });
+        }
+      } catch (err) {
+        console.error('Error fetching products:', err);
+      }
+    };
+    fetchProducts();
+  }, []);
+
+  const handleContactChange = (e) => {
+    let value = e.target.value;
+    // Ensure it starts with '09'
+    if (!value.startsWith('09')) {
+      value = '09' + value.replace(/^09/, '');
+    }
+    // Limit to 11 characters
+    if (value.length > 11) {
+      value = value.slice(0, 11);
+    }
+    setContact(value);
+  };
+
+  const fetchAddresses = async () => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      const userData = JSON.parse(storedUser);
+      try {
+        const response = await fetch(`http://localhost/popcart-api/get_addresses.php?user_id=${userData.user_id}`);
+        const data = await response.json();
+        if (data.success) {
+          const sorted = data.addresses.sort((a, b) => {
+            if (a.status === 'default') return -1;
+            if (b.status === 'default') return 1;
+            return 0;
+          });
+          setAddresses(sorted);
+        }
+      } catch (error) {
+        console.error('Error fetching addresses:', error);
+      }
+    }
+  };
+
+  const handleAddAddress = async (e) => {
+    e.preventDefault();
+    const storedUser = localStorage.getItem('user');
+    if (!storedUser) {
+      alert('User not logged in.');
+      return;
+    }
+    const userData = JSON.parse(storedUser);
+
+    try {
+      const response = await fetch('http://localhost/popcart-api/add_address.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: userData.user_id,
+          address_label: addressLabel,
+          postal_code: postalCode,
+          street_address: streetAddress,
+          city_municipality: cityMunicipality,
+          province: province,
+          status: 'default'
+        })
+      });
+      const data = await response.json();
+      if (data.success) {
+        alert('Address added successfully!');
+        fetchAddresses();
+        setShowModal(false);
+        // Reset form
+        setAddressLabel('');
+        setPostalCode('1000');
+        setStreetAddress('');
+        setCityMunicipality('');
+        setProvince('');
+      } else {
+        alert('Failed to add address.');
+      }
+    } catch (error) {
+      console.error('Error adding address:', error);
+      alert('Error adding address.');
+    }
+  };
+
+  const handleSetDefault = async (addressId) => {
+    const storedUser = localStorage.getItem('user');
+    if (!storedUser) return;
+    const userData = JSON.parse(storedUser);
+    try {
+      const response = await fetch('http://localhost/popcart-api/update_address_status.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: userData.user_id,
+          shipping_address_id: addressId
+        })
+      });
+      const data = await response.json();
+      if (data.success) {
+        alert('Default address updated!');
+        fetchAddresses();
+        setShowChangeAddressModal(false);
+      } else {
+        alert('Failed to update address.');
+      }
+    } catch (error) {
+      console.error('Error updating address:', error);
+    }
+  };
+
+  useEffect(() => {
+    localStorage.setItem('selectedItems', JSON.stringify(selectedItems));
+  }, [selectedItems]);
+
+  const handleItemSelect = (productId) => {
+    setSelectedItems(prev => 
+      prev.includes(productId) 
+        ? prev.filter(id => id !== productId) 
+        : [...prev, productId]
+    );
+  };
+
+  const handleSelectAll = () => {
+    if (selectedItems.length === cartItems.length) {
+      setSelectedItems([]);
+    } else {
+      setSelectedItems(cartItems.map(item => item.product_id));
+    }
+  };
+
+  const selectedCount = selectedItems.length;
+
+  const handleIncreaseQuantity = (productId) => {
+    setCartItems(prevCart => {
+      const updatedCart = prevCart.map(item => {
+        if (item.product_id === productId) {
+          if (item.quantity >= item.stock) {
+            alert('Maximum quantity reached based on available stock.');
+            return item;
+          }
+          return { ...item, quantity: item.quantity + 1, lastModified: Date.now() };
+        }
+        return item;
+      });
+      localStorage.setItem(getCartKey(), JSON.stringify(updatedCart));
+      return updatedCart;
+    });
+  };
+
+  const handleDecreaseQuantity = (productId) => {
+    const updatedCart = cartItems.map(item => {
+      if (item.product_id === productId) {
+        if (item.quantity > 1) {
+          return { ...item, quantity: item.quantity - 1, lastModified: Date.now() };
+        } else {
+          setItemToDelete(item);
+          setShowDeleteModal(true);
+          return item;
+        }
+      }
+      return item;
+    });
+    setCartItems(updatedCart);
+    localStorage.setItem(getCartKey(), JSON.stringify(updatedCart));
+  };
+
+  const handleDeleteItem = () => {
+    const updatedCart = cartItems.filter(item => item.product_id !== itemToDelete.product_id);
+    setCartItems(updatedCart);
+    setSelectedItems(prev => prev.filter(id => id !== itemToDelete.product_id));
+    localStorage.setItem(getCartKey(), JSON.stringify(updatedCart));
+    setShowDeleteModal(false);
+    setItemToDelete(null);
+  };
+
+  const handleDeleteClick = (item) => {
+    setItemToDelete(item);
+    setShowDeleteModal(true);
+  };
+
+  const handlePlaceOrder = async () => {
+    if (selectedItems.length === 0) {
+      alert('Please select items to order.');
+      return;
+    }
+    if (addresses.length === 0) {
+      alert('Please add a shipping address.');
+      return;
+    }
+
+    const defaultAddress = addresses.find(addr => addr.status === 'default');
+    if (!defaultAddress) {
+      alert('No default shipping address set. Please set a default address.');
+      return;
+    }
+
+    const storedUser = localStorage.getItem('user');
+    if (!storedUser) {
+      alert('User not logged in.');
+      return;
+    }
+    const userData = JSON.parse(storedUser);
+
+    // If user doesn't have a contact number yet, ensure contact input is provided and valid
+    const contactVal = contact?.trim();
+    if ((!user || !user.contact_number) && (!contactVal || contactVal.length !== 11 || !contactVal.startsWith('09'))) {
+      alert('Please add a valid contact number (starts with 09 and 11 digits) before placing an order.');
+      return;
+    }
+
+    // Place order
+    const orderItems = cartItems.filter(item => selectedItems.includes(item.product_id)).map(item => ({
+      product_id: item.product_id,
+      quantity: item.quantity,
+      price: item.price
+    }));
+
+    try {
+      const orderResponse = await fetch('http://localhost/popcart-api/place_order.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: userData.user_id,
+          shipping_address_id: defaultAddress.shipping_address_id,
+          items: orderItems
+        })
+      });
+      const orderData = await orderResponse.json();
+      if (orderData.success) {
+        alert('Order placed successfully!');
+        // Update contact if editable and changed
+        if (user && !user.contact_number && contact.trim()) {
+          try {
+            const updateResponse = await fetch('http://localhost/popcart-api/update_user.php', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                user_id: userData.user_id,
+                firstname: user.firstname || userData.firstname,
+                lastname: user.lastname || userData.lastname,
+                birthday: user.birthday || userData.birthday,
+                contact_number: contact.trim()
+              })
+            });
+            const updateData = await updateResponse.json();
+            if (!updateData.success) {
+              alert('Failed to update contact.');
+            }
+          } catch (error) {
+            console.error('Error updating contact:', error);
+            alert('Error updating contact.');
+          }
+        }
+        // Remove ordered items from cart
+        const updatedCart = cartItems.filter(item => !selectedItems.includes(item.product_id));
+        setCartItems(updatedCart);
+        localStorage.setItem(getCartKey(), JSON.stringify(updatedCart));
+        // Clear selected items and close modal
+        setSelectedItems([]);
+        setShowCheckoutModal(false);
+        // Optionally clear cart or update
+      } else {
+        alert('Failed to place order.');
+      }
+    } catch (error) {
+      console.error('Error placing order:', error);
+      alert('Error placing order.');
+    }
+  };
+
 
 
 
@@ -30,7 +390,7 @@ export default function Cart() {
   </div>
 
         <div className="right-controls">
-          <Link to="/cart" className="icon-btn">
+          <Link to="/buyer/cart" className="icon-btn">
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g clip-path="url(#clip0_42_608)">
 <path d="M6 16.5C6.41421 16.5 6.75 16.1642 6.75 15.75C6.75 15.3358 6.41421 15 6 15C5.58579 15 5.25 15.3358 5.25 15.75C5.25 16.1642 5.58579 16.5 6 16.5Z" stroke="#0A0A0A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -46,16 +406,16 @@ export default function Cart() {
 
          </Link>
          
-          <Link to="/Buyernotif" className="icon-btn">
+          <Link to="/buyer/notifications" className="icon-btn">
                       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M6.84534 14C6.96237 14.2027 7.13068 14.371 7.33337 14.488C7.53605 14.605 7.76597 14.6666 8 14.6666C8.23404 14.6666 8.46396 14.605 8.66664 14.488C8.86933 14.371 9.03764 14.2027 9.15467 14" stroke="#0A0A0A" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
           <path d="M2.17467 10.2173C2.08758 10.3128 2.0301 10.4315 2.00924 10.559C1.98837 10.6865 2.00501 10.8174 2.05714 10.9356C2.10926 11.0538 2.19462 11.1544 2.30284 11.225C2.41105 11.2956 2.53745 11.3332 2.66667 11.3333H13.3333C13.4625 11.3334 13.589 11.2959 13.6972 11.2254C13.8055 11.1549 13.891 11.0545 13.9433 10.9364C13.9955 10.8182 14.0123 10.6874 13.9916 10.5599C13.9709 10.4323 13.9136 10.3136 13.8267 10.218C12.94 9.30401 12 8.33268 12 5.33334C12 4.27248 11.5786 3.25506 10.8284 2.50492C10.0783 1.75477 9.06087 1.33334 8 1.33334C6.93914 1.33334 5.92172 1.75477 5.17157 2.50492C4.42143 3.25506 4 4.27248 4 5.33334C4 8.33268 3.05933 9.30401 2.17467 10.2173Z" stroke="#0A0A0A" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
                      </Link>
 
-          <Link to="/myprofile" className="profile">
-                                <div className="avatar">A</div>
-                                <p>Althea</p>
+          <Link to="/buyer/profile" className="profile">
+                                <div className="avatar">{user?.firstname?.charAt(0).toUpperCase() || 'U'}</div>
+                                <p>{user?.firstname || 'User'}</p>
                               </Link>
         </div>
       </div>
@@ -69,14 +429,14 @@ export default function Cart() {
 
    <nav className="nav-menu">
     
-<Link to="/Home">
+<Link to="/buyer">
  <button className="nav-item "> <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M11.25 15.75V9.75C11.25 9.55109 11.171 9.36032 11.0303 9.21967C10.8897 9.07902 10.6989 9 10.5 9H7.5C7.30109 9 7.11032 9.07902 6.96967 9.21967C6.82902 9.36032 6.75 9.55109 6.75 9.75V15.75" stroke="black" stroke-width="1.5"/>
 <path d="M2.25 7.49999C2.24995 7.28179 2.2975 7.06621 2.38934 6.86828C2.48118 6.67035 2.6151 6.49484 2.78175 6.35399L8.03175 1.85399C8.30249 1.62517 8.64552 1.49963 9 1.49963C9.35448 1.49963 9.69751 1.62517 9.96825 1.85399L15.2183 6.35399C15.3849 6.49484 15.5188 6.67035 15.6107 6.86828C15.7025 7.06621 15.7501 7.28179 15.75 7.49999V14.25C15.75 14.6478 15.592 15.0293 15.3107 15.3107C15.0294 15.592 14.6478 15.75 14.25 15.75H3.75C3.35218 15.75 2.97064 15.592 2.68934 15.3107C2.40804 15.0293 2.25 14.6478 2.25 14.25V7.49999Z" stroke="black" stroke-width="1.5"/>
 </svg>
 Home</button> </Link>
 
- <Link to="/marketplace">
+ <Link to="/buyer/marketplace">
 <button className="nav-item"> <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g clip-path="url(#clip0_41_320)">
 <path d="M1.5 5.25L4.8075 1.9425C4.94704 1.80212 5.11299 1.69075 5.29577 1.61481C5.47856 1.53886 5.67457 1.49984 5.8725 1.5H12.1275C12.3254 1.49984 12.5214 1.53886 12.7042 1.61481C12.887 1.69075 13.053 1.80212 13.1925 1.9425L16.5 5.25" stroke="#0A0A0A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -93,7 +453,7 @@ Home</button> </Link>
 </svg>
  Marketplace</button> </Link>
 
-              <Link to="/MyOrder">
+              <Link to="/buyer/orders">
                <button className="nav-item "> <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M8.25 16.2975C8.47803 16.4291 8.7367 16.4985 9 16.4985C9.2633 16.4985 9.52197 16.4291 9.75 16.2975L15 13.2975C15.2278 13.166 15.417 12.9769 15.5487 12.7491C15.6803 12.5214 15.7497 12.263 15.75 12V5.99999C15.7497 5.73694 15.6803 5.4786 15.5487 5.25086C15.417 5.02312 15.2278 4.83401 15 4.70249L9.75 1.70249C9.52197 1.57084 9.2633 1.50153 9 1.50153C8.7367 1.50153 8.47803 1.57084 8.25 1.70249L3 4.70249C2.7722 4.83401 2.58299 5.02312 2.45135 5.25086C2.31971 5.4786 2.25027 5.73694 2.25 5.99999V12C2.25027 12.263 2.31971 12.5214 2.45135 12.7491C2.58299 12.9769 2.7722 13.166 3 13.2975L8.25 16.2975Z" stroke="#0A0A0A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
               <path d="M9 16.5V9" stroke="#0A0A0A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -126,8 +486,27 @@ Home</button> </Link>
           Cancel
         </button>
 
-        <button className="confirm-btn">
+        <button className="confirm-btn" onClick={() => { localStorage.removeItem('user'); setShowSignOutModal(false); navigate('/signin'); }}>
           Sign Out
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+{showDeleteModal && (
+  <div className="modal-overlay">
+    <div className="delete-modal">
+      <h3>Remove Item</h3>
+      <p>Do you want to remove this item from your cart?</p>
+
+      <div className="modal-buttons">
+        <button className="cancel-btn" onClick={() => setShowDeleteModal(false)}>
+          Cancel
+        </button>
+
+        <button className="delete-confirm-btn" onClick={handleDeleteItem}>
+          Delete
         </button>
       </div>
     </div>
@@ -138,75 +517,51 @@ Home</button> </Link>
        <main className="main-content">
 
         <div className="cart-header">
-  <h2>Shopping Cart (2 items)</h2>
-  <span className="selected-text">1 selected</span>
+  <h2>Shopping Cart ({cartItems.length} items)</h2>
+  <span className="selected-text">{selectedCount} selected</span>
 </div>
 
   {/* SELECT ALL */}
  <div className="cart-select-all">
 
   <div className="cart-select-all-left">
-    <input type="checkbox" />
-    <span>Select All Items</span>
+    <input type="checkbox" checked={selectedCount === cartItems.length && cartItems.length > 0} onChange={handleSelectAll} />
+    <span>{selectedCount === cartItems.length ? "Deselect All Items" : "Select All Items"}</span>
   </div>
 
-  <span className="selected-count">1 selected</span>
+  <span className="selected-count">{selectedCount} selected</span>
 </div>
 
-  {/* ITEM 1 (SELECTED) */}
-  <div className="cart-item selected">
-    <div className="left-side">
-      <input type="checkbox" checked readOnly />
+  {cartItems.sort((a, b) => b.lastModified - a.lastModified).map((item, index) => (
+    <div key={item.product_id} className={`cart-item ${selectedItems.includes(item.product_id) ? 'selected' : ''}`}>
+      <div className="left-side">
+        <input type="checkbox" checked={selectedItems.includes(item.product_id)} onChange={() => handleItemSelect(item.product_id)} />
 
-      <div className="item-info">
-        <h3>Come Closer</h3>
-        <p className="artist">LEO</p>
-        <p className="genre">R&B</p>
-      </div>
-    </div>
-
-    <div className="actions">
-      <div className="qty-box">
-        <button>-</button>
-        <span>1</span>
-        <button>+</button>
+        <div className="item-info">
+          <h3>{item.album_title}</h3>
+          <p className="artist">{item.artist}</p>
+          <p className="genre">{item.genre}</p>
+        </div>
       </div>
 
-      <p className="price">₱799.00</p>
+      <div className="actions">
+        <div className="qty-box">
+          <button onClick={() => handleDecreaseQuantity(item.product_id)}>-</button>
+          <span>{item.quantity}</span>
+          <button onClick={() => handleIncreaseQuantity(item.product_id)}>+</button>
+        </div>
 
-      <button className="delete-btn">🗑</button>
-    </div>
-  </div>
+        <p className="price">₱{item.price}</p>
 
-  {/* ITEM 2 */}
-  <div className="cart-item">
-    <div className="left-side">
-      <input type="checkbox" />
-
-      <div className="item-info">
-        <h3>One Look</h3>
-        <p className="artist">LEO</p>
-        <p className="genre">Pop</p>
+        <button className="delete-btn" onClick={() => handleDeleteClick(item)}>🗑</button>
       </div>
     </div>
-
-    <div className="actions">
-      <div className="qty-box">
-        <button>-</button>
-        <span>1</span>
-        <button>+</button>
-      </div>
-
-      <p className="price">₱899.00</p>
-
-      <button className="delete-btn">🗑</button>
-    </div>
-  </div>
+  ))}
 
   {/* TOTAL */}
   <div className="cart-total">
-    <p>Total (1 item)</p>
-    <h2>₱799.00</h2>
+    <p>Total ({selectedCount} item{selectedCount !== 1 ? 's' : ''})</p>
+    <h2>₱{cartItems.filter(item => selectedItems.includes(item.product_id)).reduce((total, item) => total + (item.price * item.quantity), 0).toFixed(2)}</h2>
   </div>
 
   {/* CHECKOUT */}
@@ -214,7 +569,7 @@ Home</button> </Link>
   className="checkout-btn"
   onClick={() => setShowCheckoutModal(true)}
 >
-  Proceed to Checkout (1)
+  Proceed to Checkout ({selectedCount})
 </button>
 {/* CHECKOUT MODAL */}
 {showCheckoutModal && (
@@ -240,21 +595,21 @@ Back to Cart
       <div className="checkout-section">
         <div className="checkout-section-header">
           <p className="checkout-section-title">Shipping Address *</p>
-          <button className="checkout-add-btn" onClick={() => setShowModal(true)}> <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <button className="checkout-add-btn" onClick={() => addresses.length > 0 && addresses.some(addr => addr.status === 'default') ? setShowChangeAddressModal(true) : setShowModal(true)}> <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M13.3334 6.66666C13.3334 9.99533 9.64075 13.462 8.40075 14.5327C8.28523 14.6195 8.14461 14.6665 8.00008 14.6665C7.85555 14.6665 7.71493 14.6195 7.59941 14.5327C6.35941 13.462 2.66675 9.99533 2.66675 6.66666C2.66675 5.25217 3.22865 3.89562 4.22885 2.89543C5.22904 1.89523 6.58559 1.33333 8.00008 1.33333C9.41457 1.33333 10.7711 1.89523 11.7713 2.89543C12.7715 3.89562 13.3334 5.25217 13.3334 6.66666Z" stroke="#6B7280" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M8 8.66667C9.10457 8.66667 10 7.77124 10 6.66667C10 5.5621 9.10457 4.66667 8 4.66667C6.89543 4.66667 6 5.5621 6 6.66667C6 7.77124 6.89543 8.66667 8 8.66667Z" stroke="#6B7280" stroke-width="1.33333" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
- Add Address</button>
+ {addresses.length > 0 && addresses.some(addr => addr.status === 'default') ? 'Change Default Address' : 'Add Address'}</button>
         </div>
 
         <div className="checkout-address-card">
           <div className="checkout-address-top">
             <span className="checkout-home-icon">🏠</span>
-            <span className="checkout-address-type">Home</span>
+            <span className="checkout-address-type">{addresses.length > 0 ? addresses[0].address_label : 'Home'}</span>
             <span className="checkout-default-label">Default</span>
           </div>
           <p className="checkout-full-address">
-            Blk 0 Lot 0 Parfum Homes TANZA, CAVITE 2755, Philippines
+            {addresses.length > 0 ? `${addresses[0].street_address}, ${addresses[0].city_municipality}, ${addresses[0].province} ${addresses[0].postal_code}, Philippines` : 'No address available'}
           </p>
         </div>
       </div>
@@ -264,34 +619,34 @@ Back to Cart
         <div className="add-address-overlay">
           <div className="add-address-modal">
             <h3>Add Address</h3>
-            <form className="address-form">
+            <form className="address-form" onSubmit={handleAddAddress}>
               <div className="form-group">
                 <label>Address Label *</label>
-                <input placeholder="Home, Office, etc." />
+                <input placeholder="Home, Office, etc." value={addressLabel} onChange={(e) => setAddressLabel(e.target.value)} required />
               </div>
 
               <div className="form-group">
                 <label>Postal Code</label>
-                <input defaultValue="1000" />
+                <input value={postalCode} onChange={(e) => setPostalCode(e.target.value)} />
               </div>
 
               <div className="form-group">
                 <label>Street Address *</label>
-                <input placeholder="House number, street name, barangay" />
+                <input placeholder="House number, street name, barangay" value={streetAddress} onChange={(e) => setStreetAddress(e.target.value)} required />
               </div>
 
               <div className="form-group">
                 <label>City/Municipality *</label>
-                <input placeholder="Manila, Quezon City, etc." />
+                <input placeholder="Manila, Quezon City, etc." value={cityMunicipality} onChange={(e) => setCityMunicipality(e.target.value)} required />
               </div>
 
               <div className="form-group">
                 <label>Province</label>
-                <input placeholder="Metro Manila, Cebu, etc." />
+                <input placeholder="Metro Manila, Cebu, etc." value={province} onChange={(e) => setProvince(e.target.value)} />
               </div>
 
               <div className="checkbox-row">
-                <input type="checkbox" />
+                <input type="checkbox" checked={true} disabled />
                 <span>Set as default address</span>
               </div>
 
@@ -310,31 +665,48 @@ Back to Cart
         </div>
       )}
 
+      {/* CHANGE ADDRESS MODAL */}
+      {showChangeAddressModal && (
+        <div className="add-address-overlay">
+          <div className="add-address-modal">
+            <h3>Change Default Address</h3>
+            <div className="address-list">
+              {addresses.filter(addr => addr.status !== 'default').map(addr => (
+                <div key={addr.shipping_address_id} className="address-item">
+                  <p><strong>{addr.address_label}:</strong> {addr.street_address}, {addr.city_municipality}, {addr.province} {addr.postal_code}</p>
+                  <button onClick={() => handleSetDefault(addr.shipping_address_id)} className="mp-save-btn">Set as Default</button>
+                </div>
+              ))}
+            </div>
+            <div className="modal-actions">
+              <button type="button" className="mp-cancel-btn" onClick={() => setShowChangeAddressModal(false)}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* CUSTOMER INFO */}
       <div className="checkout-section">
         <p className="checkout-section-title">Customer Information:</p>
-        <input className="checkout-input-field" placeholder="Last Name, First Name" />
-        <input className="checkout-input-field" placeholder="Email Address" />
-        <input className="checkout-input-field" placeholder="Contact Number" />
+        <input className="checkout-input-field" placeholder="Last Name, First Name" value={customerName} readOnly />
+        <input className="checkout-input-field" placeholder="Email Address" value={email} readOnly />
+        <input className="checkout-input-field" placeholder="Contact Number" value={contact} onChange={handleContactChange} maxLength="11" readOnly={user && user.contact_number} />
       </div>
 
       {/* ORDER SUMMARY */}
       <div className="checkout-section">
         <p className="checkout-section-title">Order Summary</p>
 
-        <div className="checkout-summary-item">
-          <span>Thriller x 1</span>
-          <span>P24.99</span>
-        </div>
-
-        <div className="checkout-summary-item">
-          <span>Hotel California x 1</span>
-          <span>P22.99</span>
-        </div>
+        {cartItems.filter(item => selectedItems.includes(item.product_id)).map((item) => (
+          <div key={item.product_id} className="checkout-summary-item">
+            <span>{item.album_title} x {item.quantity}</span>
+            <span>₱{(item.price * item.quantity).toFixed(2)}</span>
+          </div>
+        ))}
 
         <div className="checkout-summary-total">
           <strong>Total</strong>
-          <strong>P47.98</strong>
+          <strong>₱{cartItems.filter(item => selectedItems.includes(item.product_id)).reduce((total, item) => total + (item.price * item.quantity), 0).toFixed(2)}</strong>
         </div>
       </div>
 
@@ -352,7 +724,7 @@ Back to Cart
       </div>
 
       {/* ORDER BUTTON */}
-      <button className="checkout-place-order-btn">
+      <button className="checkout-place-order-btn" onClick={handlePlaceOrder}>
         Place Order
       </button>
 

@@ -1,0 +1,159 @@
+.ap-container {
+  background: #ffffff;
+  border: 1px solid rgba(0,0,0,0.10);
+  border-radius: 8px;
+  padding: 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.ap-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.ap-header-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.ap-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.ap-subtitle {
+  margin: 6px 0 0 0;
+  font-size: 13px;
+  color: #717182;
+}
+
+.ap-close-btn {
+  background: transparent;
+  border: none;
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.ap-close-btn:hover {
+  background: #f3f4f6;
+}
+
+.ap-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ap-row {
+  display: flex;
+  gap: 12px;
+}
+
+.ap-field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ap-label {
+  font-size: 13px;
+  color: #111827;
+  font-weight: 500;
+}
+
+.ap-input,
+.ap-select,
+.ap-file-input,
+.ap-textarea {
+  height: 40px;
+  padding: 8px 10px;
+  background: #f3f3f5;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  font-size: 14px;
+  color: #1f2937;
+  box-sizing: border-box;
+  outline: none;
+}
+
+.ap-select {
+  height: 40px;
+  appearance: none;
+  background: #f3f3f5;
+  padding-right: 32px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.ap-file-input {
+  height: auto;
+  padding: 8px;
+  background: #f3f3f5;
+  cursor: pointer;
+}
+
+.ap-textarea {
+  min-height: 88px;
+  resize: vertical;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.ap-help {
+  margin: 4px 0 0 0;
+  font-size: 12px;
+  color: #697282;
+}
+
+.ap-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.ap-cancel-btn {
+  background: transparent;
+  border: 1px solid #e5e7eb;
+  color: #374151;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.ap-cancel-btn:hover {
+  background: #f3f4f6;
+}
+
+.ap-submit-btn {
+  background: #030213;
+  color: #fff;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.ap-submit-btn:hover {
+  background: #1a1a2e;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .ap-row {
+    flex-direction: column;
+  }
+}

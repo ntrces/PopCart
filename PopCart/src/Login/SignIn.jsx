@@ -2,17 +2,13 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./SignIn.css";
 
-export default function SignIn() {
+export default function SignIn({ onSwitchToSignUp, onClose }) {
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false); // <-- FIXED
-
-  const [errors, setErrors] = useState({
-    email: "",
-    password: "",
-  });
+  const [showPassword, setShowPassword] = useState(false);
+  const [errors, setErrors] = useState({ email: "", password: "" });
 
   const validateForm = () => {
     let valid = true;
@@ -38,7 +34,7 @@ export default function SignIn() {
   const handleSubmit = (e) => {
   e.preventDefault();
   if (validateForm()) {
-    navigate("/ordermanagement"); // <-- Redirects to Home page
+    navigate("/home"); // <-- Redirects to Home page
   }
 };
 
@@ -77,7 +73,6 @@ export default function SignIn() {
               onChange={(e) => setPassword(e.target.value)}
               className={errors.password ? "input-error" : ""}
             />
-
             <span
               className="toggle-eye"
               onClick={() => setShowPassword(!showPassword)}
@@ -85,7 +80,6 @@ export default function SignIn() {
               {showPassword ? "👁" : "👁"}
             </span>
           </div>
-
           {errors.password && <p className="error-text">{errors.password}</p>}
 
           <button type="submit" className="submit-btn">

@@ -1,0 +1,26 @@
+.yearly-wrapper {
+  width: 100%;
+  font-family: 'Arimo', sans-serif;
+  color: #111827;
+  box-sizing: border-box;
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.analytics-header { margin-bottom: 12px; display:flex; align-items:center; justify-content:space-between; }
+.analytics-title { margin:0; font-size:16px; font-weight:600; color:#0f172a; }
+
+.chart-area { display:flex; gap:16px; width:100%; align-items:flex-start; }
+.chart-card { flex:1; background: #ffffff; border-radius:8px; padding:8px 12px; box-sizing:border-box; }
+.chart-card-title { margin:6px 0 8px 4px; font-size:14px; color:#0f172a; font-weight:600; }
+
+
+@media (max-width:900px) {
+  .chart-area { flex-direction:column; }
+  .chart-card { width:100%; }
+}
+
+/* Ensure recharts legend text is visible and high-contrast */
+.recharts-legend-wrapper { color: #0f172a; }
+.recharts-legend-item text { fill: #0f172a !important; }

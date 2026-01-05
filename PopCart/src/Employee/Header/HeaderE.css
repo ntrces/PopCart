@@ -1,0 +1,114 @@
+* {
+  font-family: 'Arimo', sans-serif;
+}
+
+.header-wrapper {
+  position: fixed;
+  top: 0;            /* match sidebar width */
+  right: 0;
+  height: 71px;
+  z-index: 1000;
+  background: #ffffff;
+  box-shadow: 0 1px 6px #1018280f;
+  display: flex;
+  align-items: center;
+  width:100%;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* keep full-width container inside that region */
+.header-container {
+  width: 100%;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  padding-left: 220px;
+  padding-right: 150px;
+}
+
+/* left */
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.header-menu-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.header-logo-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.header-logo-icon { 
+    display:flex; 
+    align-items:center; 
+    justify-content:center; 
+}
+
+/* title */
+.header-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #111827;
+}
+
+/* right */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.header-notification-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.header-menu-btn:hover {
+  background-color: #f3f4f6;
+}
+
+.header-profile-avatar {
+  width: 36px;
+  height: 36px;
+  background: #111827;
+  color: #fff;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.header-profile-name {
+  font-size: 14px;
+  color: #111827;
+  font-weight: 600;
+}
+
+/* helper to push page content below fixed header:
+   add <div className="header-spacer" /> right after HeaderA in the layout */
+.header-spacer {
+  height: 64px;
+  width: 100%;
+}

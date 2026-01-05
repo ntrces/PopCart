@@ -38,6 +38,7 @@ function ProductE() {
     "Hip Hop",
     "Electronic",
     "Country",
+    "R&B",
   ];
 
   useEffect(() => {

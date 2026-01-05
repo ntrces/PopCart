@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./SignIn.css";
 
-export default function SignIn() {
+export default function SignIn({ onSwitchToSignUp, onClose }) {
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");

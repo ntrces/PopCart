@@ -14,6 +14,18 @@ export const Dashboard = () => {
   const { logout } = useAuth();
   const [totalUsers, setTotalUsers] = useState("5");
   const [totalProducts, setTotalProducts] = useState("5");
+  const [totalTransactions, setTotalTransactions] = useState("5");
+  const [totalRevenue, setTotalRevenue] = useState("₱5");
+  const [statusCounts, setStatusCounts] = useState({
+    pending: "1",
+    approved: "1",
+    packing: "1",
+    shipped: "1",
+    delivered: "1",
+    cancelled: "0"
+  });
+  const [salesToday, setSalesToday] = useState(54);
+  const [revenueToday, setRevenueToday] = useState(45.94);
   const [showSignOutModal, setShowSignOutModal] = useState(false);
 
   useEffect(() => {
@@ -46,11 +58,37 @@ export const Dashboard = () => {
     fetchProductCount();
   }, []);
 
+  useEffect(() => {
+    const fetchDashboardStats = async () => {
+      try {
+        const response = await fetch('http://localhost/popcart-api/get_dashboard_stats.php');
+        const data = await response.json();
+        if (data.success) {
+          setTotalTransactions(data.total_transactions.toString());
+          setTotalRevenue(data.total_revenue),
+          setStatusCounts({
+            pending: data.status_counts.pending.toString(),
+            approved: data.status_counts.approved.toString(),
+            packing: data.status_counts.packing.toString(),
+            shipped: data.status_counts.shipped.toString(),
+            delivered: data.status_counts.delivered.toString(),
+            cancelled: data.status_counts.cancelled.toString()
+          });
+          setSalesToday(data.sales_today);
+          setRevenueToday(data.revenue_today);
+        }
+      } catch (error) {
+        console.error('Error fetching dashboard stats:', error);
+      }
+    };
+    fetchDashboardStats();
+  }, []);
+
   const statsData = [
     {
       title: "Total Users",
       value: totalUsers,
-      description: "All registered users",
+      description: "All active users",
       icon: (
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M10.6666 14V12.6667C10.6666 11.9594 10.3857 11.2811 9.8856 10.781C9.3855 10.281 8.70722 10 7.99998 10H3.99998C3.29274 10 2.61446 10.281 2.11436 10.781C1.61426 11.2811 1.33331 11.9594 1.33331 12.6667V14" stroke="#717182" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round" />
@@ -62,8 +100,8 @@ export const Dashboard = () => {
     },
     {
       title: "Total Transactions",
-      value: "5",
-      description: "Completed users",
+      value: totalTransactions,
+      description: "Total Orders",
       icon: (
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M13.875 3H4.125C3.71079 3 3.375 3.33579 3.375 3.75V15.75C3.375 16.1642 3.71079 16.5 4.125 16.5H13.875C14.2892 16.5 14.625 16.1642 14.625 15.75V3.75C14.625 3.33579 14.2892 3 13.875 3Z" stroke="#717182" strokeWidth="1.5" strokeLinejoin="round" />
@@ -74,7 +112,7 @@ export const Dashboard = () => {
     {
       title: "Total Products",
       value: totalProducts,
-      description: "Listed albums",
+      description: "All existing products",
       icon: (
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M7.33333 14.4867C7.53603 14.6037 7.76595 14.6653 8 14.6653C8.23405 14.6653 8.46397 14.6037 8.66667 14.4867L13.3333 11.82C13.5358 11.7031 13.704 11.535 13.821 11.3326C13.938 11.1301 13.9998 10.9005 14 10.6667V5.33333C13.9998 5.09951 13.938 4.86987 13.821 4.66744C13.704 4.465 13.5358 4.2969 13.3333 4.17999L8.66667 1.51333C8.46397 1.3963 8.23405 1.33469 8 1.33469C7.76595 1.33469 7.53603 1.3963 7.33333 1.51333L2.66667 4.17999C2.46418 4.2969 2.29599 4.465 2.17897 4.66744C2.06196 4.86987 2.00024 5.09951 2 5.33333V10.6667C2.00024 10.9005 2.06196 11.1301 2.17897 11.3326C2.29599 11.535 2.46418 11.7031 2.66667 11.82L7.33333 14.4867Z" stroke="#717182" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round" />
@@ -86,7 +124,7 @@ export const Dashboard = () => {
     },
     {
       title: "Total Revenue",
-      value: "5",
+      value: totalRevenue,
       description: "All time revenue",
       icon: (
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -100,7 +138,7 @@ export const Dashboard = () => {
   const orderStatusData = [
     {
       label: "Pending",
-      count: "1",
+      count: statusCounts.pending,
       bgColor: "#A65F00",
       icon: (
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -118,7 +156,7 @@ export const Dashboard = () => {
     },
     {
       label: "Approved",
-      count: "1",
+      count: statusCounts.approved,
       bgColor: "#008236",
       icon: (
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -129,7 +167,7 @@ export const Dashboard = () => {
     },
     {
       label: "Packing",
-      count: "1",
+      count: statusCounts.packing,
       bgColor: "#1447E6",
       icon: (
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -142,7 +180,7 @@ export const Dashboard = () => {
     },
     {
       label: "Shipped",
-      count: "1",
+      count: statusCounts.shipped,
       bgColor: "#8200DB",
       icon: (
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -156,7 +194,7 @@ export const Dashboard = () => {
     },
     {
       label: "Delivered",
-      count: "1",
+      count: statusCounts.delivered,
       bgColor: "#008236",
       icon: (
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -167,7 +205,7 @@ export const Dashboard = () => {
     },
     {
       label: "Cancelled",
-      count: "0",
+      count: statusCounts.cancelled,
       bgColor: "#C10007",
       icon: (
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -186,6 +224,21 @@ export const Dashboard = () => {
 
   const timePeriods = ["Today", "Weekly", "Monthly", "Yearly"];
   const [selectedPeriod, setSelectedPeriod] = useState("Today");
+
+  const today = new Date();
+  const todayDate = today.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: '2-digit' });
+
+  const getWeekRange = () => {
+    const dayOfWeek = today.getDay(); // 0 = Sunday
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - dayOfWeek);
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 6);
+    const formatDate = (date) => date.toLocaleDateString('en-US', { month: 'long', day: '2-digit', year: 'numeric' });
+    return `${formatDate(startOfWeek)} - ${formatDate(endOfWeek)}`;
+  };
+
+  const weekRange = getWeekRange();
 
   return (
     <div className="admin-layout">
@@ -222,7 +275,7 @@ export const Dashboard = () => {
       <div className="order-status-section">
         <div className="order-status-header">
           <h2 className="order-status-title">Order Status Overview</h2>
-          <button className="order-status-view-all">View All →</button>
+          <button className="order-status-view-all" onClick={() => navigate('/admin/orders')}>View All →</button>
         </div>
         <div className="order-status-grid">
           {orderStatusData.map((status, index) => (
@@ -240,7 +293,9 @@ export const Dashboard = () => {
       {/* Chart Section */}
       <div className="chart-section">
         <div className="chart-header">
-          <h2 className="chart-title">Analytics</h2>
+          <h2 className="chart-title">
+            Analytics{(selectedPeriod === "Today" || selectedPeriod === "Weekly") ? ` ${selectedPeriod === "Today" ? todayDate : weekRange}` : ""}
+          </h2>
           <div className="time-period-selector">
             {timePeriods.map((period) => (
               <button
@@ -262,13 +317,13 @@ export const Dashboard = () => {
                 <h3 className="chart-card-title">Sales</h3>
                 <ResponsiveContainer width="100%" height={300}>
                   <BarChart
-                    data={[{ name: "Sales", value: chartData.find((d) => d.name === "Sales")?.Today || 0 }]}
+                    data={[{ name: "Sales", value: salesToday }]}
                     margin={{ top: 20, right: 10, left: 0, bottom: 5 }}
                   >
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="name" />
                     <YAxis />
-                    <Tooltip formatter={(v) => `${v}%`} />
+                    <Tooltip formatter={(v) => `${v}`} />
                     <Legend layout="horizontal" verticalAlign="bottom" align="center" iconType="square" wrapperStyle={{ color: '#0f172a' }} />
                     <Bar name="Sales" dataKey="value" barSize={80} fill={chartData.find((d) => d.name === "Sales")?.fill || '#717182'} />
                   </BarChart>
@@ -279,13 +334,13 @@ export const Dashboard = () => {
                 <h3 className="chart-card-title">Revenue</h3>
                 <ResponsiveContainer width="100%" height={300}>
                   <BarChart
-                    data={[{ name: "Revenue", value: chartData.find((d) => d.name === "Revenue")?.Today || 0 }]}
+                    data={[{ name: "Revenue", value: revenueToday }]}
                     margin={{ top: 20, right: 10, left: 0, bottom: 5 }}
                   >
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="name" />
                     <YAxis />
-                    <Tooltip formatter={(v) => `${v}%`} />
+                    <Tooltip formatter={(v) => `₱${v}`} />
                     <Legend layout="horizontal" verticalAlign="bottom" align="center" iconType="square" wrapperStyle={{ color: '#0f172a' }} />
                     <Bar name="Revenue" dataKey="value" barSize={80} fill={chartData.find((d) => d.name === "Revenue")?.fill || '#0A0A0A'} />
                   </BarChart>

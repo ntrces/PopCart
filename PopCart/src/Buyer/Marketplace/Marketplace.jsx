@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./Marketplace.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import getImageUrl from "../../utils/getImageUrl";
 import placeholder from "../../assets/image.png";
 
@@ -10,7 +10,23 @@ export default function Marketplace() {
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
   const [showSignOutModal, setShowSignOutModal] = useState(false);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    try {
+      const s = localStorage.getItem('user');
+      return s ? JSON.parse(s) : null;
+    } catch (e) {
+      return null;
+    }
+  });
+  const getCartKey = () => {
+    try {
+      const s = localStorage.getItem('user');
+      if (s) return `cart_${JSON.parse(s).user_id}`;
+    } catch (e) {}
+    return 'cart';
+  };
+
+  const navigate = useNavigate();
 
   const [showAddCartModal, setShowAddCartModal] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
@@ -28,8 +44,8 @@ export default function Marketplace() {
   const [viewMode, setViewMode] = useState("grid"); // 'grid' or 'list'
 
   useEffect(() => {
-    // Load existing cart items from localStorage on component mount
-    const storedCart = localStorage.getItem('cart');
+    // Load existing cart items from localStorage on component mount (per-user key)
+    const storedCart = localStorage.getItem(getCartKey());
     if (storedCart) {
       try {
         setCartItems(JSON.parse(storedCart));
@@ -78,12 +94,16 @@ export default function Marketplace() {
   }, []);
 
   const addToCart = (product) => {
+    if (!user) {
+      alert('Please log in to add to cart.');
+      return;
+    }
     if (product.stock <= 0) {
       alert('This product is out of stock.');
       return;
     }
     // Check if the item already exists in the local state cart
-    const existingItem = cartItems.find(item => item.product_id === product.product_id);
+    const existingItem = cartItems.find(item => Number(item.product_id) === Number(product.product_id));
     
     let updatedCart;
     if (!existingItem) {
@@ -96,14 +116,14 @@ export default function Marketplace() {
         return;
       }
       updatedCart = cartItems.map(item => 
-        item.product_id === product.product_id 
+        Number(item.product_id) === Number(product.product_id)
           ? { ...item, quantity: item.quantity + 1, lastModified: Date.now() } 
           : item
       );
     }
 
     setCartItems(updatedCart);
-    localStorage.setItem('cart', JSON.stringify(updatedCart));
+    localStorage.setItem(getCartKey(), JSON.stringify(updatedCart));
     setShowAddCartModal(true);
   };
 
@@ -248,7 +268,7 @@ export default function Marketplace() {
                   Cancel
                 </button>
 
-                <button className="confirm-btn">
+                <button className="confirm-btn" onClick={() => { localStorage.removeItem('user'); setShowSignOutModal(false); navigate('/signin'); }}>
                   Sign Out
                 </button>
               </div>

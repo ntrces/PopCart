@@ -63,6 +63,10 @@ function EditE({ product, onClose, onUpdate }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (showFileInput && !formData.albumCoverImage) {
+      alert('Please upload a new album cover image.');
+      return;
+    }
     const data = new FormData();
     data.append('product_id', product.product_id);
     data.append('price', formData.price);
@@ -204,7 +208,7 @@ function EditE({ product, onClose, onUpdate }) {
                 className="ap-select"
               >
                 <option value="">Select year</option>
-                {Array.from({ length: 2024 - 1950 + 1 }, (_, i) => 2024 - i).map((year) => (
+                {Array.from({ length: new Date().getFullYear() - 1900 + 1 }, (_, i) => new Date().getFullYear() - i).map((year) => (
                   <option key={year} value={year}>{year}</option>
                 ))}
               </select>

@@ -1,10 +1,19 @@
 import React, { useState, useEffect } from "react";
 import "./Cart.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 
 export default function Cart() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const navigate = useNavigate();
+
+  const getCartKey = () => {
+    try {
+      const s = localStorage.getItem('user');
+      if (s) return `cart_${JSON.parse(s).user_id}`;
+    } catch (e) {}
+    return 'cart';
+  };
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
   const [showSignOutModal, setShowSignOutModal] = useState(false);
@@ -14,7 +23,9 @@ export default function Cart() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [itemToDelete, setItemToDelete] = useState(null);
   const [cartItems, setCartItems] = useState([]);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    try { const s = localStorage.getItem('user'); return s ? JSON.parse(s) : null; } catch (e) { return null; }
+  });
   const [selectedItems, setSelectedItems] = useState([]);
   const [addresses, setAddresses] = useState([]);
   const [customerName, setCustomerName] = useState('');
@@ -47,7 +58,7 @@ export default function Cart() {
     };
     fetchUser();
 
-    const storedCart = localStorage.getItem('cart');
+    const storedCart = localStorage.getItem(getCartKey());
     if (storedCart) {
       const parsedCart = JSON.parse(storedCart);
       // Initialize lastModified if not present
@@ -84,7 +95,7 @@ export default function Cart() {
               return item;
             });
             if (updatedCart.length !== prevCart.length || updatedCart.some((item, i) => item !== filtered[i])) {
-              localStorage.setItem('cart', JSON.stringify(updatedCart));
+              localStorage.setItem(getCartKey(), JSON.stringify(updatedCart));
               setSelectedItems(prevSelected => prevSelected.filter(id => productIds.includes(Number(id))));
             }
             return updatedCart;
@@ -234,7 +245,7 @@ export default function Cart() {
         }
         return item;
       });
-      localStorage.setItem('cart', JSON.stringify(updatedCart));
+      localStorage.setItem(getCartKey(), JSON.stringify(updatedCart));
       return updatedCart;
     });
   };
@@ -253,14 +264,14 @@ export default function Cart() {
       return item;
     });
     setCartItems(updatedCart);
-    localStorage.setItem('cart', JSON.stringify(updatedCart));
+    localStorage.setItem(getCartKey(), JSON.stringify(updatedCart));
   };
 
   const handleDeleteItem = () => {
     const updatedCart = cartItems.filter(item => item.product_id !== itemToDelete.product_id);
     setCartItems(updatedCart);
     setSelectedItems(prev => prev.filter(id => id !== itemToDelete.product_id));
-    localStorage.setItem('cart', JSON.stringify(updatedCart));
+    localStorage.setItem(getCartKey(), JSON.stringify(updatedCart));
     setShowDeleteModal(false);
     setItemToDelete(null);
   };
@@ -293,6 +304,13 @@ export default function Cart() {
     }
     const userData = JSON.parse(storedUser);
 
+    // If user doesn't have a contact number yet, ensure contact input is provided and valid
+    const contactVal = contact?.trim();
+    if ((!user || !user.contact_number) && (!contactVal || contactVal.length !== 11 || !contactVal.startsWith('09'))) {
+      alert('Please add a valid contact number (starts with 09 and 11 digits) before placing an order.');
+      return;
+    }
+
     // Place order
     const orderItems = cartItems.filter(item => selectedItems.includes(item.product_id)).map(item => ({
       product_id: item.product_id,
@@ -319,7 +337,13 @@ export default function Cart() {
             const updateResponse = await fetch('http://localhost/popcart-api/update_user.php', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ user_id: userData.user_id, contact_number: contact.trim() })
+              body: JSON.stringify({
+                user_id: userData.user_id,
+                firstname: user.firstname || userData.firstname,
+                lastname: user.lastname || userData.lastname,
+                birthday: user.birthday || userData.birthday,
+                contact_number: contact.trim()
+              })
             });
             const updateData = await updateResponse.json();
             if (!updateData.success) {
@@ -333,7 +357,7 @@ export default function Cart() {
         // Remove ordered items from cart
         const updatedCart = cartItems.filter(item => !selectedItems.includes(item.product_id));
         setCartItems(updatedCart);
-        localStorage.setItem('cart', JSON.stringify(updatedCart));
+        localStorage.setItem(getCartKey(), JSON.stringify(updatedCart));
         // Clear selected items and close modal
         setSelectedItems([]);
         setShowCheckoutModal(false);

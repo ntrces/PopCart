@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../auth/useAuth.jsx";
 import "./ProductManagement.css";
 import Modal from "../Users/Modal.jsx";
 import AddProduct from "./AddProduct.jsx";
@@ -10,6 +12,8 @@ import Header from "../Header/HeaderA.jsx";
 import Sidebar from "../Sidebar/SidebarA.jsx";
 
 function ProductManagement() {
+  const navigate = useNavigate();
+  const { logout } = useAuth();
   const [searchValue, setSearchValue] = useState("");
   const [selectedGenre, setSelectedGenre] = useState("All Genres");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -18,6 +22,7 @@ function ProductManagement() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [tableData, setTableData] = useState([]);
+  const [showSignOutModal, setShowSignOutModal] = useState(false);
 
   const filteredData = useMemo(() => {
     return tableData.filter(row => {
@@ -38,6 +43,7 @@ function ProductManagement() {
     "Hip Hop",
     "Electronic",
     "Country",
+    "R&B",
   ];
 
   useEffect(() => {
@@ -63,7 +69,7 @@ function ProductManagement() {
     { label: "Price", align: "left" },
     { label: "Stock", align: "left" },
     { label: "Year", align: "left" },
-    { label: "Actions", align: "right" },
+    { label: "Actions", align: "center" },
   ];
 
   const handleSearchChange = (e) => {
@@ -105,7 +111,7 @@ function ProductManagement() {
           <Header className="admin-header" />
           <div className="admin-content-wrapper">
     
-            <Sidebar className="admin-sidebar" />
+            <Sidebar className="admin-sidebar" onSignOutClick={() => setShowSignOutModal(true)} />
     
             <main className="admin-main-content">
 
@@ -187,7 +193,7 @@ function ProductManagement() {
               <div className="pm-table-row">
                 {headers.map((header, i) => (
                   <div key={i} className="pm-th">
-                    <div className={`pm-th-text ${header.align === "right" ? "align-right" : ""}`}>
+                    <div className={`pm-th-text ${header.align === "right" ? "align-right" : header.align === "center" ? "align-center" : ""}`}>
                       {header.label}
                     </div>
                   </div>
@@ -284,6 +290,25 @@ function ProductManagement() {
     </div>
             </main>
           </div>
+
+          {showSignOutModal && (
+            <div className="modal-overlay">
+              <div className="signout-modal">
+                <h3>Sign Out</h3>
+                <p>Are you sure you want to sign out?</p>
+
+                <div className="modal-buttons">
+                  <button className="cancel-btn" onClick={() => setShowSignOutModal(false)}>
+                    Cancel
+                  </button>
+
+                  <button className="confirm-btn" onClick={() => { logout(); setShowSignOutModal(false); navigate('/signin'); }}>
+                    Sign Out
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>  
   );
 }

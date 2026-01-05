@@ -68,7 +68,7 @@ function ProductManagement() {
     { label: "Price", align: "left" },
     { label: "Stock", align: "left" },
     { label: "Year", align: "left" },
-    { label: "Actions", align: "right" },
+    { label: "Actions", align: "center" },
   ];
 
   const handleSearchChange = (e) => {
@@ -202,7 +202,7 @@ function ProductManagement() {
 
             <div className="pm-table-body">
               {filteredData.map((row) => (
-                <div key={row.product_id} className={`pm-table-row ${row.stock == 0 ? 'out-of-stock-row' : ''}`}>
+                <div key={row.product_id} className={`pm-table-row ${row.stock === 0 ? 'out-of-stock-row' : ''}`}>
                   <div className="pm-table-cell album-cell">
                     {row.album_cover_img ? (
                       <img src={getImageUrl(row.album_cover_img)} alt={row.album_title} className="pm-album-image" />
@@ -289,27 +289,28 @@ function ProductManagement() {
     </div>
             </main>
           </div>
-        </div>
 
-        {showSignOutModal && (
-          <div className="modal-overlay">
-            <div className="signout-modal">
-              <h3>Sign Out</h3>
-              <p>Are you sure you want to sign out?</p>
+          {showSignOutModal && (
+            <div className="modal-overlay">
+              <div className="signout-modal">
+                <h3>Sign Out</h3>
+                <p>Are you sure you want to sign out?</p>
 
-              <div className="modal-buttons">
-                <button className="cancel-btn" onClick={() => setShowSignOutModal(false)}>
-                  Cancel
-                </button>
+                <div className="modal-buttons">
+                  <button className="cancel-btn" onClick={() => setShowSignOutModal(false)}>
+                    Cancel
+                  </button>
 
-                <button className="confirm-btn" onClick={() => { logout(); setShowSignOutModal(false); navigate('/signin'); }}>
-                  Sign Out
-                </button>
+                  <button className="confirm-btn" onClick={() => { logout(); setShowSignOutModal(false); navigate('/signin'); }}>
+                    Sign Out
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
   );
-}
+      
+  };
 
 export default ProductManagement;

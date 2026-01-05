@@ -160,7 +160,7 @@ export const Order = () => {
                   <div className="order-card-top">
                     <div className="order-info">
                       <div className="order-top-row">
-                        <div className="order-id">{order.order_number}</div>
+                        <div className="order-id">Order {order.order_header_id}</div>
                         <div
                           className="order-status-badge"
                           style={{

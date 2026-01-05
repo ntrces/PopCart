@@ -63,6 +63,10 @@ function EditProduct({ product, onClose, onUpdate }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!formData.albumCoverImage) {
+      alert('Please upload an album cover image.');
+      return;
+    }
     const data = new FormData();
     data.append('product_id', product.product_id);
     data.append('price', formData.price);

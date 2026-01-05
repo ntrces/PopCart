@@ -186,7 +186,7 @@ function AddE ({ onClose, onAdd }) {
                 className="ap-select"
               >
                 <option value="">Select year</option>
-                {Array.from({ length: 2024 - 1950 + 1 }, (_, i) => 2024 - i).map((year) => (
+                {Array.from({ length: new Date().getFullYear() - 1900 + 1 }, (_, i) => new Date().getFullYear() - i).map((year) => (
                   <option key={year} value={year}>{year}</option>
                 ))}
               </select>

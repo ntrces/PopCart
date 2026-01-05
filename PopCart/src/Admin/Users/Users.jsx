@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../auth/useAuth.jsx";
 import "./Users.css";
 import Delete from "./Delete.jsx";
 import EditUser from "./Edit.jsx";
@@ -8,11 +10,45 @@ import Header from "../Header/HeaderA.jsx";
 import Sidebar from "../Sidebar/SidebarA.jsx";
 
 export default function Users() {
+  const navigate = useNavigate();
+  const { logout } = useAuth();
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [searchValue, setSearchValue] = useState("");
+  const [showSignOutModal, setShowSignOutModal] = useState(false);
+  const [users, setUsers] = useState([]);
+  const [counts, setCounts] = useState({ all: 0, customer: 0, employee: 0, admin: 0 });
+
+  const fetchCounts = async () => {
+    try {
+      const response = await fetch('http://localhost/popcart-api/get_user_counts.php');
+      const data = await response.json();
+      if (data.success) {
+        setCounts(data.counts);
+      }
+    } catch (error) {
+      console.error('Error fetching user counts:', error);
+    }
+  };
+
+  const fetchUsers = async () => {
+    try {
+      const response = await fetch('http://localhost/popcart-api/get_users.php');
+      const data = await response.json();
+      if (data.success) {
+        setUsers(data.users);
+      }
+    } catch (error) {
+      console.error('Error fetching users:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCounts();
+    fetchUsers();
+  }, []);
 
   const handleOpenAdd = () => setShowAddModal(true);
   const handleCloseAdd = () => setShowAddModal(false);
@@ -40,36 +76,56 @@ export default function Users() {
       <Header className="admin-header" />
       <div className="admin-content-wrapper">
 
-        <Sidebar className="admin-sidebar" />
+        <Sidebar className="admin-sidebar" onSignOutClick={() => setShowSignOutModal(true)} />
 
         <main className="admin-main-content">
     <div className="users-page">
       <div className="users-container">
         <UserManagementSection onAdd={handleOpenAdd} />
         <UserSearchFilterSection searchValue={searchValue} setSearchValue={setSearchValue} />
-        <UserTableSection onEdit={handleOpenEdit} onDelete={handleOpenDelete} searchValue={searchValue} />
+        <UserTableSection onEdit={handleOpenEdit} onDelete={handleOpenDelete} searchValue={searchValue} users={users} counts={counts} />
+
       </div>
 
       {showAddModal && (
         <Modal onClose={handleCloseAdd}>
-          <AddUser onClose={handleCloseAdd} />
+          <AddUser onClose={handleCloseAdd} onSuccess={() => { fetchUsers(); fetchCounts(); }} />
         </Modal>
       )}
 
       {showEditModal && (
         <Modal onClose={handleCloseEdit}>
-          <EditUser user={selectedUser} onClose={handleCloseEdit} />
+          <EditUser user={selectedUser} onClose={handleCloseEdit} onSuccess={() => { fetchUsers(); fetchCounts(); }} />
         </Modal>
       )}
 
       {showDeleteModal && (
         <Modal onClose={handleCloseDelete}>
-          <Delete user={selectedUser} onClose={handleCloseDelete} />
+          <Delete user={selectedUser} onClose={handleCloseDelete} onSuccess={() => { fetchUsers(); fetchCounts(); }} />
         </Modal>
       )}
     </div>
         </main>
       </div>
+
+      {showSignOutModal && (
+        <div className="modal-overlay">
+          <div className="signout-modal">
+            <h3>Sign Out</h3>
+            <p>Are you sure you want to sign out?</p>
+
+            <div className="modal-buttons">
+              <button className="cancel-btn" onClick={() => setShowSignOutModal(false)}>
+                Cancel
+              </button>
+
+              <button className="confirm-btn" onClick={() => { logout(); setShowSignOutModal(false); navigate('/signin'); }}>
+                Sign Out
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -122,40 +178,8 @@ const UserSearchFilterSection = ({ searchValue, setSearchValue }) => {
   );
 };
 
-const UserTableSection = ({ onEdit, onDelete, searchValue }) => {
+const UserTableSection = ({ onEdit, onDelete, searchValue, users, counts }) => {
   const [activeFilter, setActiveFilter] = useState("all");
-  const [counts, setCounts] = useState({ all: 5, customer: 3, employee: 1, admin: 1 });
-  const [users, setUsers] = useState([]);
-
-  useEffect(() => {
-    const fetchCounts = async () => {
-      try {
-        const response = await fetch('http://localhost/popcart-api/get_user_counts.php');
-        const data = await response.json();
-        if (data.success) {
-          setCounts(data.counts);
-        }
-      } catch (error) {
-        console.error('Error fetching user counts:', error);
-      }
-    };
-    fetchCounts();
-  }, []);
-
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await fetch('http://localhost/popcart-api/get_users.php');
-        const data = await response.json();
-        if (data.success) {
-          setUsers(data.users);
-        }
-      } catch (error) {
-        console.error('Error fetching users:', error);
-      }
-    };
-    fetchUsers();
-  }, []);
 
   const getRoleStyles = (usertype) => {
     switch (usertype) {
@@ -214,16 +238,6 @@ const UserTableSection = ({ onEdit, onDelete, searchValue }) => {
         ))}
       </nav>
 
-      {searchValue && (
-        <div className="search-results" style={{ padding: '12px 16px' }}>
-          <p style={{ margin: 0, fontSize: 14 }}>{visibleUsers.length} result(s) for "{searchValue}"</p>
-          <ul style={{ margin: '6px 0 0 0', paddingLeft: 16 }}>
-            {visibleUsers.slice(0, 10).map((u) => (
-              <li key={u.user_id} style={{ fontSize: 13 }}>{`${u.firstname} ${u.lastname} — ${u.email}`}</li>
-            ))}
-          </ul>
-        </div>
-      )}
 
       <div className="ut-card">
         <div className="ut-table">
@@ -231,7 +245,7 @@ const UserTableSection = ({ onEdit, onDelete, searchValue }) => {
             <div className="ut-table-row">
               {tableHeaders.map((header, i) => (
                 <div key={i} className="ut-th">
-                  <div className={`ut-th-text ${header === "Actions" ? "align-right" : ""}`}>{header}</div>
+                  <div className={`ut-th-text ${header === "Actions" ? "align-center" : ""}`}>{header}</div>
                 </div>
               ))}
             </div>

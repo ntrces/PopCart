@@ -1,12 +1,15 @@
 import React, { useState } from "react";
 import "./AddUser.css";
 
- function AddUser ({ onClose }) {
+ function AddUser ({ onClose, onSuccess }) {
   const [formData, setFormData] = useState({
-    name: "",
+    lastname: "",
+    firstname: "",
     email: "",
+    birthday: "",
     password: "",
-    role: "",
+    confirmPassword: "",
+    usertype: "",
   });
 
   const handleInputChange = (e) => {
@@ -18,18 +21,48 @@ import "./AddUser.css";
   };
 
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
-    onClose();
+    if (formData.password !== formData.confirmPassword) {
+      alert("Passwords do not match.");
+      return;
+    }
+    try {
+      const response = await fetch('http://localhost/popcart-api/add_user.php', {
+        method: 'POST',
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          lastname: formData.lastname,
+          firstname: formData.firstname,
+          email: formData.email,
+          birthday: formData.birthday,
+          password: formData.password,
+          usertype: formData.usertype,
+        })
+      });
+      const data = await response.json();
+      if (data.success) {
+        alert('User added successfully');
+        if (onSuccess) onSuccess();
+        onClose();
+      } else {
+        alert('Error: ' + data.message);
+      }
+    } catch (error) {
+      console.error('Error adding user:', error);
+      alert('Failed to add user');
+    }
   };
 
   const handleCancel = () => {
     setFormData({
-      name: "",
+      lastname: "",
+      firstname: "",
       email: "",
+      birthday: "",
       password: "",
-      role: "",
+      confirmPassword: "",
+      usertype: "",
     });
     onClose();
   };
@@ -50,16 +83,34 @@ import "./AddUser.css";
       <div className="fields-container">
         <div className="field-group">
           <div className="label-wrapper">
-            <label htmlFor="name" className="label">
-              Name:
+            <label htmlFor="lastname" className="label">
+              Last Name:
             </label>
           </div>
 
           <input
             type="text"
-            id="name"
-            name="name"
-            value={formData.name}
+            id="lastname"
+            name="lastname"
+            value={formData.lastname}
+            onChange={handleInputChange}
+            className="input"
+            required
+          />
+        </div>
+
+        <div className="field-group">
+          <div className="label-wrapper">
+            <label htmlFor="firstname" className="label">
+              First Name:
+            </label>
+          </div>
+
+          <input
+            type="text"
+            id="firstname"
+            name="firstname"
+            value={formData.firstname}
             onChange={handleInputChange}
             className="input"
             required
@@ -86,6 +137,23 @@ import "./AddUser.css";
 
         <div className="field-group">
           <div className="label-wrapper">
+            <label htmlFor="birthday" className="label">
+              Birthday:
+            </label>
+          </div>
+
+          <input
+            type="date"
+            id="birthday"
+            name="birthday"
+            value={formData.birthday}
+            onChange={handleInputChange}
+            className="input"
+          />
+        </div>
+
+        <div className="field-group">
+          <div className="label-wrapper">
             <label htmlFor="password" className="label">
               Password:
             </label>
@@ -104,23 +172,41 @@ import "./AddUser.css";
 
         <div className="field-group">
           <div className="label-wrapper">
-            <label htmlFor="role" className="label">
+            <label htmlFor="confirmPassword" className="label">
+              Confirm Password:
+            </label>
+          </div>
+
+          <input
+            type="password"
+            id="confirmPassword"
+            name="confirmPassword"
+            value={formData.confirmPassword}
+            onChange={handleInputChange}
+            className="input"
+            required
+          />
+        </div>
+
+        <div className="field-group">
+          <div className="label-wrapper">
+            <label htmlFor="usertype" className="label">
               Role
             </label>
           </div>
 
           <select
-            id="role"
-            name="role"
-            value={formData.role}
+            id="usertype"
+            name="usertype"
+            value={formData.usertype}
             onChange={handleInputChange}
             className="select"
             required
           >
             <option value="">Select a role</option>
+            <option value="buyer">Buyer</option>
+            <option value="employee">Employee</option>
             <option value="admin">Admin</option>
-            <option value="user">User</option>
-            <option value="moderator">Moderator</option>
           </select>
         </div>
       </div>

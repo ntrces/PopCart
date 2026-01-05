@@ -2,7 +2,14 @@ import React, { useState, useEffect } from "react";
 import "./HeaderE.css";
 
 export default function HeaderE() {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    try {
+      const s = localStorage.getItem('user');
+      return s ? JSON.parse(s) : null;
+    } catch (e) {
+      return null;
+    }
+  });
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');

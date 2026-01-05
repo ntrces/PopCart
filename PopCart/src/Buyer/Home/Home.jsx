@@ -7,7 +7,12 @@ import getImageUrl from "../../utils/getImageUrl";
 export default function Home() {
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    try {
+      const s = localStorage.getItem('user');
+      return s ? JSON.parse(s) : null;
+    } catch (e) { return null; }
+  });
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
   const [showSignOutModal, setShowSignOutModal] = useState(false);
@@ -72,12 +77,16 @@ export default function Home() {
   }, []);
 
   const addToCart = (product) => {
+    if (!user) {
+      alert('Please log in to add to cart.');
+      return;
+    }
     if (product.stock <= 0) {
       alert('This product is out of stock.');
       return;
     }
     try {
-      const stored = localStorage.getItem('cart');
+      const stored = localStorage.getItem(`cart_${user.user_id}`);
       const cart = stored ? JSON.parse(stored) : [];
       const existing = cart.find(i => Number(i.product_id) === Number(product.product_id));
       let updated;
@@ -90,7 +99,7 @@ export default function Home() {
         }
         updated = cart.map(i => i.product_id === product.product_id ? { ...i, quantity: i.quantity + 1, lastModified: Date.now() } : i);
       }
-      localStorage.setItem('cart', JSON.stringify(updated));
+      localStorage.setItem(`cart_${user.user_id}`, JSON.stringify(updated));
       setShowAddCartModal(true);
     } catch (err) {
       console.error('addToCart error', err);

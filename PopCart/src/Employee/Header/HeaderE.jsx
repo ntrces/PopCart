@@ -1,9 +1,23 @@
-import React from "react";
-import { useAuth } from "../../auth/useAuth.jsx";
+import React, { useState, useEffect } from "react";
 import "./HeaderE.css";
 
 export default function HeaderE() {
-  const { user } = useAuth();
+  const [user, setUser] = useState(() => {
+    try {
+      const s = localStorage.getItem('user');
+      return s ? JSON.parse(s) : null;
+    } catch (e) {
+      return null;
+    }
+  });
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      const userData = JSON.parse(storedUser);
+      setUser(userData);
+    }
+  }, []);
 
   return (
     <div className="header-wrapper" role="banner">
@@ -42,8 +56,8 @@ export default function HeaderE() {
             </svg>
           </button>
 
-          <div className="header-profile-avatar" title={user?.name || "Admin"}>{user?.name?.charAt(0) || "E"}</div>
-          <div className="header-profile-name">{user?.name || "Employee"}</div>
+          <div className="header-profile-avatar" title={user?.firstname || "Employee"}>{user?.firstname?.charAt(0) || "E"}</div>
+          <div className="header-profile-name">{user?.firstname || "Employee"}</div>
         </div>
       </header>
     </div>

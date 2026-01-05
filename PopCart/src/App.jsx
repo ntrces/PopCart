@@ -23,7 +23,7 @@ import ProductManage from "./Employee/ProductManagement/ProductE.jsx";
 export default function App() {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/buyer" replace />} />
+      <Route path="/" element={<SignIn />} />
       <Route path="/signin" element={<SignIn />} />
       <Route path="/signup-buyer" element={<SignUpBuyer />} />
 

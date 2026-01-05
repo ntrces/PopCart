@@ -370,10 +370,6 @@ body {
   color: #e7000b;
 }
 
-.pm-action-btn.delete:hover {
-  background-color: rgba(231, 0, 11, 0.1);
-}
-
 .pm-text-truncate {
   white-space: nowrap;
   overflow: hidden;
@@ -406,36 +402,36 @@ body {
   background: #FFFFFF;
   border-radius: 12px;
   padding: 20px;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 16px;
+  justify-content: space-between;
 }
 
 .signout-modal h3 {
-  margin: 0;
   font-size: 18px;
-  font-weight: 600;
-  color: #111827;
+  font-weight: 700;
+  color: #000;
+  margin: 0;
+  font-family: Inter, sans-serif;
 }
 
 .signout-modal p {
-  margin: 0;
   font-size: 14px;
-  color: #6b7280;
-  text-align: center;
+  color: #666;
+  margin: 0;
+  font-family: Inter, sans-serif;
 }
 
 .modal-buttons {
   display: flex;
   gap: 12px;
+  justify-content: flex-end;
 }
 
-.cancel-btn,
-.confirm-btn {
+.cancel-btn, .confirm-btn {
   padding: 8px 16px;
-  border-radius: 8px;
+  border-radius: 6px;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
@@ -444,19 +440,19 @@ body {
 }
 
 .cancel-btn {
-  background: #f3f4f6;
+  background-color: #f3f4f6;
   color: #374151;
 }
 
 .cancel-btn:hover {
-  background: #e5e7eb;
+  background-color: #e5e7eb;
 }
 
 .confirm-btn {
-  background: #ef4444;
+  background-color: #dc2626;
   color: #ffffff;
 }
 
 .confirm-btn:hover {
-  background: #dc2626;
+  background-color: #b91c1c;
 }

@@ -1,28 +1,32 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { Tooltip, ResponsiveContainer,CartesianGrid, XAxis, YAxis, BarChart, Legend, Bar} from "recharts";
 import "./Yearly.css";
 
-const revenueByYear = {
-  2022: [30,45,40,55,70,60,75,95,85,100,120,110],
-  2023: [38,52,48,70,85,72,90,105,98,118,135,128],
-  2024: [45,60,50,75,90,80,95,110,98,120,140,130],
-};
-
-const salesByYear = {
-  2022: [20,30,28,40,50,45,58,70,66,80,95,88],
-  2023: [25,35,33,48,60,52,68,85,78,96,110,102],
-  2024: [30,40,35,55,65,60,72,88,82,96,110,105],
-};
-
 export default function Yearly() {
-  const data = useMemo(() => {
-    const years = [2022, 2023, 2024];
-    return years.map((y) => {
-      const rev = revenueByYear[y].reduce((s, v) => s + v, 0);
-      const sales = salesByYear[y].reduce((s, v) => s + v, 0);
-      return { year: String(y), Revenue: rev, Sales: sales };
-    });
+  const [yearlyData, setYearlyData] = useState([]);
+
+  useEffect(() => {
+    const fetchYearlyStats = async () => {
+      try {
+        const response = await fetch('http://localhost/popcart-api/get_yearly_stats.php');
+        const data = await response.json();
+        if (data.success) {
+          setYearlyData(data.data);
+        }
+      } catch (error) {
+        console.error('Error fetching yearly stats:', error);
+      }
+    };
+    fetchYearlyStats();
   }, []);
+
+  const data = useMemo(() => {
+    return yearlyData.map((item) => ({
+      year: String(item.year),
+      Revenue: item.Revenue,
+      Sales: item.Sales
+    }));
+  }, [yearlyData]);
 
   return (
     <section className="yearly-wrapper">
@@ -37,7 +41,7 @@ export default function Yearly() {
               <CartesianGrid stroke="#e6e7ea" vertical={false} />
               <XAxis dataKey="year" tick={{ fill: "#334155" }} />
               <YAxis tick={{ fill: "#334155" }} />
-              <Tooltip formatter={(v) => v} />
+              <Tooltip formatter={(v) => `₱${v.toLocaleString()}`} />
               <Legend layout="horizontal" verticalAlign="bottom" align="center" iconType="square" wrapperStyle={{ color: '#0f172a' }} />
               <Bar dataKey="Revenue" fill="#0a0a0a" barSize={36} />
             </BarChart>

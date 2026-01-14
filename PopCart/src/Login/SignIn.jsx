@@ -67,12 +67,7 @@ export default function SignIn() {
       }
     }
   };
-  const handleSubmit = (e) => {
-  e.preventDefault();
-  if (validateForm()) {
-    navigate("/home"); // <-- Redirects to Home page
-  }
-};
+ 
 
   return (
     <div className="sign-in">

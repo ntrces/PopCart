@@ -1,11 +1,26 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./LandingPage.css";
-import SignIn from "./SignIn.jsx";
-import SignUpBuyer from "./SignUpBuyer.jsx";
+import { useNavigate } from "react-router-dom";
+import getImageUrl from "../utils/getImageUrl";
 
 export const LandingPage = () => {
-  const [showSignInModal, setShowSignInModal] = useState(false);
-  const [showSignUpModal, setShowSignUpModal] = useState(false);
+  const navigate = useNavigate();
+  const [albums, setAlbums] = useState([]);
+
+  useEffect(() => {
+    const fetchFeaturedProducts = async () => {
+      try {
+        const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/get_featured_products.php');
+        const data = await response.json();
+        if (data.success) {
+          setAlbums(data.products);
+        }
+      } catch (error) {
+        console.error('Error fetching featured products:', error);
+      }
+    };
+    fetchFeaturedProducts();
+  }, []);
   const benefits = [
     {
       id: 1,
@@ -51,37 +66,6 @@ export const LandingPage = () => {
     },
   ];
 
-  const albums = [
-    {
-      id: 1,
-      title: "Album Title",
-      artist: "Artist Name",
-      gradient:
-        "linear-gradient(225deg,rgba(255,107,107,1)_0%,rgba(78,205,196,1)_100%)",
-    },
-    {
-      id: 2,
-      title: "Album Title",
-      artist: "Artist Name",
-      gradient:
-        "linear-gradient(225deg,rgba(78,205,196,1)_0%,rgba(85,98,112,1)_100%)",
-    },
-    {
-      id: 3,
-      title: "Album Title",
-      artist: "Artist Name",
-      gradient:
-        "linear-gradient(225deg,rgba(247,151,30,1)_0%,rgba(255,210,0,1)_100%)",
-    },
-    {
-      id: 4,
-      title: "Album Title",
-      artist: "Artist Name",
-      gradient:
-        "linear-gradient(225deg,rgba(102,126,234,1)_0%,rgba(118,75,162,1)_100%)",
-    },
-  ];
-
   const metrics = [
     { value: "50K+", label: "Albums Available" },
     { value: "12K+", label: "Active Users" },
@@ -113,8 +97,8 @@ export const LandingPage = () => {
         </div>
 
         <nav className="auth-nav" aria-label="User authentication">
-          <button className="btn btn-ghost" onClick={() => setShowSignInModal(true)}>Sign In</button>
-          <button className="btn btn-primary" onClick={() => setShowSignUpModal(true)}>Sign Up</button>
+          <button className="btn btn-ghost" onClick={() => navigate('/signin')}>Sign In</button>
+          <button className="btn btn-primary" onClick={() => navigate('/signup-buyer')}>Sign Up</button>
         </nav>
       </header>
 
@@ -161,10 +145,10 @@ export const LandingPage = () => {
         <h2>Featured Albums</h2>
         <div className="albums-grid">
           {albums.map((album) => (
-            <article key={album.id} className="album-card">
-              <div className="album-art" style={{ background: album.gradient }} role="img" aria-label={`${album.title} album cover`} />
+            <article key={album.product_id} className="album-card">
+              <img src={getImageUrl(album.album_cover_img)} alt={`${album.album_title} cover`} className="album-art" />
               <div className="album-body">
-                <h3>{album.title}</h3>
+                <h3>{album.album_title}</h3>
                 <p>{album.artist}</p>
               </div>
             </article>
@@ -188,7 +172,7 @@ export const LandingPage = () => {
           <h2>Start Your Collection Today</h2>
           <p>Join thousands of music lovers and build your perfect album library</p>
           <div className="cta-actions">
-            <button className="cta-btn" onClick={() => setShowSignUpModal(true)}>Sign Up Now</button>
+            <button className="cta-btn" onClick={() => navigate('/signup-buyer')}>Sign Up Now</button>
           </div>
         </div>
       </section>
@@ -224,29 +208,10 @@ export const LandingPage = () => {
           </div>
         </div>
       </footer>
-
-      {/* Sign In Modal */}
-      {showSignInModal && (
-        <div className="modal-overlay" onClick={() => setShowSignInModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <button className="modal-close" onClick={() => setShowSignInModal(false)}>×</button>
-            <SignIn />
-          </div>
-        </div>
-      )}
-
-      {/* Sign Up Modal */}
-      {showSignUpModal && (
-        <div className="modal-overlay" onClick={() => setShowSignUpModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <button className="modal-close" onClick={() => setShowSignUpModal(false)}>×</button>
-            <SignUpBuyer />
-          </div>
-        </div>
-      )}
     
     </div>
   );
 };
 
 export default LandingPage;
+

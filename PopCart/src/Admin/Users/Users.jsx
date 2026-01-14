@@ -23,7 +23,7 @@ export default function Users() {
 
   const fetchCounts = async () => {
     try {
-      const response = await fetch('http://localhost/popcart-api/get_user_counts.php');
+      const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/get_user_counts.php');
       const data = await response.json();
       if (data.success) {
         setCounts(data.counts);
@@ -35,7 +35,7 @@ export default function Users() {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch('http://localhost/popcart-api/get_users.php');
+      const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/get_users.php');
       const data = await response.json();
       if (data.success) {
         setUsers(data.users);

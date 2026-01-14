@@ -31,7 +31,7 @@ export const Dashboard = () => {
   useEffect(() => {
     const fetchUserCount = async () => {
       try {
-        const response = await fetch('http://localhost/popcart-api/get_user_count.php');
+        const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/get_user_count.php');
         const data = await response.json();
         if (data.success) {
           setTotalUsers(data.total_users.toString());
@@ -46,7 +46,7 @@ export const Dashboard = () => {
   useEffect(() => {
     const fetchProductCount = async () => {
       try {
-        const response = await fetch('http://localhost/popcart-api/get_product_count.php');
+        const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/get_product_count.php');
         const data = await response.json();
         if (data.success) {
           setTotalProducts(data.total_products.toString());
@@ -61,7 +61,7 @@ export const Dashboard = () => {
   useEffect(() => {
     const fetchDashboardStats = async () => {
       try {
-        const response = await fetch('http://localhost/popcart-api/get_dashboard_stats.php');
+        const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/get_dashboard_stats.php');
         const data = await response.json();
         if (data.success) {
           setTotalTransactions(data.total_transactions.toString());

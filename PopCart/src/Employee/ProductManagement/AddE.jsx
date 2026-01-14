@@ -47,7 +47,7 @@ function AddE ({ onClose, onAdd }) {
     data.append('description', formData.description);
     data.append('album_cover_img[]', formData.albumCoverImage);
     try {
-      const response = await fetch('http://localhost/popcart-api/add_product.php', {
+      const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/add_product.php', {
         method: 'POST',
         body: data
       });

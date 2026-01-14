@@ -233,6 +233,7 @@
     width:282px;
     height:282px;
     border-radius:12px 12px 0 0;
+    object-fit: cover;
 }
 
 .album-body {

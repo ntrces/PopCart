@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./SignIn.css";
 
-export default function SignIn({ onSwitchToSignUp, onClose }) {
+export default function SignIn() {
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
@@ -71,6 +71,7 @@ export default function SignIn({ onSwitchToSignUp, onClose }) {
   return (
     <div className="sign-in">
       <div className="sign-in-card">
+        <button className="back-btn" onClick={() => navigate("/")}>←</button>
         <h1 className="title">🎵 Pop Cart</h1>
         <p className="subtitle">Your marketplace for authentic albums</p>
 

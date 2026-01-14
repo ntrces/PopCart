@@ -92,7 +92,7 @@ export default function SignUpBuyer() {
 
       if (data.success) {
         alert("Account created successfully!");
-        navigate("/"); // Navigate to Sign In
+        navigate("/signin"); // Navigate to Sign In
       } else {
         alert(data.message);
       }
@@ -105,11 +105,12 @@ export default function SignUpBuyer() {
   return (
     <div className="sign-up-buyer">
       <div className="sign-up-card">
+        <button className="back-btn" onClick={() => navigate("/")}>←</button>
         <h1 className="title">🎵 Pop Cart</h1>
         <p className="subtitle">Your marketplace for authentic albums</p>
 
         <div className="tabs">
-          <button onClick={() => navigate("/")} className="tab">
+          <button onClick={() => navigate("/signin")} className="tab">
             Sign In
           </button>
           <button className="tab active">Sign Up</button>

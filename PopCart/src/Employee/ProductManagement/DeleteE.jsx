@@ -9,7 +9,7 @@ export default function DeleteE ({ product, onClose, onDelete }) {
 
   const handleDelete = async () => {
     try {
-      const response = await fetch('http://localhost/popcart-api/delete_product.php', {
+      const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/delete_product.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ product_id: product.product_id })

@@ -15,7 +15,7 @@ export const Weekly = () => {
   useEffect(() => {
     const fetchWeeklyStats = async () => {
       try {
-        const response = await fetch('http://localhost/popcart-api/get_weekly_stats.php');
+        const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/get_weekly_stats.php');
         const data = await response.json();
         if (data.success) {
           setWeeklySales(data.weekly_sales);

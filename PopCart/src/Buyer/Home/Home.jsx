@@ -28,12 +28,12 @@ export default function Home() {
       if (storedUser) {
         const userData = JSON.parse(storedUser);
         try {
-          const response = await fetch(`http://localhost/popcart-api/get_user.php?user_id=${userData.user_id}`);
+          const response = await fetch(`http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/get_user.php?user_id=${userData.user_id}`);
           const data = await response.json();
           if (data.success) {
             setUser(data.user);
             // Fetch order stats
-            const statsResponse = await fetch(`http://localhost/popcart-api/get_order_stats.php?user_id=${userData.user_id}`);
+            const statsResponse = await fetch(`http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/get_order_stats.php?user_id=${userData.user_id}`);
             const statsData = await statsResponse.json();
             if (statsData.success) {
               setOrderStats({
@@ -52,7 +52,7 @@ export default function Home() {
     // Fetch products for the home albums list
     const fetchProducts = async () => {
       try {
-        const res = await fetch('http://localhost/popcart-api/get_products.php');
+        const res = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/get_products.php');
         const data = await res.json();
         if (data && data.success && Array.isArray(data.products)) {
           const mapped = data.products.map(p => ({
@@ -114,12 +114,17 @@ export default function Home() {
       <div className="top-bar">
   <div className="left-group">
 <button className="toggle-btn" onClick={toggleSidebar}>☰</button>
-    <div className="logo"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <div className="header-logo-section">
+            <div className="header-logo-icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M7.5 15V4.16667L17.5 2.5V13.3333" stroke="#8B5CF6" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M5 17.5C6.38071 17.5 7.5 16.3807 7.5 15C7.5 13.6193 6.38071 12.5 5 12.5C3.61929 12.5 2.5 13.6193 2.5 15C2.5 16.3807 3.61929 17.5 5 17.5Z" stroke="#8B5CF6" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M15 15.8333C16.3807 15.8333 17.5 14.7141 17.5 13.3333C17.5 11.9526 16.3807 10.8333 15 10.8333C13.6193 10.8333 12.5 11.9526 12.5 13.3333C12.5 14.7141 13.6193 15.8333 15 15.8333Z" stroke="#8B5CF6" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
- Pop Cart</div>
+            </div>
+
+            <h1 className="header-title">Pop Cart</h1>
+          </div>
   </div>
 
         <div className="right-controls">
@@ -373,3 +378,4 @@ Home</button> </Link>
     </div>
   );
 }
+

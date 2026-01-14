@@ -24,6 +24,26 @@
   font-size: 16px;
 }
 
+.header-logo-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.header-logo-icon { 
+    display:flex; 
+    align-items:center; 
+    justify-content:center; 
+}
+
+/* title */
+.header-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #111827;
+}
+
 .toggle-btn {
   background: none;
   border: none;
@@ -310,7 +330,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 20px;
-  padding: 20px 0;
+  padding: 10px 0;
 }
 
 .album-grid .album-card {

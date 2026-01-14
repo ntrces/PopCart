@@ -28,7 +28,7 @@ import "./AddUser.css";
       return;
     }
     try {
-      const response = await fetch('http://localhost/popcart-api/add_user.php', {
+      const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/add_user.php', {
         method: 'POST',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

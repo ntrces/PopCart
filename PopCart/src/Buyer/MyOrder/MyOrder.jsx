@@ -18,7 +18,7 @@ export default function MyOrder() {
       if (storedUser) {
         const userData = JSON.parse(storedUser);
         try {
-          const response = await fetch(`http://localhost/popcart-api/get_user.php?user_id=${userData.user_id}`);
+          const response = await fetch(`http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/get_user.php?user_id=${userData.user_id}`);
           const data = await response.json();
           if (data.success) {
             setUser(data.user);
@@ -35,13 +35,13 @@ export default function MyOrder() {
     if (user) {
       const fetchOrders = async () => {
         try {
-          const response = await fetch(`http://localhost/popcart-api/get_orders.php?user_id=${user.user_id}`);
+          const response = await fetch(`http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/get_orders.php?user_id=${user.user_id}`);
           const data = await response.json();
           if (data.success) {
             // For each order, fetch its items (album_title, artist, qty)
             const ordersWithItems = await Promise.all(data.orders.map(async (order) => {
               try {
-                const r = await fetch(`http://localhost/popcart-api/get_order_products.php?order_header_id=${order.order_header_id}`);
+                const r = await fetch(`http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/get_order_products.php?order_header_id=${order.order_header_id}`);
                 const d = await r.json();
                 if (d.success) {
                   // Normalize items to expected front-end shape
@@ -295,3 +295,4 @@ Home</button> </Link>
     </div>
   );
 }
+

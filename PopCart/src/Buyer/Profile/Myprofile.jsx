@@ -43,7 +43,7 @@ export default function Myprofile() {
       if (storedUser) {
         const userData = JSON.parse(storedUser);
         try {
-          const response = await fetch(`http://localhost/popcart-api/get_user.php?user_id=${userData.user_id}`);
+          const response = await fetch(`http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/get_user.php?user_id=${userData.user_id}`);
           const data = await response.json();
           if (data.success) {
             setUser(data.user);
@@ -65,7 +65,7 @@ export default function Myprofile() {
       if (storedUser) {
         const userData = JSON.parse(storedUser);
         try {
-          const response = await fetch(`http://localhost/popcart-api/get_addresses.php?user_id=${userData.user_id}`);
+          const response = await fetch(`http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/get_addresses.php?user_id=${userData.user_id}`);
           const data = await response.json();
           if (data.success) {
             setAddresses(data.addresses);
@@ -100,7 +100,7 @@ export default function Myprofile() {
 
   const handleSave = async () => {
     try {
-      const response = await fetch('http://localhost/popcart-api/update_user.php', {
+      const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/update_user.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_id: user.user_id, ...formData })
@@ -123,7 +123,7 @@ export default function Myprofile() {
   const handleAddressSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost/popcart-api/add_address.php', {
+      const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/add_address.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_id: user.user_id, ...addressForm })
@@ -143,7 +143,7 @@ export default function Myprofile() {
         // Refresh addresses
         const fetchAddresses = async () => {
           try {
-            const response = await fetch(`http://localhost/popcart-api/get_addresses.php?user_id=${user.user_id}`);
+            const response = await fetch(`http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/get_addresses.php?user_id=${user.user_id}`);
             const data = await response.json();
             if (data.success) {
               setAddresses(data.addresses);
@@ -163,7 +163,7 @@ export default function Myprofile() {
 
   const handleSetDefault = async (addressId) => {
     try {
-      const response = await fetch('http://localhost/popcart-api/update_address_status.php', {
+      const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/update_address_status.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_id: user.user_id, shipping_address_id: addressId })
@@ -174,7 +174,7 @@ export default function Myprofile() {
         // Refresh addresses
         const fetchAddresses = async () => {
           try {
-            const response = await fetch(`http://localhost/popcart-api/get_addresses.php?user_id=${user.user_id}`);
+            const response = await fetch(`http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/get_addresses.php?user_id=${user.user_id}`);
             const data = await response.json();
             if (data.success) {
               setAddresses(data.addresses);
@@ -195,7 +195,7 @@ export default function Myprofile() {
   const handleDeleteAddress = async (addressId) => {
     if (confirm('Are you sure you want to delete this address?')) {
       try {
-        const response = await fetch('http://localhost/popcart-api/delete_address.php', {
+        const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/delete_address.php', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ user_id: user.user_id, shipping_address_id: addressId })
@@ -206,7 +206,7 @@ export default function Myprofile() {
           // Refresh addresses
           const fetchAddresses = async () => {
             try {
-              const response = await fetch(`http://localhost/popcart-api/get_addresses.php?user_id=${user.user_id}`);
+              const response = await fetch(`http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/get_addresses.php?user_id=${user.user_id}`);
               const data = await response.json();
               if (data.success) {
                 setAddresses(data.addresses);
@@ -525,3 +525,4 @@ Home</button> </Link>
     </div>
   );
 }
+

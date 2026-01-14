@@ -14,7 +14,7 @@ export default function Monthly() {
   useEffect(() => {
     const fetchMonthlyStats = async () => {
       try {
-        const response = await fetch(`http://localhost/popcart-api/get_monthly_stats.php?year=${year}`);
+        const response = await fetch(`http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/get_monthly_stats.php?year=${year}`);
         const data = await response.json();
         if (data.success) {
           setMonthlyRevenue(data.revenue);

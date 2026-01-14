@@ -29,7 +29,7 @@ function Edit ({ user, onClose, onSuccess }) {
     if (user.usertype === 'admin' && formData.usertype !== 'admin') {
       // Check active admin count
       try {
-        const response = await fetch('http://localhost/popcart-api/get_user_counts.php');
+        const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/get_user_counts.php');
         const data = await response.json();
         if (data.success && data.counts.admin <= 1) {
           alert('Cannot change role: At least one active admin must remain.');
@@ -45,7 +45,7 @@ function Edit ({ user, onClose, onSuccess }) {
     data.append('user_id', user.user_id);
     data.append('usertype', formData.usertype);
     try {
-      const response = await fetch('http://localhost/popcart-api/update_user.php', {
+      const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/update_user.php', {
         method: 'POST',
         body: data
       });

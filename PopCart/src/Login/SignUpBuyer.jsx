@@ -74,7 +74,7 @@ export default function SignUpBuyer() {
 
     try {
       const response = await fetch(
-        "http://localhost/popcart-api/signup_buyer.php",
+        "http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/signup_buyer.php",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -206,3 +206,4 @@ export default function SignUpBuyer() {
     </div>
   );
 }
+

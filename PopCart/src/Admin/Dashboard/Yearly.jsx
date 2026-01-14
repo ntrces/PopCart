@@ -8,7 +8,7 @@ export default function Yearly() {
   useEffect(() => {
     const fetchYearlyStats = async () => {
       try {
-        const response = await fetch('http://localhost/popcart-api/get_yearly_stats.php');
+        const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/get_yearly_stats.php');
         const data = await response.json();
         if (data.success) {
           setYearlyData(data.data);

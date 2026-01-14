@@ -35,7 +35,7 @@ export default function SignIn() {
     e.preventDefault();
     if (validateForm()) {
       try {
-        const response = await fetch("http://localhost/popcart-api/signin.php", {
+        const response = await fetch("http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/signin.php", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, password }),
@@ -121,3 +121,4 @@ export default function SignIn() {
     </div>
   );
 }
+

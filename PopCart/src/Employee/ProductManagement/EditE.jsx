@@ -20,7 +20,7 @@ function EditE({ product, onClose, onUpdate }) {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await fetch(`http://localhost/popcart-api/get_product.php?product_id=${product.product_id}`);
+        const response = await fetch(`http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/get_product.php?product_id=${product.product_id}`);
         const data = await response.json();
         if (data.success) {
           const p = data.product;
@@ -75,7 +75,7 @@ function EditE({ product, onClose, onUpdate }) {
       data.append('album_cover_img[]', formData.albumCoverImage);
     }
     try {
-      const response = await fetch('http://localhost/popcart-api/update_product.php', {
+      const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/update_product.php', {
         method: 'POST',
         body: data
       });

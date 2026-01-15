@@ -272,7 +272,7 @@ Home</button> </Link>
   </div>            </div>
 
 
-<div className="album-list">
+<div className="album-list-home">
   {products.slice(0, 4).map((product) => (
     <div key={product.product_id} className={`album-card ${product.stock === 0 ? 'out-of-stock' : ''}`}>
       <div className="album-img">

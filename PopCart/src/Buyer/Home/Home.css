@@ -1,47 +1,35 @@
-
+/* =========================
+   GLOBAL
+========================= */
 .home-wrapper {
   background: #ffffff;
 }
 
-/* TOP BAR */
+/* =========================
+   TOP BAR
+========================= */
 .top-bar {
   background: #fffdfd;
   padding: 12px 20px;
   display: flex;
   align-items: center;
-  justify-content: space-between; /* keeps right-controls on the right */
-  gap: 10px; /* optional spacing between toggle and logo */
+  justify-content: space-between;
+  gap: 10px;
   border-bottom: 1px solid #a2a2a6;
 }
 
-.logo {
+.left-group,
+.right-controls {
   display: flex;
   align-items: center;
-  justify-content: flex-start; /* keeps logo text left-aligned */
-  margin: 0; /* remove extra margin */
-  gap: 8px; /* spacing between icon and text if you add icon later */
-  font-weight: bold;
-  font-size: 16px;
 }
 
-.header-logo-section {
-  display: flex;
-  align-items: center;
+.left-group {
   gap: 10px;
 }
 
-.header-logo-icon { 
-    display:flex; 
-    align-items:center; 
-    justify-content:center; 
-}
-
-/* title */
-.header-title {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 700;
-  color: #111827;
+.right-controls {
+  gap: 16px;
 }
 
 .toggle-btn {
@@ -51,187 +39,193 @@
   cursor: pointer;
 }
 
-
-.left-group {
+/* Logo */
+.header-logo-section {
   display: flex;
   align-items: center;
   gap: 10px;
 }
-.right-controls {
+
+.header-logo-icon {
   display: flex;
   align-items: center;
-  gap: 16px;
+  justify-content: center;
 }
 
+.header-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #111827;
+}
+
+/* Icons */
 .icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
   background: none;
   border: none;
   cursor: pointer;
 }
 
+.icon-btn svg,
 .icon-img {
-  width: 24px;
-  height: 24px;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
 }
 
-/* PROFILE */
+/* =========================
+   PROFILE
+========================= */
 .profile {
   display: flex;
   align-items: center;
   gap: 8px;
-  text-decoration: none !important;
+  text-decoration: none;
   color: inherit;
 }
 
 .profile p {
-  color: #000 !important; /* name stays black */
+  color: #000;
 }
 
-/* Avatar default violet — ALWAYS visible */
 .avatar {
-  background-color: #9b5de5 !important; /* FORCE the violet color */
   width: 45px;
   height: 45px;
   border-radius: 50%;
+  background: #9b5de5;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
-  color: white !important;
+  color: #fff;
 }
 
-
-/* LAYOUT */
+/* =========================
+   LAYOUT
+========================= */
 .home-container {
   display: flex;
 }
 
-/* SIDEBAR */
+/* =========================
+   SIDEBAR
+========================= */
 .sidebar {
   width: 230px;
-  background: white;
+  background: #fff;
   padding: 20px;
   border-right: 1px solid #a2a2a6;
-
 }
+
+.sidebar a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Navigation */
+.nav-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.nav-item,
+.sign-out {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  text-align: left;
+  color: #0a0a0a;
+}
+
+.nav-item svg {
+  width: 20px;
+  height: 20px;
+}
+
+.nav-item:hover {
+  background: #f2f2f2;
+  border-radius: 6px;
+}
+
+.nav-item.active {
+  background: #000;
+  color: #fff;
+  border-radius: 6px;
+}
+
+/* Sidebar footer */
 .sidebar-bottom {
-  margin-top: auto;       /* keeps it at the bottom */
-  display: flex;          /* use flex to control alignment */
-  justify-content: flex-end; /* push the button to the right */
+  margin-top: auto;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .view-all {
   padding: 8px 12px;
-  font-family: 'Inter', sans-serif;
   font-weight: 700;
   font-size: 14px;
-  color: black;
-  background: #ffffff;
+  background: #fff;
   border: none;
   border-radius: 4px;
   cursor: pointer;
 }
 
 .view-all:hover {
-  background-color: black;
-  color: #ffffff;
+  background: #000;
+  color: #fff;
 }
 
-
-/* NAV */
-.nav-menu {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  
-}
-.nav-item,
-.sign-out {
-  padding: 10px;
-  border: none;
-  background: none;
-  text-align: left;
-  cursor: pointer;
-}
-.nav-item,
-.sign-out {
-  display: flex;
-  align-items: center;
-  gap: 10px;                /* spacing between icon & text */
-  padding: 10px 14px;
-  width: 100%;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  font-size: 16px;
-  color: #0A0A0A;
-  text-align: left;
-}
-.nav-item svg {
-  width: 20px;
-  height: 20px;
-  display: block;              /* fixes weird shifting */
-  flex-shrink: 0;
-}
-.nav-item:hover {
-  background-color: #f2f2f2; /* light gray background on hover */
-  color: #000000;  
-  border-radius: 6px;           /* optional text color change */
-}
-
-.nav-item.active {
-  background-color: black; /* background for active item */
-  color: #ffffff;   
-  border-radius: 6px;       /* text color for active item */
-}
-
-/* Overlay */
+/* =========================
+   MODALS (Shared)
+========================= */
 .modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   background: rgba(10, 10, 10, 0.3);
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   z-index: 999;
 }
 
-/* Modal Box */
+/* Sign Out Modal */
 .signout-modal {
   width: 320px;
   height: 151px;
-  background: #FFFFFF;
+  background: #fff;
   border-radius: 12px;
   padding: 20px;
-  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
 
 .signout-modal h3 {
+  margin: 0;
   font-size: 18px;
   font-weight: 700;
-  color: #000;
-  margin: 0;
-  font-family: Inter, sans-serif;
 }
 
 .signout-modal p {
   font-size: 14px;
   color: #717182;
-  font-family: Inter, sans-serif;
 }
 
-/* Buttons */
 .modal-buttons {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
-  margin-top: 20px;
 }
 
 .cancel-btn,
@@ -239,27 +233,36 @@
   background: none;
   border: none;
   font-size: 14px;
-  font-family: Inter, sans-serif;
   color: #717182;
   cursor: pointer;
-  transition: 0.2s;
 }
 
 .cancel-btn:hover,
 .confirm-btn:hover {
-  background-color: #000;
-  color: #ffffff;
+  background: #000;
+  color: #fff;
   border-radius: 5px;
-  padding:5px;
+  padding: 5px;
 }
 
-
-/* MAIN CONTENT */
+/* =========================
+   MAIN CONTENT
+========================= */
 .main-content {
-  padding: 25px;
   width: 100%;
+  padding: 25px;
 }
 
+/* Welcome */
+.welcome-text {
+  margin: 10px 0;
+}
+
+.welcome-text p {
+  line-height: 1.6;
+}
+
+/* Stats */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -268,142 +271,72 @@
 }
 
 .stat-card {
-  background: white;
+  background: #fff;
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-.album-list {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  padding: 20px 0;
-}
-
-.album-list .album-card {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 16px;
-  padding: 16px;
-  border-radius: 14px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-}
-
-.album-list .album-img {
-  width: 80px;
-  height: 80px;
-  flex-shrink: 0;
-  background: #e5e5e5;
-  border-radius: 10px;
-}
-
-.album-list .album-img .mp-album-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 10px;
-}
-
-.album-list .album-info {
-  flex: 1;
-  margin: 0;
-}
-
-.album-list .album-info h4 {
-  font-size: 1.05rem;
-  margin: 0 0 4px 0;
-}
-
-.album-list .price-details-box {
-  margin-top: 8px;
-}
-
-.album-list .album-add-cart-btn {
-  flex-shrink: 0;
-}
-
-/* Smaller grid variant used by Marketplace: reduced card width and image height */
-
-.album-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 20px;
-  padding: 10px 0;
-}
-
-.album-grid .album-card {
-  padding: 16px;
-  border-radius: 14px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-}
-
-.album-grid .album-img {
-  width: 100%;
-  height: 250px;
-  background: #e5e5e5;
-  border-radius: 10px;
-  background-size: cover;
-  background-position: center;
-}
-
-.album-grid .album-img .mp-album-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 10px;
-}
-.album-grid .album-info h4 {
-  font-size: 1.05rem;
-  margin: 0;
-}
-
-.stock-count {
-  font-weight: 600;
-  color: #6b7280;
-  font-size: 0.9rem;
-}
-
+/* =========================
+   ALBUMS (Shared)
+========================= */
 .album-card {
-  background: white;
+  background: #fff;
   border-radius: 14px;
   padding: 16px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
   display: flex;
   flex-direction: column;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
 }
 
 .album-img {
-  width: 100%;
-  height: 250px;
-  background: #e5e5e5;
-  border-radius: 10px;
   position: relative;
+  width: 100%;
+  height: 230px;
+  background: #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
 }
 
-/* Title + Artist */
+.mp-album-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .album-info {
   margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
-/* Price + Details row */
+.album-info h4 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.album-info p {
+  margin: 0;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+/* Price + Details */
 .price-details-row {
   display: flex;
-  align-items: center;
   justify-content: space-between;
+  align-items: center;
   margin-top: 8px;
 }
 
-/* Price text */
 .price {
-  color: #8B5CF6;
+  color: #8b5cf6;
   font-weight: 700;
-  font-size: 1.1em;
-  white-space: nowrap;
+  font-size: 16px;
 }
 
-/* Small details button */
 .details-btn {
   display: flex;
   align-items: center;
@@ -412,45 +345,47 @@
   padding: 4px 10px;
   border-radius: 6px;
   border: none;
-  cursor: pointer;
   font-size: 0.85em;
-  white-space: nowrap;
+  cursor: pointer;
 }
 
-/* Add to Cart button */
-.cart-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
+/* Add to cart */
+.album-add-cart-btn {
   margin-top: 12px;
-  background: #000;
-  color: white;
-  padding: 10px;
-  border-radius: 6px;
   width: 100%;
+  background: #000;
+  color: #fff;
   border: none;
+  padding: 12px;
+  border-radius: 10px;
   cursor: pointer;
 }
 
-.icon-btn {
-  display: inline-flex;        /* keeps icon centered */
-  align-items: center;
-  justify-content: center;
-  padding: 8px;                /* adjust if needed */
-  background: transparent;     /* optional */
-  border: none;                /* optional */
-  cursor: pointer;
+.album-add-cart-btn:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
 }
 
-.icon-btn svg {
-  width: 18px;                 /* your preferred size */
-  height: 18px;
-  display: inline-block;
-  flex-shrink: 0;
+/* =========================
+   GRIDS
+========================= */
+.album-list-home {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+  padding:35px ;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-/* Out of stock styles */
+.album-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+/* =========================
+   STOCK STATES
+========================= */
 .out-of-stock {
   opacity: 0.5;
   filter: grayscale(100%);
@@ -458,14 +393,11 @@
 
 .out-of-stock-label {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: rgba(0, 0, 0, 0.7);
-  color: white;
-  padding: 8px 12px;
-  border-radius: 4px;
-  font-size: 16px;
-  font-weight: bold;
-  z-index: 10;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+  color: #fff;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

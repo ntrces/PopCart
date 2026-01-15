@@ -30,18 +30,18 @@
   border-bottom: 1px solid #a2a2a6;
 }
 
-.left-group {
+.left-group,
+.right-controls {
   display: flex;
   align-items: center;
+}
+
+.left-group {
   gap: 10px;
 }
 
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: bold;
-  font-size: 16px;
+.right-controls {
+  gap: 16px;
 }
 
 .toggle-btn {
@@ -51,27 +51,43 @@
   cursor: pointer;
 }
 
-.right-controls {
+/* Logo */
+.header-logo-section {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 10px;
 }
 
+.header-logo-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #111827;
+}
+
+/* Icons */
 .icon-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   padding: 8px;
+  background: none;
   border: none;
-  background: transparent;
   cursor: pointer;
 }
 
-.icon-btn svg {
+.icon-btn svg,
+.icon-img {
   width: 18px;
   height: 18px;
+  flex-shrink: 0;
 }
-
 /* PROFILE */
 .profile {
   display: flex;
@@ -285,13 +301,25 @@
   margin-bottom: 30px;
 }
 
+
+
 .myorders-header .left {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
+
+
 .icon-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+}
+
+.icon-box h2{
   display: flex;
   justify-content: center;
   align-items: center;
@@ -306,13 +334,14 @@
 }
 
 
-.myorders-header h1 {
+.my-orders-header h1 {
   margin: 0;
   font-size: 22px;
   font-weight: 700;
+  margin-bottom: 5px;
 }
 
-.myorders-header p {
+.my-orders-header p {
   margin: 0;
   margin-top: -2px;
   font-size: 14px;
@@ -336,12 +365,15 @@
   margin: 0;
   font-size: 18px;
   font-weight: 700;
+  margin-bottom: 5px;
 }
 
 .order-history-card .sub {
   margin-top: 4px;
   font-size: 14px;
   color: #888;
+  margin-bottom: 20px;
+
 }
 
 /* INNER ORDER CARD */
@@ -372,6 +404,13 @@
   margin: 0;
   font-size: 13px;
   color: #666;
+}
+
+.no-orders {
+  text-align: right;       /* aligns text to the right */
+  font-size: 12px;         /* smaller text */
+  color: #6b7280;          /* optional gray color */
+  margin-top: 10px;        /* space from previous content */
 }
 
 /* STATUS PILL */

@@ -287,7 +287,7 @@ Home</button> </Link>
 
         <div className="price-details-box">
           <div className="price-details-row">
-            <p className="price">₱{Number(product.price).toFixed(2)}</p>
+              <p className="price">₱{Number(product.price).toFixed(2)}</p>
 
             <button className="details-btn" onClick={() => { setSelectedAlbum(product); setShowDetails(true); }}>
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">

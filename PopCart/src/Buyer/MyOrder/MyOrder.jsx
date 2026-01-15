@@ -83,12 +83,17 @@ export default function MyOrder() {
       <div className="top-bar">
   <div className="left-group">
 <button className="toggle-btn" onClick={toggleSidebar}>☰</button>
-    <div className="logo"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <div className="header-logo-section">
+            <div className="header-logo-icon" aria-hidden="true">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M7.5 15V4.16667L17.5 2.5V13.3333" stroke="#8B5CF6" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M5 17.5C6.38071 17.5 7.5 16.3807 7.5 15C7.5 13.6193 6.38071 12.5 5 12.5C3.61929 12.5 2.5 13.6193 2.5 15C2.5 16.3807 3.61929 17.5 5 17.5Z" stroke="#8B5CF6" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M15 15.8333C16.3807 15.8333 17.5 14.7141 17.5 13.3333C17.5 11.9526 16.3807 10.8333 15 10.8333C13.6193 10.8333 12.5 11.9526 12.5 13.3333C12.5 14.7141 13.6193 15.8333 15 15.8333Z" stroke="#8B5CF6" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
- Pop Cart</div>
+            </div>
+
+            <h1 className="header-title">Pop Cart</h1>
+          </div>
   </div>
 
         <div className="right-controls">
@@ -208,10 +213,10 @@ Home</button> </Link>
     <path d="M7.5 4.26999L16.5 9.41999" stroke="#0A0A0A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
   </svg>
 </div>
-      <div>
-        <h1>My Orders</h1>
-        <p>Track your purchases</p>
-      </div>
+      <div className="my-orders-header">
+  <h1>My Orders</h1>
+  <p>Track your purchases</p>
+</div>
     </div>
     <div className="order-count">{orders.length} order{orders.length !== 1 ? 's' : ''}</div>
   </div>

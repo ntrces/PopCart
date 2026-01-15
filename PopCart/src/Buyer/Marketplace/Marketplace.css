@@ -654,7 +654,7 @@
 /* ALBUMS GRID */
 .album-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr); /* 4 columns */
+  grid-template-columns: repeat(3, 1fr); /* 4 columns */
   gap: 20px;
   width: 100%;
   padding: 20px 0;

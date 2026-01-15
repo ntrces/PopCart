@@ -317,10 +317,18 @@
   font-weight: 700;
 }
 
+/* general album info text */
 .album-info p {
   margin: 0;
   font-size: 14px;
-  color: #6b7280;
+  color: #6b7280; /* default gray */
+}
+
+/* price text */
+.album-info .price {
+  color: #8b5cf6;
+  font-weight: 700;
+  font-size: 16px;
 }
 
 /* Price + Details */
@@ -331,11 +339,6 @@
   margin-top: 8px;
 }
 
-.price {
-  color: #8b5cf6;
-  font-weight: 700;
-  font-size: 16px;
-}
 
 .details-btn {
   display: flex;

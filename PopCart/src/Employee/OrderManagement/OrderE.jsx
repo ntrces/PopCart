@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/useAuth.jsx";
 import "./OrderE.css";
@@ -106,10 +106,60 @@ export const Order = () => {
     count: filterCounts[filter.id],
   }));
 
-  const visibleOrders =
-    activeFilter === "all"
+  const visibleOrders = useMemo(() => {
+    let filtered = activeFilter === "all"
       ? orders
       : orders.filter((o) => o.order_status.toLowerCase() === activeFilter);
+    
+    // Sort based on filter
+    if (activeFilter === "all") {
+      // Sort by order_header_id descending (latest order on top)
+      filtered = [...filtered].sort((a, b) => b.order_header_id - a.order_header_id);
+    } else {
+      // Sort by the timestamp of the current status (latest first)
+      filtered = [...filtered].sort((a, b) => {
+        let dateA, dateB;
+        
+        // Get the appropriate timestamp based on current filter
+        switch(activeFilter) {
+          case 'pending':
+            dateA = a.order_datetime;
+            dateB = b.order_datetime;
+            break;
+          case 'approved':
+            dateA = a.approved_datetime || a.order_datetime;
+            dateB = b.approved_datetime || b.order_datetime;
+            break;
+          case 'packing':
+            dateA = a.packing_datetime || a.order_datetime;
+            dateB = b.packing_datetime || b.order_datetime;
+            break;
+          case 'shipped':
+            dateA = a.shipped_datetime || a.order_datetime;
+            dateB = b.shipped_datetime || b.order_datetime;
+            break;
+          case 'delivered':
+            dateA = a.delivered_datetime || a.order_datetime;
+            dateB = b.delivered_datetime || b.order_datetime;
+            break;
+          case 'cancelled':
+            dateA = a.cancelled_datetime || a.order_datetime;
+            dateB = b.cancelled_datetime || b.order_datetime;
+            break;
+          default:
+            dateA = a.order_datetime;
+            dateB = b.order_datetime;
+        }
+        
+        // Convert to Date objects and compare (descending order - latest first)
+        const timeA = new Date(dateA).getTime();
+        const timeB = new Date(dateB).getTime();
+        return timeB - timeA;
+      });
+    }
+    
+    return filtered;
+  }, [orders, activeFilter]);
 
   return (
       <div className="admin-layout">

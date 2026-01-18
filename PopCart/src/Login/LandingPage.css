@@ -423,3 +423,26 @@
     cursor: pointer;
     color: #666;
 }
+
+/* Make all links inside the landing page look like regular content (not traditional links) */
+.popcart-landing a {
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+
+.popcart-landing a:hover,
+.popcart-landing a:focus {
+    text-decoration: none;
+    color: inherit;
+}
+
+.popcart-landing a.btn,
+.popcart-landing a.cta-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: #000000;
+}

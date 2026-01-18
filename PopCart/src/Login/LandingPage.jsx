@@ -30,7 +30,7 @@ export const LandingPage = () => {
       bgClass: "bg-indigo",
       icon: (
         <div className="icon-wrap">
-          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M28 28H0V0H28V28Z" stroke="#4F46E5"/> <path d="M10.5 21V5.83333L24.5 3.5V18.6667" stroke="#4F46E5" strokeWidth="2.33333" strokeLinecap="round" strokeLinejoin="round"/><path d="M7 24.5C8.933 24.5 10.5 22.933 10.5 21C10.5 19.067 8.933 17.5 7 17.5C5.067 17.5 3.5 19.067 3.5 21C3.5 22.933 5.067 24.5 7 24.5Z" stroke="#4F46E5" strokeWidth="2.33333" strokeLinecap="round" strokeLinejoin="round"/> <path d="M21 22.167C22.933 22.167 24.5 20.6 24.5 18.667C24.5 16.734 22.933 15.167 21 15.167C19.067 15.167 17.5 16.734 17.5 18.667C17.5 20.6 19.067 22.167 21 22.167Z" stroke="#4F46E5" strokeWidth="2.33333" strokeLinecap="round" strokeLinejoin="round"/>
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M28 28H0V0H28V28Z" /> <path d="M10.5 21V5.83333L24.5 3.5V18.6667" stroke="#4F46E5" strokeWidth="2.33333" strokeLinecap="round" strokeLinejoin="round"/><path d="M7 24.5C8.933 24.5 10.5 22.933 10.5 21C10.5 19.067 8.933 17.5 7 17.5C5.067 17.5 3.5 19.067 3.5 21C3.5 22.933 5.067 24.5 7 24.5Z" stroke="#4F46E5" strokeWidth="2.33333" strokeLinecap="round" strokeLinejoin="round"/> <path d="M21 22.167C22.933 22.167 24.5 20.6 24.5 18.667C24.5 16.734 22.933 15.167 21 15.167C19.067 15.167 17.5 16.734 17.5 18.667C17.5 20.6 19.067 22.167 21 22.167Z" stroke="#4F46E5" strokeWidth="2.33333" strokeLinecap="round" strokeLinejoin="round"/>
 </svg>
         </div>
       ),
@@ -44,7 +44,7 @@ export const LandingPage = () => {
       icon: (
         <div className="icon-wrap">
           <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M28 28H0V0H28V28Z" stroke="#F59E0B"/><path d="M22.1666 16.3333C23.9049 14.63 25.6666 12.5883 25.6666 9.91667C25.6666 8.21486 24.9905 6.58276 23.7872 5.3794C22.5838 4.17604 20.9517 3.5 19.2499 3.5C17.1966 3.5 15.7499 4.08333 13.9999 5.83333C12.2499 4.08333 10.8033 3.5 8.74992 3.5C7.04811 3.5 5.41601 4.17604 4.21265 5.3794C3.00929 6.58276 2.33325 8.21486 2.33325 9.91667C2.33325 12.6 4.08325 14.6417 5.83325 16.3333L13.9999 24.5L22.1666 16.3333Z" stroke="#F59E0B" strokeWidth="2.33333" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M28 28H0V0H28V28Z"/><path d="M22.1666 16.3333C23.9049 14.63 25.6666 12.5883 25.6666 9.91667C25.6666 8.21486 24.9905 6.58276 23.7872 5.3794C22.5838 4.17604 20.9517 3.5 19.2499 3.5C17.1966 3.5 15.7499 4.08333 13.9999 5.83333C12.2499 4.08333 10.8033 3.5 8.74992 3.5C7.04811 3.5 5.41601 4.17604 4.21265 5.3794C3.00929 6.58276 2.33325 8.21486 2.33325 9.91667C2.33325 12.6 4.08325 14.6417 5.83325 16.3333L13.9999 24.5L22.1666 16.3333Z" stroke="#F59E0B" strokeWidth="2.33333" strokeLinecap="round" strokeLinejoin="round"/>
 </svg>
 
         </div>
@@ -58,7 +58,7 @@ export const LandingPage = () => {
       bgClass: "bg-green",
       icon: (
         <div className="icon-wrap">
-          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M28 28H0V0H28V28Z" stroke="#16A34A"/><path d="M9.33341 25.6663C9.97775 25.6663 10.5001 25.144 10.5001 24.4997C10.5001 23.8553 9.97775 23.333 9.33341 23.333C8.68908 23.333 8.16675 23.8553 8.16675 24.4997C8.16675 25.144 8.68908 25.6663 9.33341 25.6663Z" stroke="#16A34A" strokeWidth="2.33333" strokeLinecap="round" strokeLinejoin="round"/> <path d="M22.1667 25.6663C22.811 25.6663 23.3333 25.144 23.3333 24.4997C23.3333 23.8553 22.811 23.333 22.1667 23.333C21.5223 23.333 21 23.8553 21 24.4997C21 25.144 21.5223 25.6663 22.1667 25.6663Z" stroke="#16A34A" strokeWidth="2.33333" strokeLinecap="round" strokeLinejoin="round"/> <path d="M2.3916 2.3916H4.72494L7.82827 16.8816C7.94211 17.4123 8.23738 17.8867 8.66326 18.2231C9.08915 18.5595 9.61899 18.737 10.1616 18.7249H21.5716C22.1026 18.7241 22.6175 18.5421 23.0311 18.2091C23.4448 17.876 23.7324 17.4119 23.8466 16.8933L25.7716 8.22493H5.97327" stroke="#16A34A" strokeWidth="2.33333" strokeLinecap="round" strokeLinejoin="round"/>
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg"> <path d="M28 28H0V0H28V28Z" /><path d="M9.33341 25.6663C9.97775 25.6663 10.5001 25.144 10.5001 24.4997C10.5001 23.8553 9.97775 23.333 9.33341 23.333C8.68908 23.333 8.16675 23.8553 8.16675 24.4997C8.16675 25.144 8.68908 25.6663 9.33341 25.6663Z" stroke="#16A34A" strokeWidth="2.33333" strokeLinecap="round" strokeLinejoin="round"/> <path d="M22.1667 25.6663C22.811 25.6663 23.3333 25.144 23.3333 24.4997C23.3333 23.8553 22.811 23.333 22.1667 23.333C21.5223 23.333 21 23.8553 21 24.4997C21 25.144 21.5223 25.6663 22.1667 25.6663Z" stroke="#16A34A" strokeWidth="2.33333" strokeLinecap="round" strokeLinejoin="round"/> <path d="M2.3916 2.3916H4.72494L7.82827 16.8816C7.94211 17.4123 8.23738 17.8867 8.66326 18.2231C9.08915 18.5595 9.61899 18.737 10.1616 18.7249H21.5716C22.1026 18.7241 22.6175 18.5421 23.0311 18.2091C23.4448 17.876 23.7324 17.4119 23.8466 16.8933L25.7716 8.22493H5.97327" stroke="#16A34A" strokeWidth="2.33333" strokeLinecap="round" strokeLinejoin="round"/>
 </svg>
 
         </div>
@@ -203,7 +203,7 @@ export const LandingPage = () => {
         <div className="footer-bottom">
           <p>© 2025 PopCart. All rights reserved.</p>
           <div className="footer-icons" aria-hidden>
-            <svg width="128" height="20" viewBox="0 0 128 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20 20H0V0H20V20Z" stroke="#9CA3AF"/>
+            <svg width="128" height="20" viewBox="0 0 128 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20 20H0V0H20V20Z" />
 <path d="M18.3334 3.33368C18.3334 3.33368 17.7501 5.08368 16.6667 6.16701C18.0001 14.5003 8.83341 20.5837 1.66675 15.8337C3.50008 15.917 5.33341 15.3337 6.66675 14.167C2.50008 12.917 0.416748 8.00034 2.50008 4.16701C4.33341 6.33368 7.16675 7.58368 10.0001 7.50034C9.25008 4.00034 13.3334 2.00034 15.8334 4.33368C16.7501 4.33368 18.3334 3.33368 18.3334 3.33368Z" stroke="#9CA3AF" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/></svg>
           </div>
         </div>

@@ -21,7 +21,7 @@ import OrderManagement from "./Admin/Orders/OrderManagement.jsx";
 import OrderManage from "./Employee/OrderManagement/OrderE.jsx";
 import ProductManage from "./Employee/ProductManagement/ProductE.jsx";
 
-import AdminLogin from "./Admin/Login/SignInAdmin.jsx";
+import LandingPage from "./Login/LandingPage.jsx";
 
 export default function App() {
   return (

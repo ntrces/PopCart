@@ -97,7 +97,7 @@ export const LandingPage = () => {
         </div>
 
         <nav className="auth-nav" aria-label="User authentication">
-          <button className="btn btn-ghost" onClick={() => navigate('/signin')}>Sign In</button>
+          <button className="btn btn-ghost" onClick={() => navigate('/SignIn')}>Sign In</button>
           <button className="btn btn-primary" onClick={() => navigate('/signup-buyer')}>Sign Up</button>
         </nav>
       </header>

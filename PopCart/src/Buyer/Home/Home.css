@@ -189,7 +189,7 @@
 /* =========================
    MODALS (Shared)
 ========================= */
-.modal-overlay {
+.modal-overlay-home {
   position: fixed;
   inset: 0;
   background: rgba(10, 10, 10, 0.3);
@@ -200,50 +200,78 @@
 }
 
 /* Sign Out Modal */
-.signout-modal {
-  width: 320px;
-  height: 151px;
-  background: #fff;
-  border-radius: 12px;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+.signout-modal-home {
+  width: 360px;
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 24px;
+  box-sizing: border-box;
+  text-align: center; /* CENTER EVERYTHING */
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
 
-.signout-modal h3 {
-  margin: 0;
-  font-size: 18px;
+/* Title */
+.signout-modal-home h3 {
+  margin: 0 0 8px;
+  font-size: 20px;
   font-weight: 700;
+  color: #111827;
 }
 
-.signout-modal p {
+/* Message */
+.signout-modal-home p {
+  margin: 0 0 20px;
   font-size: 14px;
-  color: #717182;
+  color: #6b7280;
 }
 
-.modal-buttons {
+/* Buttons container */
+.modal-buttons-home {
   display: flex;
-  justify-content: flex-end;
-  gap: 10px;
+  justify-content: center;
+  gap: 14px;
 }
 
-.cancel-btn,
-.confirm-btn {
-  background: none;
-  border: none;
+/* Base button styles */
+.cancel-btn-home,
+.confirm-btn-home {
+  min-width: 110px;       /* SAME WIDTH */
+  height: 40px;           /* SAME HEIGHT */
   font-size: 14px;
-  color: #717182;
+  font-weight: 500;
+  border-radius: 8px;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.cancel-btn:hover,
-.confirm-btn:hover {
-  background: #000;
-  color: #fff;
-  border-radius: 5px;
-  padding: 5px;
+/* Cancel button (outlined gray) */
+.cancel-btn-home {
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  color: #6b7280;
 }
+
+.cancel-btn-home:hover {
+  background-color: #f3f4f6;
+}
+
+/* Sign Out button (solid red) */
+.confirm-btn-home {
+  background-color: #ef4444;
+  border: none;
+  color: #ffffff;
+}
+
+.confirm-btn-home:hover {
+  background-color: #dc2626;
+}
+
+/* Click effect */
+.cancel-btn-home:active,
+.confirm-btn-home:active {
+  transform: scale(0.96);
+}
+
 
 /* =========================
    MAIN CONTENT

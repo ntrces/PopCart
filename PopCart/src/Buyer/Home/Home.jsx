@@ -216,17 +216,17 @@ Home</button> </Link>
         )}
 
         {showSignOutModal && (
-  <div className="modal-overlay">
-    <div className="signout-modal">
+  <div className="modal-overlay-home">
+    <div className="signout-modal-home">
       <h3>Sign Out</h3>
       <p>Are you sure you want to sign out?</p>
 
-      <div className="modal-buttons">
-        <button className="cancel-btn" onClick={() => setShowSignOutModal(false)}>
+      <div className="modal-buttons-home">
+        <button className="cancel-btn-home" onClick={() => setShowSignOutModal(false)}>
           Cancel
         </button>
 
-        <button className="confirm-btn" onClick={() => { localStorage.removeItem('user'); setShowSignOutModal(false); navigate('/signin'); }}>
+        <button className="confirm-btn-home" onClick={() => { localStorage.removeItem('user'); setShowSignOutModal(false); navigate('/signin'); }}>
           Sign Out
         </button>
       </div>

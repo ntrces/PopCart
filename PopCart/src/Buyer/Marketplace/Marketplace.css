@@ -167,66 +167,92 @@
   border-radius: 6px;
 }
 
+/* Sign Out Modal */
 
 
-/* --------------------------------------------------
-   SIGN OUT MODAL
--------------------------------------------------- */
-.modal-overlay {
+
+.modal-overlay-mp {
   position: fixed;
   inset: 0;
-  background: transparent;
+  background: rgba(10, 10, 10, 0.3);
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   z-index: 999;
 }
 
-.signout-modal {
-  width: 320px;
+.signout-modal-mp {
+  width: 360px;
   background: #ffffff;
-  border-radius: 12px;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  border-radius: 14px;
+  padding: 24px;
+  box-sizing: border-box;
+  text-align: center; /* CENTER EVERYTHING */
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
 
-.signout-modal h3 {
-  font-size: 18px;
+/* Title */
+.signout-modal-mp h3 {
+  margin: 0 0 8px;
+  font-size: 20px;
   font-weight: 700;
-  margin: 0;
+  color: #111827;
 }
 
-.signout-modal p {
+/* Message */
+.signout-modal-mp p {
+  margin: 0 0 20px;
   font-size: 14px;
-  color: #717182;
+  color: #6b7280;
 }
 
-.modal-buttons {
+/* Buttons container */
+.modal-buttons-mp {
   display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 20px;
+  justify-content: center;
+  gap: 14px;
 }
 
-.cancel-btn,
-.confirm-btn {
-  background: none;
-  border: none;
+/* Base button styles */
+.cancel-btn-mp,
+.confirm-btn-mp {
+  min-width: 110px;       /* SAME WIDTH */
+  height: 40px;           /* SAME HEIGHT */
   font-size: 14px;
-  color: #717182;
+  font-weight: 500;
+  border-radius: 8px;
   cursor: pointer;
-  transition: 0.2s;
+  transition: all 0.2s ease;
 }
 
-.cancel-btn:hover,
-.confirm-btn:hover {
-  background: #000;
-  color: #fff;
-  border-radius: 5px;
-  padding: 5px;
+/* Cancel button (outlined gray) */
+.cancel-btn-mp {
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  color: #6b7280;
 }
+
+.cancel-btn-mp:hover {
+  background-color: #f3f4f6;
+}
+
+/* Sign Out button (solid red) */
+.confirm-btn-mp {
+  background-color: #ef4444;
+  border: none;
+  color: #ffffff;
+}
+
+.confirm-btn-mp:hover {
+  background-color: #dc2626;
+}
+
+/* Click effect */
+.cancel-btn-mp:active,
+.confirm-btn-mp:active {
+  transform: scale(0.96);
+}
+
 /* --------------------------------------------------
    PRODUCT LIST (placeholder)
 -------------------------------------------------- */

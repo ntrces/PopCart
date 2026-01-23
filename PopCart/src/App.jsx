@@ -21,12 +21,13 @@ import OrderManagement from "./Admin/Orders/OrderManagement.jsx";
 import OrderManage from "./Employee/OrderManagement/OrderE.jsx";
 import ProductManage from "./Employee/ProductManagement/ProductE.jsx";
 
+
 export default function App() {
   return (
     <Routes>
       <Route path="/" element={<LandingPage />} />
       <Route path="/landing" element={<LandingPage />} />
-      <Route path="/signin" element={<SignIn />} />
+      <Route path="/SignIn" element={<SignIn />} />
       <Route path="/signup-buyer" element={<SignUpBuyer />} />
 
       {/* Admin routes */}

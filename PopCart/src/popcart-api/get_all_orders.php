@@ -79,6 +79,11 @@ if ($result->num_rows > 0) {
             'statusBg' => $statusBg,
             'statusColor' => $statusColor,
             'customer' => $row['lastname'] . ' ' . $row['firstname'] . ' • ' . $row['email'],
+            'approved_datetime' => ($row['approved_date'] && $row['approved_time']) ? $row['approved_date'] . ' ' . $row['approved_time'] : null,
+            'packing_datetime' => ($row['packing_date'] && $row['packing_time']) ? $row['packing_date'] . ' ' . $row['packing_time'] : null,
+            'shipped_datetime' => ($row['shipped_date'] && $row['shipped_time']) ? $row['shipped_date'] . ' ' . $row['shipped_time'] : null,
+            'delivered_datetime' => ($row['delivered_date'] && $row['delivered_time']) ? $row['delivered_date'] . ' ' . $row['delivered_time'] : null,
+            'cancelled_datetime' => ($row['cancelled_date'] && $row['cancelled_time']) ? $row['cancelled_date'] . ' ' . $row['cancelled_time'] : null,
             'user' => [
                 'name' => $row['firstname'] . ' ' . $row['lastname'],
                 'email' => $row['email'],

@@ -22,7 +22,11 @@ $data = json_decode(file_get_contents("php://input"), true);
 $email    = $data["email"] ?? "";
 $password = $data["password"] ?? "";
 
-// Prepared statement to find user by email
+$user = null;
+$found = false;
+$source_table = "";
+
+// First, check the users table
 $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
 $stmt->bind_param("s", $email);
 $stmt->execute();
@@ -30,7 +34,28 @@ $result = $stmt->get_result();
 
 if ($result->num_rows > 0) {
     $user = $result->fetch_assoc();
+    $found = true;
+    $source_table = "users";
+}
+$stmt->close();
 
+// If not found in users table, check the admins table
+if (!$found) {
+    $stmt = $conn->prepare("SELECT * FROM admins WHERE email = ?");
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        $user = $result->fetch_assoc();
+        $found = true;
+        $source_table = "admins";
+    }
+    $stmt->close();
+}
+
+// If user found in either table, verify password
+if ($found && $user) {
     // Verify hashed password
     if (password_verify($password, $user["password"])) {
         echo json_encode([
@@ -42,7 +67,8 @@ if ($result->num_rows > 0) {
                 "lastname" => $user["lastname"],
                 "email" => $user["email"],
                 "usertype" => $user["usertype"],
-                "status" => $user["status"]
+                "status" => $user["status"],
+                "source_table" => $source_table
             ]
         ]);
     } else {
@@ -52,6 +78,5 @@ if ($result->num_rows > 0) {
     echo json_encode(["success" => false, "message" => "User not registered"]);
 }
 
-$stmt->close();
 $conn->close();
 ?>

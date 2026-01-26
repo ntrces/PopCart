@@ -1,13 +1,19 @@
 import React from "react";
 import "./Delete.css";
 
-export default function Delete ({ onClose, user, onSuccess }) {
+export default function Delete ({ onClose, user, onSuccess, currentUser }) {
   const handleCancel = () => {
     console.log("Cancel clicked");
     onClose();
   };
 
   const handleDelete = async () => {
+    // Prevent deleting own account
+    if (currentUser && user.user_id === currentUser.user_id) {
+      alert('You cannot delete your own account.');
+      return;
+    }
+
     if (user.usertype === 'admin') {
       // Check active admin count
       try {

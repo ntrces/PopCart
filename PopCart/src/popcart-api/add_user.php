@@ -39,13 +39,18 @@ if (!in_array($usertype, ['buyer', 'employee', 'admin'])) {
     exit;
 }
 
-// Check if email already exists
-$checkEmail = $conn->prepare("SELECT * FROM users WHERE email = ?");
-$checkEmail->bind_param("s", $email);
-$checkEmail->execute();
-$checkResult = $checkEmail->get_result();
+// Check if email already exists in both tables
+$checkEmail1 = $conn->prepare("SELECT * FROM users WHERE email = ?");
+$checkEmail1->bind_param("s", $email);
+$checkEmail1->execute();
+$checkResult1 = $checkEmail1->get_result();
 
-if ($checkResult->num_rows > 0) {
+$checkEmail2 = $conn->prepare("SELECT * FROM admins WHERE email = ?");
+$checkEmail2->bind_param("s", $email);
+$checkEmail2->execute();
+$checkResult2 = $checkEmail2->get_result();
+
+if ($checkResult1->num_rows > 0 || $checkResult2->num_rows > 0) {
     echo json_encode(["success" => false, "message" => "Email already registered."]);
     exit;
 }
@@ -53,8 +58,12 @@ if ($checkResult->num_rows > 0) {
 // --- 3. Secure Password Hashing ---
 $hashedPassword = password_hash($plainPassword, PASSWORD_DEFAULT);
 
-// --- 4. Prepared Statement Execution ---
-$stmt = $conn->prepare("INSERT INTO users (lastname, firstname, email, birthday, password, usertype, status) VALUES (?, ?, ?, ?, ?, ?, ?)");
+// --- 4. Decide which table to insert into ---
+// If usertype is 'admin', insert into admins table; otherwise, insert into users table
+$table = ($usertype === 'admin') ? 'admins' : 'users';
+
+// --- 5. Prepared Statement Execution ---
+$stmt = $conn->prepare("INSERT INTO $table (lastname, firstname, email, birthday, password, usertype, status) VALUES (?, ?, ?, ?, ?, ?, ?)");
 $stmt->bind_param("sssssss", $lastname, $firstname, $email, $birthday, $hashedPassword, $usertype, $status);
 
 if ($stmt->execute()) {

@@ -6,12 +6,27 @@ header("Content-Type: application/json");
 
 require 'db_connect.php';
 
-$sql = "SELECT user_id, firstname, lastname, email, usertype, status FROM users WHERE status = 'active'";
-$result = $conn->query($sql);
-
+// Get users from both users and admins tables
 $users = [];
-if ($result) {
-    while ($row = $result->fetch_assoc()) {
+
+// Fetch from users table
+$sql1 = "SELECT user_id, firstname, lastname, email, usertype, status, 'users' as source_table 
+         FROM users WHERE status = 'active'";
+$result1 = $conn->query($sql1);
+
+if ($result1) {
+    while ($row = $result1->fetch_assoc()) {
+        $users[] = $row;
+    }
+}
+
+// Fetch from admins table
+$sql2 = "SELECT user_id, firstname, lastname, email, usertype, status, 'admins' as source_table 
+         FROM admins WHERE status = 'active'";
+$result2 = $conn->query($sql2);
+
+if ($result2) {
+    while ($row = $result2->fetch_assoc()) {
         $users[] = $row;
     }
 }

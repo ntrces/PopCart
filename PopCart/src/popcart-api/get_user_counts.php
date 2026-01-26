@@ -6,7 +6,10 @@ header("Content-Type: application/json");
 
 require 'db_connect.php';
 
-$sql_total = "SELECT COUNT(*) as total FROM users WHERE status = 'active'";
+// Count from both users and admins tables
+$sql_total = "SELECT 
+    (SELECT COUNT(*) FROM users WHERE status = 'active') + 
+    (SELECT COUNT(*) FROM admins WHERE status = 'active') as total";
 $result_total = $conn->query($sql_total);
 $total = 0;
 if ($result_total) {
@@ -22,7 +25,9 @@ if ($result_customer) {
     $customer = $row['count'];
 }
 
-$sql_employee = "SELECT COUNT(*) as count FROM users WHERE usertype = 'employee' AND status = 'active'";
+$sql_employee = "SELECT 
+    (SELECT COUNT(*) FROM users WHERE usertype = 'employee' AND status = 'active') + 
+    (SELECT COUNT(*) FROM admins WHERE usertype = 'employee' AND status = 'active') as count";
 $result_employee = $conn->query($sql_employee);
 $employee = 0;
 if ($result_employee) {
@@ -30,7 +35,7 @@ if ($result_employee) {
     $employee = $row['count'];
 }
 
-$sql_admin = "SELECT COUNT(*) as count FROM users WHERE usertype = 'admin' AND status = 'active'";
+$sql_admin = "SELECT COUNT(*) as count FROM admins WHERE usertype = 'admin' AND status = 'active'";
 $result_admin = $conn->query($sql_admin);
 $admin = 0;
 if ($result_admin) {

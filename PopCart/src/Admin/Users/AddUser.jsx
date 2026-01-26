@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./AddUser.css";
 
- function AddUser ({ onClose, onSuccess }) {
+function AddUser ({ onClose, onSuccess, currentUser, isFirstAdmin }) {
   const [formData, setFormData] = useState({
     lastname: "",
     firstname: "",
@@ -74,8 +74,8 @@ import "./AddUser.css";
 
         <button type="button" className="close-button" aria-label="Close" onClick={onClose}>
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M15 5L5 15" stroke="#6B7280" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M5 5L15 15" stroke="#6B7280" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M15 5L5 15" stroke="#6B7280" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M5 5L15 15" stroke="#6B7280" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
         </button>
       </header>
@@ -206,7 +206,7 @@ import "./AddUser.css";
             <option value="">Select a role</option>
             <option value="buyer">Buyer</option>
             <option value="employee">Employee</option>
-            <option value="admin">Admin</option>
+            {isFirstAdmin && <option value="admin">Admin</option>}
           </select>
         </div>
       </div>

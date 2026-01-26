@@ -216,17 +216,17 @@ Home</button> </Link>
         )}
 
         {showSignOutModal && (
-  <div className="modal-overlay">
-    <div className="signout-modal">
+  <div className="modal-overlay-home">
+    <div className="signout-modal-home">
       <h3>Sign Out</h3>
       <p>Are you sure you want to sign out?</p>
 
-      <div className="modal-buttons">
-        <button className="cancel-btn" onClick={() => setShowSignOutModal(false)}>
+      <div className="modal-buttons-home">
+        <button className="cancel-btn-home" onClick={() => setShowSignOutModal(false)}>
           Cancel
         </button>
 
-        <button className="confirm-btn" onClick={() => { localStorage.removeItem('user'); setShowSignOutModal(false); navigate('/signin'); }}>
+        <button className="confirm-btn-home" onClick={() => { localStorage.removeItem('user'); setShowSignOutModal(false); navigate('/signin'); }}>
           Sign Out
         </button>
       </div>
@@ -272,7 +272,7 @@ Home</button> </Link>
   </div>            </div>
 
 
-<div className="album-list">
+<div className="album-list-home">
   {products.slice(0, 4).map((product) => (
     <div key={product.product_id} className={`album-card ${product.stock === 0 ? 'out-of-stock' : ''}`}>
       <div className="album-img">
@@ -287,7 +287,7 @@ Home</button> </Link>
 
         <div className="price-details-box">
           <div className="price-details-row">
-            <p className="price">₱{Number(product.price).toFixed(2)}</p>
+              <p className="price">₱{Number(product.price).toFixed(2)}</p>
 
             <button className="details-btn" onClick={() => { setSelectedAlbum(product); setShowDetails(true); }}>
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">

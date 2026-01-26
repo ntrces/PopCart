@@ -261,22 +261,22 @@ export default function Marketplace() {
         )}
 
         {showSignOutModal && (
-          <div className="modal-overlay">
-            <div className="signout-modal">
-              <h3>Sign Out</h3>
-              <p>Are you sure you want to sign out?</p>
+          <div className="modal-overlay-mp">
+    <div className="signout-modal-mp">
+      <h3>Sign Out</h3>
+      <p>Are you sure you want to sign out?</p>
 
-              <div className="modal-buttons">
-                <button className="cancel-btn" onClick={() => setShowSignOutModal(false)}>
-                  Cancel
-                </button>
+      <div className="modal-buttons-mp">
+        <button className="cancel-btn-mp" onClick={() => setShowSignOutModal(false)}>
+          Cancel
+        </button>
 
-                <button className="confirm-btn" onClick={() => { localStorage.removeItem('user'); setShowSignOutModal(false); navigate('/signin'); }}>
-                  Sign Out
-                </button>
-              </div>
-            </div>
-          </div>
+        <button className="confirm-btn-mp" onClick={() => { localStorage.removeItem('user'); setShowSignOutModal(false); navigate('/signin'); }}>
+          Sign Out
+        </button>
+      </div>
+    </div>
+  </div>
         )}
 
       

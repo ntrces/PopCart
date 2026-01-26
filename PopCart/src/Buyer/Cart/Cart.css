@@ -28,18 +28,18 @@
   border-bottom: 1px solid #a2a2a6;
 }
 
-.left-group {
+.left-group,
+.right-controls {
   display: flex;
   align-items: center;
+}
+
+.left-group {
   gap: 10px;
 }
 
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: bold;
-  font-size: 16px;
+.right-controls {
+  gap: 16px;
 }
 
 .toggle-btn {
@@ -49,25 +49,42 @@
   cursor: pointer;
 }
 
-.right-controls {
+/* Logo */
+.header-logo-section {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 10px;
 }
 
+.header-logo-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #111827;
+}
+
+/* Icons */
 .icon-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   padding: 8px;
+  background: none;
   border: none;
-  background: transparent;
   cursor: pointer;
 }
 
-.icon-btn svg {
+.icon-btn svg,
+.icon-img {
   width: 18px;
   height: 18px;
+  flex-shrink: 0;
 }
 
 /* PROFILE */
@@ -151,7 +168,7 @@
 /* --------------------------------------------------
    SIGN OUT MODAL
 -------------------------------------------------- */
-.modal-overlay {
+.modal-overlay-cart {
   position: fixed;
   inset: 0;
   background: rgba(10, 10, 10, 0.3);
@@ -161,63 +178,79 @@
   z-index: 999;
 }
 
-.signout-modal {
-  width: 320px;
+/* Sign Out Modal */
+.signout-modal-cart {
+  width: 360px;
   background: #ffffff;
-  border-radius: 12px;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  border-radius: 14px;
+  padding: 24px;
+  box-sizing: border-box;
+  text-align: center;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
 
-.delete-modal {
-  width: 320px;
-  background: #ffffff;
-  border-radius: 12px;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.signout-modal h3 {
-  font-size: 18px;
+/* Title */
+.signout-modal-cart h3 {
+  margin: 0 0 8px;
+  font-size: 20px;
   font-weight: 700;
-  margin: 0;
+  color: #111827;
 }
 
-.signout-modal p {
+/* Message */
+.signout-modal-cart p {
+  margin: 0 0 20px;
   font-size: 14px;
-  color: #717182;
+  color: #6b7280;
 }
 
-.modal-buttons {
+/* Buttons container */
+.modal-buttons-cart {
   display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 20px;
+  justify-content: center;
+  gap: 14px;
 }
 
-.cancel-btn,
-.confirm-btn,
-.delete-confirm-btn {
-  background: none;
-  border: none;
+/* Base button styles */
+.cancel-btn-cart,
+.confirm-btn-cart {
+  min-width: 110px;
+  height: 40px;
   font-size: 14px;
-  color: #717182;
+  font-weight: 500;
+  border-radius: 8px;
   cursor: pointer;
-  transition: 0.2s;
+  transition: all 0.2s ease;
 }
 
-.cancel-btn:hover,
-.confirm-btn:hover,
-.delete-confirm-btn:hover {
-  background: #000;
-  color: #fff;
-  border-radius: 5px;
-  padding: 5px;
+/* Cancel button (outlined gray) */
+.cancel-btn-cart {
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  color: #6b7280;
 }
+
+.cancel-btn-cart:hover {
+  background-color: #f3f4f6;
+}
+
+/* Sign Out button (solid red) */
+.confirm-btn-cart {
+  background-color: #ef4444;
+  border: none;
+  color: #ffffff;
+}
+
+.confirm-btn-cart:hover {
+  background-color: #dc2626;
+}
+
+/* Click effect */
+.cancel-btn-cart:active,
+.confirm-btn-cart:active {
+  transform: scale(0.96);
+}
+
 
 /* --------------------------------------------------
    PRODUCT LIST (placeholder)

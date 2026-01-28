@@ -116,7 +116,13 @@ export default function Users() {
 
   // Check if current user is the first admin
   const isFirstAdmin = currentUser && firstAdmin && 
-                        currentUser.user_id === firstAdmin.user_id;
+                        currentUser.user_id == firstAdmin.user_id &&
+                        currentUser.source_table === 'admins';
+  
+  // Debug logging
+  console.log('Current User:', currentUser);
+  console.log('First Admin:', firstAdmin);
+  console.log('Is First Admin:', isFirstAdmin);
 
   return (
  <div className="admin-layout">
@@ -262,7 +268,8 @@ const UserTableSection = ({ onEdit, onDelete, searchValue, users, counts, isFirs
   };
 
   const getDisplayRole = (user) => {
-    if (isFirstAdminUser(user)) {
+    // Check if this is the first admin with usertype 'admin'
+    if (isFirstAdminUser(user) && user.usertype === 'admin') {
       return 'Super Admin';
     }
     return user.usertype;

@@ -35,7 +35,7 @@ export default function SignIn() {
     e.preventDefault();
     if (validateForm()) {
       try {
-        const response = await fetch("http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/signin.php", {
+        const response = await fetch("http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/signin_admin.php", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, password }),
@@ -47,16 +47,11 @@ export default function SignIn() {
           // Store user data in localStorage
           localStorage.setItem('user', JSON.stringify(data.user));
 
-          // Navigate based on usertype
-          if (data.usertype === "buyer") {
-            navigate("/buyer");
-          } else if (data.usertype === "employee") {
-            navigate("/employee");
-          } else if (data.usertype === "admin") {
+          // Only admin users can log in through this page
+          if (data.usertype === "admin") {
             navigate("/admin");
           } else {
-            // not registered or invalid usertype
-            setErrors({ ...errors, password: "User not registered." });
+            setErrors({ ...errors, password: "Only admin users can access this page." });
           }
         } else {
           setErrors({ ...errors, password: data.message });

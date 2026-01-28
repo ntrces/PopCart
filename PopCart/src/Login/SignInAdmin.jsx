@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./SignIn.css";
+import "./SignInAdmin.css";
 
-export default function SignIn() {
+export default function SignInAdmin() {
   const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
@@ -108,4 +108,3 @@ export default function SignIn() {
     </div>
   );
 }
-

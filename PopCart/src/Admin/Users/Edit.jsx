@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./Edit.css";
 
 
-function Edit ({ user, onClose, onSuccess }) {
+function Edit ({ user, onClose, onSuccess, currentUser, isFirstAdmin }) {
   const [formData, setFormData] = useState({
     usertype: "",
   });
@@ -25,6 +25,13 @@ function Edit ({ user, onClose, onSuccess }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Prevent editing own account
+    if (currentUser && user.user_id === currentUser.user_id) {
+      alert('You cannot edit your own account.');
+      return;
+    }
+
     // Check if changing role and if it's the last admin
     if (user.usertype === 'admin' && formData.usertype !== 'admin') {
       // Check active admin count
@@ -41,9 +48,14 @@ function Edit ({ user, onClose, onSuccess }) {
         return;
       }
     }
+    
     const data = new FormData();
     data.append('user_id', user.user_id);
+    data.append('email', user.email);
     data.append('usertype', formData.usertype);
+    data.append('old_usertype', user.usertype);
+    data.append('source_table', user.source_table || 'users');
+    
     try {
       const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/update_user.php', {
         method: 'POST',
@@ -69,6 +81,7 @@ function Edit ({ user, onClose, onSuccess }) {
 
   const getRoleOptions = () => {
     if (!user) return [];
+    
     switch (user.usertype) {
       case 'buyer':
         return [
@@ -97,8 +110,8 @@ function Edit ({ user, onClose, onSuccess }) {
 
         <button type="button" className="close-button" aria-label="Close" onClick={onClose}>
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M15 5L5 15" stroke="#6B7280" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M5 5L15 15" stroke="#6B7280" stroke-width="1.66667" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M15 5L5 15" stroke="#6B7280" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M5 5L15 15" stroke="#6B7280" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
 </svg>
         </button>
       </header>

@@ -6,6 +6,7 @@ import LandingPage from "./Login/LandingPage.jsx";
 import SignIn from "./Login/SignIn.jsx";
 import SignUpBuyer from "./Login/SignUpBuyer.jsx";
 
+
 import Home from "./Buyer/Home/Home.jsx";
 import Marketplace from "./Buyer/Marketplace/Marketplace.jsx";
 import MyOrder from "./Buyer/MyOrder/MyOrder.jsx";
@@ -20,6 +21,7 @@ import OrderManagement from "./Admin/Orders/OrderManagement.jsx";
 
 import OrderManage from "./Employee/OrderManagement/OrderE.jsx";
 import ProductManage from "./Employee/ProductManagement/ProductE.jsx";
+import SignInAdmin from './Login/SignInAdmin.jsx';
 
 
 export default function App() {
@@ -31,6 +33,7 @@ export default function App() {
       <Route path="/signup-buyer" element={<SignUpBuyer />} />
 
       {/* Admin routes */}
+      <Route path="/admin/signin" element={<SignInAdmin />} />
       <Route path="/admin" element={<AdminDashboard />} />
       <Route path="/admin/users" element={<Users />} />
       <Route path="/admin/products" element={<ProductManagement />} />

@@ -20,6 +20,28 @@ export default function Users() {
   const [showSignOutModal, setShowSignOutModal] = useState(false);
   const [users, setUsers] = useState([]);
   const [counts, setCounts] = useState({ all: 0, customer: 0, employee: 0, admin: 0 });
+  const [currentUser, setCurrentUser] = useState(null);
+  const [firstAdmin, setFirstAdmin] = useState(null);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      const userData = JSON.parse(storedUser);
+      setCurrentUser(userData);
+    }
+  }, []);
+
+  const fetchFirstAdmin = async () => {
+    try {
+      const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/get_first_admin.php');
+      const data = await response.json();
+      if (data.success) {
+        setFirstAdmin(data.firstAdmin);
+      }
+    } catch (error) {
+      console.error('Error fetching first admin:', error);
+    }
+  };
 
   const fetchCounts = async () => {
     try {
@@ -46,6 +68,7 @@ export default function Users() {
   };
 
   useEffect(() => {
+    fetchFirstAdmin();
     fetchCounts();
     fetchUsers();
   }, []);
@@ -54,6 +77,16 @@ export default function Users() {
   const handleCloseAdd = () => setShowAddModal(false);
 
   const handleOpenEdit = (user) => {
+    // Prevent editing own account
+    if (currentUser && user.user_id === currentUser.user_id) {
+      alert("You cannot edit your own account.");
+      return;
+    }
+    // Prevent editing the first admin
+    if (firstAdmin && user.user_id === firstAdmin.user_id && user.source_table === 'admins') {
+      alert("You cannot edit the first admin account.");
+      return;
+    }
     setSelectedUser(user);
     setShowEditModal(true);
   };
@@ -63,6 +96,16 @@ export default function Users() {
   };
 
   const handleOpenDelete = (user) => {
+    // Prevent deleting own account
+    if (currentUser && user.user_id === currentUser.user_id) {
+      alert("You cannot delete your own account.");
+      return;
+    }
+    // Prevent deleting the first admin
+    if (firstAdmin && user.user_id === firstAdmin.user_id && user.source_table === 'admins') {
+      alert("You cannot delete the first admin account.");
+      return;
+    }
     setSelectedUser(user);
     setShowDeleteModal(true);
   };
@@ -70,6 +113,16 @@ export default function Users() {
     setSelectedUser(null);
     setShowDeleteModal(false);
   };
+
+  // Check if current user is the first admin
+  const isFirstAdmin = currentUser && firstAdmin && 
+                        currentUser.user_id == firstAdmin.user_id &&
+                        currentUser.source_table === 'admins';
+  
+  // Debug logging
+  console.log('Current User:', currentUser);
+  console.log('First Admin:', firstAdmin);
+  console.log('Is First Admin:', isFirstAdmin);
 
   return (
  <div className="admin-layout">
@@ -83,25 +136,50 @@ export default function Users() {
       <div className="users-container">
         <UserManagementSection onAdd={handleOpenAdd} />
         <UserSearchFilterSection searchValue={searchValue} setSearchValue={setSearchValue} />
-        <UserTableSection onEdit={handleOpenEdit} onDelete={handleOpenDelete} searchValue={searchValue} users={users} counts={counts} />
+        <UserTableSection 
+          onEdit={handleOpenEdit} 
+          onDelete={handleOpenDelete} 
+          searchValue={searchValue} 
+          users={users} 
+          counts={counts} 
+          isFirstAdmin={isFirstAdmin}
+          currentUser={currentUser}
+          firstAdmin={firstAdmin}
+        />
 
       </div>
 
       {showAddModal && (
         <Modal onClose={handleCloseAdd}>
-          <AddUser onClose={handleCloseAdd} onSuccess={() => { fetchUsers(); fetchCounts(); }} />
+          <AddUser 
+            onClose={handleCloseAdd} 
+            onSuccess={() => { fetchUsers(); fetchCounts(); }} 
+            currentUser={currentUser}
+            isFirstAdmin={isFirstAdmin}
+          />
         </Modal>
       )}
 
       {showEditModal && (
         <Modal onClose={handleCloseEdit}>
-          <EditUser user={selectedUser} onClose={handleCloseEdit} onSuccess={() => { fetchUsers(); fetchCounts(); }} />
+          <EditUser 
+            user={selectedUser} 
+            onClose={handleCloseEdit} 
+            onSuccess={() => { fetchUsers(); fetchCounts(); }} 
+            currentUser={currentUser}
+            isFirstAdmin={isFirstAdmin}
+          />
         </Modal>
       )}
 
       {showDeleteModal && (
         <Modal onClose={handleCloseDelete}>
-          <Delete user={selectedUser} onClose={handleCloseDelete} onSuccess={() => { fetchUsers(); fetchCounts(); }} />
+          <Delete 
+            user={selectedUser} 
+            onClose={handleCloseDelete} 
+            onSuccess={() => { fetchUsers(); fetchCounts(); }} 
+            currentUser={currentUser} 
+          />
         </Modal>
       )}
     </div>
@@ -178,10 +256,27 @@ const UserSearchFilterSection = ({ searchValue, setSearchValue }) => {
   );
 };
 
-const UserTableSection = ({ onEdit, onDelete, searchValue, users, counts }) => {
+const UserTableSection = ({ onEdit, onDelete, searchValue, users, counts, isFirstAdmin, currentUser, firstAdmin }) => {
   const [activeFilter, setActiveFilter] = useState("all");
 
-  const getRoleStyles = (usertype) => {
+  const isFirstAdminUser = (user) => {
+    return firstAdmin && user.user_id === firstAdmin.user_id && user.source_table === 'admins';
+  };
+
+  const isCurrentUser = (user) => {
+    return currentUser && user.user_id === currentUser.user_id;
+  };
+
+  const getDisplayRole = (user) => {
+    // Check if this is the first admin with usertype 'admin'
+    if (isFirstAdminUser(user) && user.usertype === 'admin') {
+      return 'Super Admin';
+    }
+    return user.usertype;
+  };
+
+  const getRoleStyles = (user) => {
+    const usertype = user.usertype;
     switch (usertype) {
       case 'buyer':
         return { roleColor: "role-badge-blue", roleTextColor: "role-text-blue" };
@@ -253,7 +348,7 @@ const UserTableSection = ({ onEdit, onDelete, searchValue, users, counts }) => {
 
           <div className="ut-table-body">
             {visibleUsers.map((user) => (
-              <div key={user.user_id} className="ut-row">
+              <div key={`${user.source_table}-${user.user_id}`} className="ut-row">
                 <div className="ut-cell user-cell">
                   <div className="user-avatar">{user.firstname.charAt(0)}</div>
                   <div className="user-name">{`${user.firstname} ${user.lastname}`}</div>
@@ -263,8 +358,8 @@ const UserTableSection = ({ onEdit, onDelete, searchValue, users, counts }) => {
 
                 <div className="ut-cell">
                   <div className="role-wrap">
-                    <div className={`role-badge ${getRoleStyles(user.usertype).roleColor}`}>
-                      <span className={`role-text ${getRoleStyles(user.usertype).roleTextColor}`}>{user.usertype}</span>
+                    <div className={`role-badge ${getRoleStyles(user).roleColor}`}>
+                      <span className={`role-text ${getRoleStyles(user).roleTextColor}`}>{getDisplayRole(user)}</span>
                     </div>
                   </div>
                 </div>
@@ -275,32 +370,36 @@ const UserTableSection = ({ onEdit, onDelete, searchValue, users, counts }) => {
 
                 <div className="ut-cell actions-cell">
                   <div className="actions-group">
-                    <button
-                      className="action-btn edit"
-                      onClick={() => onEdit(user)}
-                        aria-label={`Edit ${user.firstname} ${user.lastname}`}
-                      type="button"
-                    >
-                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                        <path d="M8 2H3.33333C2.97971 2 2.64057 2.14048 2.39052 2.39052C2.14048 2.64057 2 2.97971 2 3.33333V12.6667C2 13.0203 2.14048 13.3594 2.39052 13.6095C2.64057 13.8595 2.97971 14 3.33333 14H12.6667C13.0203 14 13.3594 13.8595 13.6095 13.6095C13.8595 13.3594 14 13.0203 14 12.6667V8" stroke="#2B7FFF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M12.2499 1.75003C12.5151 1.48481 12.8748 1.33582 13.2499 1.33582C13.625 1.33582 13.9847 1.48481 14.2499 1.75003C14.5151 2.01525 14.6641 2.37496 14.6641 2.75003C14.6641 3.1251 14.5151 3.48481 14.2499 3.75003L8.24123 9.75936C8.08293 9.91753 7.88737 10.0333 7.67257 10.096L5.75723 10.656C5.69987 10.6728 5.63906 10.6738 5.58117 10.6589C5.52329 10.6441 5.47045 10.614 5.4282 10.5717C5.38594 10.5295 5.35583 10.4766 5.341 10.4188C5.32617 10.3609 5.32717 10.3001 5.3439 10.2427L5.9039 8.32736C5.96692 8.11273 6.08292 7.9174 6.24123 7.75936L12.2499 1.75003Z" stroke="#2B7FFF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    </button>
+                    {!isFirstAdminUser(user) && !isCurrentUser(user) && (
+                      <>
+                        <button
+                          className="action-btn edit"
+                          onClick={() => onEdit(user)}
+                          aria-label={`Edit ${user.firstname} ${user.lastname}`}
+                          type="button"
+                        >
+                          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path d="M8 2H3.33333C2.97971 2 2.64057 2.14048 2.39052 2.39052C2.14048 2.64057 2 2.97971 2 3.33333V12.6667C2 13.0203 2.14048 13.3594 2.39052 13.6095C2.64057 13.8595 2.97971 14 3.33333 14H12.6667C13.0203 14 13.3594 13.8595 13.6095 13.6095C13.8595 13.3594 14 13.0203 14 12.6667V8" stroke="#2B7FFF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                            <path d="M12.2499 1.75003C12.5151 1.48481 12.8748 1.33582 13.2499 1.33582C13.625 1.33582 13.9847 1.48481 14.2499 1.75003C14.5151 2.01525 14.6641 2.37496 14.6641 2.75003C14.6641 3.1251 14.5151 3.48481 14.2499 3.75003L8.24123 9.75936C8.08293 9.91753 7.88737 10.0333 7.67257 10.096L5.75723 10.656C5.69987 10.6728 5.63906 10.6738 5.58117 10.6589C5.52329 10.6441 5.47045 10.614 5.4282 10.5717C5.38594 10.5295 5.35583 10.4766 5.341 10.4188C5.32617 10.3609 5.32717 10.3001 5.3439 10.2427L5.9039 8.32736C5.96692 8.11273 6.08292 7.9174 6.24123 7.75936L12.2499 1.75003Z" stroke="#2B7FFF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        </button>
 
-                    <button
-                      className="action-btn delete"
-                      onClick={() => onDelete(user)}
-                        aria-label={`Delete ${user.firstname} ${user.lastname}`}
-                      type="button"
-                    >
-                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                        <path d="M6.66675 7.33331V11.3333" stroke="#E7000B" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M9.33325 7.33331V11.3333" stroke="#E7000B" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M12.6666 4V13.3333C12.6666 13.687 12.5261 14.0261 12.2761 14.2761C12.026 14.5262 11.6869 14.6667 11.3333 14.6667H4.66659C4.31296 14.6667 3.97382 14.5262 3.72378 14.2761C3.47373 14.0261 3.33325 13.687 3.33325 13.3333V4" stroke="#E7000B" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M2 4H14" stroke="#E7000B" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M5.33325 3.99998V2.66665C5.33325 2.31302 5.47373 1.97389 5.72378 1.72384C5.97383 1.47379 6.31296 1.33331 6.66659 1.33331H9.33325C9.68687 1.33331 10.026 1.47379 10.2761 1.72384C10.5261 1.97389 10.6666 2.31302 10.6666 2.66665V3.99998" stroke="#E7000B" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    </button>
+                        <button
+                          className="action-btn delete"
+                          onClick={() => onDelete(user)}
+                          aria-label={`Delete ${user.firstname} ${user.lastname}`}
+                          type="button"
+                        >
+                          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path d="M6.66675 7.33331V11.3333" stroke="#E7000B" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/>
+                            <path d="M9.33325 7.33331V11.3333" stroke="#E7000B" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/>
+                            <path d="M12.6666 4V13.3333C12.6666 13.687 12.5261 14.0261 12.2761 14.2761C12.026 14.5262 11.6869 14.6667 11.3333 14.6667H4.66659C4.31296 14.6667 3.97382 14.5262 3.72378 14.2761C3.47373 14.0261 3.33325 13.687 3.33325 13.3333V4" stroke="#E7000B" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/>
+                            <path d="M2 4H14" stroke="#E7000B" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/>
+                            <path d="M5.33325 3.99998V2.66665C5.33325 2.31302 5.47373 1.97389 5.72378 1.72384C5.97383 1.47379 6.31296 1.33331 6.66659 1.33331H9.33325C9.68687 1.33331 10.026 1.47379 10.2761 1.72384C10.5261 1.97389 10.6666 2.31302 10.6666 2.66665V3.99998" stroke="#E7000B" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        </button>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>

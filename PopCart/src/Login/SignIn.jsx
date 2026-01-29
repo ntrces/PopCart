@@ -52,8 +52,6 @@ export default function SignIn() {
             navigate("/buyer");
           } else if (data.usertype === "employee") {
             navigate("/employee");
-          } else if (data.usertype === "admin") {
-            navigate("/admin");
           } else {
             // not registered or invalid usertype
             setErrors({ ...errors, password: "User not registered." });

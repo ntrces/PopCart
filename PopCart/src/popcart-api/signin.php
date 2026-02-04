@@ -56,8 +56,25 @@ if (!$found) {
 
 // If user found in either table, verify password
 if ($found && $user) {
+    // If user is from users table, handle login_attempt and status checks
+    if ($source_table === "users") {
+        if ($user["status"] === "inactive") {
+            echo json_encode(["success" => false, "message" => "Your Account has been deactivated"]);
+            $conn->close();
+            exit;
+        }
+    }
+
     // Verify hashed password
     if (password_verify($password, $user["password"])) {
+        // Reset login attempts on successful login (users table only)
+        if ($source_table === "users") {
+            $resetStmt = $conn->prepare("UPDATE users SET login_attempt = 0 WHERE user_id = ?");
+            $resetStmt->bind_param("i", $user["user_id"]);
+            $resetStmt->execute();
+            $resetStmt->close();
+        }
+
         echo json_encode([
             "success" => true,
             "usertype" => $user["usertype"], // return usertype for React routing
@@ -72,7 +89,33 @@ if ($found && $user) {
             ]
         ]);
     } else {
-        echo json_encode(["success" => false, "message" => "Invalid email or password"]);
+        // Handle failed login attempts for users table only
+        if ($source_table === "users") {
+            $currentAttempts = isset($user["login_attempt"]) ? (int)$user["login_attempt"] : 0;
+            $newAttempts = $currentAttempts + 1;
+
+            if ($newAttempts >= 3) {
+                $deactivateStmt = $conn->prepare("UPDATE users SET status = 'inactive', login_attempt = 0 WHERE user_id = ?");
+                $deactivateStmt->bind_param("i", $user["user_id"]);
+                $deactivateStmt->execute();
+                $deactivateStmt->close();
+
+                echo json_encode(["success" => false, "message" => "Your Account has been deactivated"]);
+            } else {
+                $updateStmt = $conn->prepare("UPDATE users SET login_attempt = ? WHERE user_id = ?");
+                $updateStmt->bind_param("ii", $newAttempts, $user["user_id"]);
+                $updateStmt->execute();
+                $updateStmt->close();
+
+                if ($newAttempts === 2) {
+                    echo json_encode(["success" => false, "message" => "2 Failed login. Enter the correct password to avoid deactivation"]);
+                } else {
+                    echo json_encode(["success" => false, "message" => "Invalid email or password"]);
+                }
+            }
+        } else {
+            echo json_encode(["success" => false, "message" => "Invalid email or password"]);
+        }
     }
 } else {
     echo json_encode(["success" => false, "message" => "User not registered"]);

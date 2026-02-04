@@ -47,11 +47,11 @@ export default function SignInAdmin() {
           // Store user data in localStorage
           localStorage.setItem('user', JSON.stringify(data.user));
 
-          // Only admin users can log in through this page
-          if (data.usertype === "admin") {
+          // Allow both 'admin' and 'SuperAdmin' user types to access admin module
+          if (data.usertype === "admin" || data.usertype === "SuperAdmin") {
             navigate("/admin");
           } else {
-            setErrors({ ...errors, password: "Only admin users can access this page." });
+            setErrors({ ...errors, password: "Only admin and SuperAdmin users can access this page." });
           }
         } else {
           setErrors({ ...errors, password: data.message });

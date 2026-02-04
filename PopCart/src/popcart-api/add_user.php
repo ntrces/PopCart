@@ -56,7 +56,7 @@ if ($checkResult1->num_rows > 0 || $checkResult2->num_rows > 0) {
 }
 
 // --- 3. Secure Password Hashing ---
-$hashedPassword = password_hash($plainPassword, PASSWORD_DEFAULT);
+$hashedPassword = password_hash($plainPassword, PASSWORD_BCRYPT);
 
 // --- 4. Determine which table to insert into based on usertype ---
 $table = ($usertype === 'admin') ? 'admins' : 'users';

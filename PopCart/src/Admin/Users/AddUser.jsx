@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./AddUser.css";
 
-function AddUser ({ onClose, onSuccess, currentUser, isFirstAdmin }) {
+function AddUser ({ onClose, onSuccess, currentUser }) {
   const [formData, setFormData] = useState({
     lastname: "",
     firstname: "",
@@ -20,11 +20,18 @@ function AddUser ({ onClose, onSuccess, currentUser, isFirstAdmin }) {
     }));
   };
 
+  // Check if current user is SuperAdmin
+  const isSuperAdmin = currentUser && currentUser.usertype === 'SuperAdmin';
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
       alert("Passwords do not match.");
+      return;
+    }
+    if (formData.usertype === "admin" && !isSuperAdmin) {
+      alert("Only Super Admin can add admin users.");
       return;
     }
     try {
@@ -206,7 +213,7 @@ function AddUser ({ onClose, onSuccess, currentUser, isFirstAdmin }) {
             <option value="">Select a role</option>
             <option value="buyer">Buyer</option>
             <option value="employee">Employee</option>
-            {isFirstAdmin && <option value="admin">Admin</option>}
+            {isSuperAdmin && <option value="admin">Admin</option>}
           </select>
         </div>
       </div>

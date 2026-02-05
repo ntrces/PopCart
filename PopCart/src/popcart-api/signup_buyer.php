@@ -22,7 +22,7 @@ $firstname = $data["firstName"];
 $email = $data["email"];
 $birthday = $data["birthday"];
 $contact_number = $data["contactNumber"] ?? '';
-$password = password_hash($data["password"], PASSWORD_DEFAULT);
+$password = password_hash($data["password"], PASSWORD_BCRYPT);
 
 // Check if email already exists
 $checkEmail = $conn->prepare("SELECT * FROM users WHERE email = ?");

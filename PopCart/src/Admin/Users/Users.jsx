@@ -21,7 +21,6 @@ export default function Users() {
   const [users, setUsers] = useState([]);
   const [counts, setCounts] = useState({ all: 0, customer: 0, employee: 0, admin: 0 });
   const [currentUser, setCurrentUser] = useState(null);
-  const [firstAdmin, setFirstAdmin] = useState(null);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
@@ -30,18 +29,6 @@ export default function Users() {
       setCurrentUser(userData);
     }
   }, []);
-
-  const fetchFirstAdmin = async () => {
-    try {
-      const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/get_first_admin.php');
-      const data = await response.json();
-      if (data.success) {
-        setFirstAdmin(data.firstAdmin);
-      }
-    } catch (error) {
-      console.error('Error fetching first admin:', error);
-    }
-  };
 
   const fetchCounts = async () => {
     try {
@@ -68,7 +55,6 @@ export default function Users() {
   };
 
   useEffect(() => {
-    fetchFirstAdmin();
     fetchCounts();
     fetchUsers();
   }, []);
@@ -82,9 +68,9 @@ export default function Users() {
       alert("You cannot edit your own account.");
       return;
     }
-    // Prevent editing the first admin
-    if (firstAdmin && user.user_id === firstAdmin.user_id && user.source_table === 'admins') {
-      alert("You cannot edit the first admin account.");
+    // Prevent editing SuperAdmin users
+    if (user.usertype === 'SuperAdmin') {
+      alert("You cannot edit Super Admin users.");
       return;
     }
     setSelectedUser(user);
@@ -101,9 +87,9 @@ export default function Users() {
       alert("You cannot delete your own account.");
       return;
     }
-    // Prevent deleting the first admin
-    if (firstAdmin && user.user_id === firstAdmin.user_id && user.source_table === 'admins') {
-      alert("You cannot delete the first admin account.");
+    // Prevent deleting SuperAdmin users
+    if (user.usertype === 'SuperAdmin') {
+      alert("You cannot delete Super Admin users.");
       return;
     }
     setSelectedUser(user);
@@ -113,16 +99,6 @@ export default function Users() {
     setSelectedUser(null);
     setShowDeleteModal(false);
   };
-
-  // Check if current user is the first admin
-  const isFirstAdmin = currentUser && firstAdmin && 
-                        currentUser.user_id == firstAdmin.user_id &&
-                        currentUser.source_table === 'admins';
-  
-  // Debug logging
-  console.log('Current User:', currentUser);
-  console.log('First Admin:', firstAdmin);
-  console.log('Is First Admin:', isFirstAdmin);
 
   return (
  <div className="admin-layout">
@@ -142,9 +118,7 @@ export default function Users() {
           searchValue={searchValue} 
           users={users} 
           counts={counts} 
-          isFirstAdmin={isFirstAdmin}
           currentUser={currentUser}
-          firstAdmin={firstAdmin}
         />
 
       </div>
@@ -155,7 +129,6 @@ export default function Users() {
             onClose={handleCloseAdd} 
             onSuccess={() => { fetchUsers(); fetchCounts(); }} 
             currentUser={currentUser}
-            isFirstAdmin={isFirstAdmin}
           />
         </Modal>
       )}
@@ -167,7 +140,6 @@ export default function Users() {
             onClose={handleCloseEdit} 
             onSuccess={() => { fetchUsers(); fetchCounts(); }} 
             currentUser={currentUser}
-            isFirstAdmin={isFirstAdmin}
           />
         </Modal>
       )}
@@ -256,11 +228,11 @@ const UserSearchFilterSection = ({ searchValue, setSearchValue }) => {
   );
 };
 
-const UserTableSection = ({ onEdit, onDelete, searchValue, users, counts, isFirstAdmin, currentUser, firstAdmin }) => {
+const UserTableSection = ({ onEdit, onDelete, searchValue, users, counts, currentUser }) => {
   const [activeFilter, setActiveFilter] = useState("all");
 
-  const isFirstAdminUser = (user) => {
-    return firstAdmin && user.user_id === firstAdmin.user_id && user.source_table === 'admins';
+  const isSuperAdminUser = (user) => {
+    return user.usertype === 'SuperAdmin';
   };
 
   const isCurrentUser = (user) => {
@@ -268,8 +240,8 @@ const UserTableSection = ({ onEdit, onDelete, searchValue, users, counts, isFirs
   };
 
   const getDisplayRole = (user) => {
-    // Check if this is the first admin with usertype 'admin'
-    if (isFirstAdminUser(user) && user.usertype === 'admin') {
+    // Display 'Super Admin' only for users with usertype 'SuperAdmin'
+    if (user.usertype === 'SuperAdmin') {
       return 'Super Admin';
     }
     return user.usertype;
@@ -284,6 +256,8 @@ const UserTableSection = ({ onEdit, onDelete, searchValue, users, counts, isFirs
         return { roleColor: "role-badge-green", roleTextColor: "role-text-green" };
       case 'admin':
         return { roleColor: "role-badge-red", roleTextColor: "role-text-red" };
+      case 'SuperAdmin':
+        return { roleColor: "role-badge-red", roleTextColor: "role-text-red" };
       default:
         return { roleColor: "role-badge-gray", roleTextColor: "role-text-gray" };
     }
@@ -293,7 +267,7 @@ const UserTableSection = ({ onEdit, onDelete, searchValue, users, counts, isFirs
     if (activeFilter === "all") return true;
     if (activeFilter === "customer") return user.usertype === 'buyer';
     if (activeFilter === "employee") return user.usertype === 'employee';
-    if (activeFilter === "admin") return user.usertype === 'admin';
+    if (activeFilter === "admin") return user.usertype === 'admin' || user.usertype === 'SuperAdmin';
     return false;
   });
 
@@ -370,7 +344,7 @@ const UserTableSection = ({ onEdit, onDelete, searchValue, users, counts, isFirs
 
                 <div className="ut-cell actions-cell">
                   <div className="actions-group">
-                    {!isFirstAdminUser(user) && !isCurrentUser(user) && (
+                    {!isSuperAdminUser(user) && !isCurrentUser(user) && (
                       <>
                         <button
                           className="action-btn edit"

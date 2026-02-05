@@ -35,7 +35,7 @@ if ($result_employee) {
     $employee = $row['count'];
 }
 
-$sql_admin = "SELECT COUNT(*) as count FROM admins WHERE usertype = 'admin' AND status = 'active'";
+$sql_admin = "SELECT COUNT(*) as count FROM admins WHERE usertype IN ('admin', 'SuperAdmin') AND status = 'active'";
 $result_admin = $conn->query($sql_admin);
 $admin = 0;
 if ($result_admin) {

@@ -2,7 +2,19 @@
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: Content-Type");
 header("Access-Control-Allow-Methods: POST");
+header("Access-Control-Allow-Credentials: true");
 header("Content-Type: application/json");
+
+// Prevent caching to stop back navigation after logout
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Pragma: no-cache");
+header("Expires: 0");
+
+// Include secure session configuration
+require 'session_config.php';
+// Include password utility functions for secure verification
+require 'password_utils.php';
+require 'input_utils.php';
 
 $servername = "localhost";
 $username   = "root"; // default XAMPP user
@@ -18,9 +30,16 @@ if ($conn->connect_error) {
 }
 
 // Get JSON input
-$data = json_decode(file_get_contents("php://input"), true);
-$email    = $data["email"] ?? "";
-$password = $data["password"] ?? "";
+$data = read_json_input();
+$error = null;
+$email = validate_email($data["email"] ?? "", $error);
+$password = validate_password_length($data["password"] ?? "", $error);
+
+if (!$email || !$password) {
+    echo json_encode(["success" => false, "message" => $error ?? "Invalid credentials"]);
+    $conn->close();
+    exit;
+}
 
 $user = null;
 $found = false;
@@ -65,8 +84,9 @@ if ($found && $user) {
         }
     }
 
-    // Verify hashed password
-    if (password_verify($password, $user["password"])) {
+    // Verify hashed password using secure verification function
+    // Works with both ARGON2ID and BCRYPT hashes for backward compatibility
+    if (verifyPassword($password, $user["password"])) {
         // Reset login attempts on successful login (users table only)
         if ($source_table === "users") {
             $resetStmt = $conn->prepare("UPDATE users SET login_attempt = 0 WHERE user_id = ?");
@@ -74,6 +94,13 @@ if ($found && $user) {
             $resetStmt->execute();
             $resetStmt->close();
         }
+
+        // Store user data in secure session
+        $_SESSION['user_id'] = $user["user_id"];
+        $_SESSION['usertype'] = $user["usertype"];
+        $_SESSION['email'] = $user["email"];
+        $_SESSION['source_table'] = $source_table;
+        $_SESSION['authenticated'] = true;
 
         echo json_encode([
             "success" => true,

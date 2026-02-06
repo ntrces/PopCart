@@ -5,13 +5,14 @@ header("Access-Control-Allow-Methods: POST");
 header("Content-Type: application/json");
 
 require 'db_connect.php';
+require 'input_utils.php';
 
 $data = $_POST;
-$product_id = $data['product_id'] ?? '';
-$price = $data['price'] ?? '';
-$stock = $data['stock'] ?? '';
+$product_id = validate_int($data['product_id'] ?? null, 1);
+$price = validate_float($data['price'] ?? null, 0);
+$stock = validate_int($data['stock'] ?? null, 0);
 
-if (!$product_id || !$price || !$stock) {
+if (!$product_id || $price === null || $stock === null) {
     echo json_encode(["success" => false, "message" => "Required fields missing"]);
     exit;
 }
@@ -31,7 +32,8 @@ if (!empty($_FILES['album_cover_img'])) {
             $fileName = uniqid() . '_' . basename($name);
             $filePath = $uploadDir . $fileName;
             if (move_uploaded_file($tmpName, $filePath)) {
-                $uploadedImages[] = 'uploads/' . $fileName;
+                // Store full relative path from web root (localhost)
+                $uploadedImages[] = 'PopCart1/PopCart/PopCart/src/uploads/' . $fileName;
             }
         }
     }

@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/useAuth.jsx";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Cell, Legend, Tooltip, ResponsiveContainer } from "recharts";
+import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Cell, Legend, Tooltip, ResponsiveContainer } from "recharts";
 import "./Dashboard.css";
 import Monthly from "./Monthly.jsx";
 import Yearly from "./Yearly.jsx";
@@ -12,20 +12,20 @@ import Header from "../Header/HeaderA.jsx";
 export const Dashboard = () => {
   const navigate = useNavigate();
   const { logout } = useAuth();
-  const [totalUsers, setTotalUsers] = useState("5");
-  const [totalProducts, setTotalProducts] = useState("5");
-  const [totalTransactions, setTotalTransactions] = useState("5");
-  const [totalRevenue, setTotalRevenue] = useState("₱5");
+  const [totalUsers, setTotalUsers] = useState("0");
+  const [totalProducts, setTotalProducts] = useState("0");
+  const [totalTransactions, setTotalTransactions] = useState("0");
+  const [totalRevenue, setTotalRevenue] = useState("₱0");
   const [statusCounts, setStatusCounts] = useState({
-    pending: "1",
-    approved: "1",
-    packing: "1",
-    shipped: "1",
-    delivered: "1",
+    pending: "0",
+    approved: "0",
+    packing: "0",
+    shipped: "0",
+    delivered: "0",
     cancelled: "0"
   });
-  const [salesToday, setSalesToday] = useState(54);
-  const [revenueToday, setRevenueToday] = useState(45.94);
+  const [salesToday, setSalesToday] = useState(0);
+  const [revenueToday, setRevenueToday] = useState(0);
   const [showSignOutModal, setShowSignOutModal] = useState(false);
 
   useEffect(() => {
@@ -65,7 +65,7 @@ export const Dashboard = () => {
         const data = await response.json();
         if (data.success) {
           setTotalTransactions(data.total_transactions.toString());
-          setTotalRevenue(data.total_revenue),
+          setTotalRevenue(data.total_revenue);
           setStatusCounts({
             pending: data.status_counts.pending.toString(),
             approved: data.status_counts.approved.toString(),
@@ -217,11 +217,6 @@ export const Dashboard = () => {
     },
   ];
 
-  const chartData = [
-    { name: "Sales", Today: 54.06, fill: "#717182" },
-    { name: "Revenue", Today: 45.94, fill: "#0A0A0A" },
-  ];
-
   const timePeriods = ["Today", "Weekly", "Monthly", "Yearly"];
   const [selectedPeriod, setSelectedPeriod] = useState("Today");
 
@@ -229,7 +224,7 @@ export const Dashboard = () => {
   const todayDate = today.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: '2-digit' });
 
   const getWeekRange = () => {
-    const dayOfWeek = today.getDay(); // 0 = Sunday
+    const dayOfWeek = today.getDay(); 
     const startOfWeek = new Date(today);
     startOfWeek.setDate(today.getDate() - dayOfWeek);
     const endOfWeek = new Date(startOfWeek);
@@ -244,117 +239,74 @@ export const Dashboard = () => {
     <div className="admin-layout">
       <Header className="admin-header" />
       <div className="admin-content-wrapper">
-
         <Sidebar className="admin-sidebar" onSignOutClick={() => setShowSignOutModal(true)} />
-
         <main className="admin-main-content">
-    <div className="dashboard-container">
-      {/* Header */}
-      <div className="dashboard-header">
-        <h1 className="dashboard-title">Dashboard</h1>
-        <p className="dashboard-subtitle">Overview of platform analytics</p>
-      </div>
-
-      {/* Stats Cards */}
-      <div className="stats-grid">
-        {statsData.map((stat, index) => (
-          <div key={index} className="stat-card">
-            <div className="stat-card-header">
-              <h3 className="stat-card-title">{stat.title}</h3>
-              <div className="stat-card-icon">{stat.icon}</div>
+          <div className="dashboard-container">
+            <div className="dashboard-header">
+              <h1 className="dashboard-title">Dashboard</h1>
+              <p className="dashboard-subtitle">Overview of platform analytics</p>
             </div>
-            <div className="stat-card-body">
-              <div className="stat-card-value">{stat.value}</div>
-              <p className="stat-card-description">{stat.description}</p>
+
+            <div className="stats-grid">
+              {statsData.map((stat, index) => (
+                <div key={index} className="stat-card">
+                  <div className="stat-card-header">
+                    <h3 className="stat-card-title">{stat.title}</h3>
+                    <div className="stat-card-icon">{stat.icon}</div>
+                  </div>
+                  <div className="stat-card-body">
+                    <div className="stat-card-value">{stat.value}</div>
+                    <p className="stat-card-description">{stat.description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="order-status-section">
+              <div className="order-status-header">
+                <h2 className="order-status-title">Order Status Overview</h2>
+                <button className="order-status-view-all" onClick={() => navigate('/admin/orders')}>View All →</button>
+              </div>
+              <div className="order-status-grid">
+                {orderStatusData.map((status, index) => (
+                  <div key={index} className="order-status-card">
+                    <div className="order-status-icon" style={{ backgroundColor: `${status.bgColor}15` }}>
+                      {status.icon}
+                    </div>
+                    <div className="order-status-count">{status.count}</div>
+                    <div className="order-status-label">{status.label}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="chart-section">
+              <div className="chart-header">
+                <h2 className="chart-title">
+                  Analytics{(selectedPeriod === "Today" || selectedPeriod === "Weekly") ? ` ${selectedPeriod === "Today" ? todayDate : weekRange}` : ""}
+                </h2>
+                <div className="time-period-selector">
+                  {timePeriods.map((period) => (
+                    <button
+                      key={period}
+                      className={`time-period-btn ${selectedPeriod === period ? "active" : ""}`}
+                      onClick={() => setSelectedPeriod(period)}
+                    >
+                      {period}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="chart-render-area">
+                {selectedPeriod === "Today" && <TodayCharts salesToday={salesToday} revenueToday={revenueToday} />}
+                {selectedPeriod === "Weekly" && <Weekly />}
+                {selectedPeriod === "Monthly" && <Monthly />}
+                {selectedPeriod === "Yearly" && <Yearly />}
+              </div>
             </div>
           </div>
-        ))}
-      </div>
-
-      {/* Order Status */}
-      <div className="order-status-section">
-        <div className="order-status-header">
-          <h2 className="order-status-title">Order Status Overview</h2>
-          <button className="order-status-view-all" onClick={() => navigate('/admin/orders')}>View All →</button>
-        </div>
-        <div className="order-status-grid">
-          {orderStatusData.map((status, index) => (
-            <div key={index} className="order-status-card">
-              <div className="order-status-icon" style={{ backgroundColor: `${status.bgColor}15` }}>
-                {status.icon}
-              </div>
-              <div className="order-status-count">{status.count}</div>
-              <div className="order-status-label">{status.label}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Chart Section */}
-      <div className="chart-section">
-        <div className="chart-header">
-          <h2 className="chart-title">
-            Analytics{(selectedPeriod === "Today" || selectedPeriod === "Weekly") ? ` ${selectedPeriod === "Today" ? todayDate : weekRange}` : ""}
-          </h2>
-          <div className="time-period-selector">
-            {timePeriods.map((period) => (
-              <button
-                key={period}
-                className={`time-period-btn ${selectedPeriod === period ? "active" : ""}`}
-                onClick={() => setSelectedPeriod(period)}
-              >
-                {period}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Conditional charts */}
-        <div className="chart-render-area">
-          {selectedPeriod === "Today" && (
-            <div className="chart-area">
-              <div className="chart-card">
-                <h3 className="chart-card-title">Sales</h3>
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart
-                    data={[{ name: "Sales", value: salesToday }]}
-                    margin={{ top: 20, right: 10, left: 0, bottom: 5 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip formatter={(v) => `${v}`} />
-                    <Legend layout="horizontal" verticalAlign="bottom" align="center" iconType="square" wrapperStyle={{ color: '#0f172a' }} />
-                    <Bar name="Sales" dataKey="value" barSize={80} fill={chartData.find((d) => d.name === "Sales")?.fill || '#717182'} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-
-              <div className="chart-card">
-                <h3 className="chart-card-title">Revenue</h3>
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart
-                    data={[{ name: "Revenue", value: revenueToday }]}
-                    margin={{ top: 20, right: 10, left: 0, bottom: 5 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip formatter={(v) => `₱${v}`} />
-                    <Legend layout="horizontal" verticalAlign="bottom" align="center" iconType="square" wrapperStyle={{ color: '#0f172a' }} />
-                    <Bar name="Revenue" dataKey="value" barSize={80} fill={chartData.find((d) => d.name === "Revenue")?.fill || '#0A0A0A'} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-          )}
-          {selectedPeriod === "Weekly" && <Weekly />}
-          {selectedPeriod === "Monthly" && <Monthly />}
-          {selectedPeriod === "Yearly" && <Yearly />}
-        </div>
-      </div>
-    </div>
-    </main>
+        </main>
       </div>
 
       {showSignOutModal && (
@@ -362,15 +314,9 @@ export const Dashboard = () => {
           <div className="signout-modal">
             <h3>Sign Out</h3>
             <p>Are you sure you want to sign out?</p>
-
             <div className="modal-buttons">
-              <button className="cancel-btn" onClick={() => setShowSignOutModal(false)}>
-                Cancel
-              </button>
-
-              <button className="confirm-btn" onClick={() => { logout(); setShowSignOutModal(false); navigate('/signin'); }}>
-                Sign Out
-              </button>
+              <button className="cancel-btn" onClick={() => setShowSignOutModal(false)}>Cancel</button>
+              <button className="confirm-btn" onClick={() => { logout(); setShowSignOutModal(false); navigate('/signin'); }}>Sign Out</button>
             </div>
           </div>
         </div>
@@ -378,5 +324,45 @@ export const Dashboard = () => {
     </div>
   );
 }
+
+const TodayCharts = ({ salesToday, revenueToday }) => {
+  const chartData = useMemo(
+    () => [{ period: "Today", sales: salesToday, revenue: parseFloat(revenueToday) || 0 }],
+    [salesToday, revenueToday]
+  );
+
+  return (
+    <div className="chart-area">
+      <div className="chart-card">
+        <h3 className="chart-card-title">Sales (Delivered Today)</h3>
+        <ResponsiveContainer width="100%" height={320}>
+          <BarChart data={chartData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
+            <CartesianGrid stroke="#e6e7ea" vertical={false} />
+            <XAxis dataKey="period" tick={{ fill: "#334155" }} />
+            <YAxis tick={{ fill: "#334155" }} />
+            <Tooltip cursor={{fill: 'transparent'}} formatter={(v) => [`${v} orders`, "Delivered Today"]} />
+            <Bar dataKey="sales" fill="#717182" radius={[4, 4, 0, 0]} barSize={60} />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+
+      <div className="chart-card">
+        <h3 className="chart-card-title">Revenue (Delivered Today)</h3>
+        <ResponsiveContainer width="100%" height={320}>
+          <BarChart data={chartData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
+            <CartesianGrid stroke="#e6e7ea" vertical={false} />
+            <XAxis dataKey="period" tick={{ fill: "#334155" }} />
+            <YAxis tick={{ fill: "#334155" }} />
+            <Tooltip 
+              cursor={{fill: 'transparent'}}
+              formatter={(v) => [`₱${parseFloat(v).toLocaleString('en-PH', { minimumFractionDigits: 2 })}`, "Revenue Today"]} 
+            />
+            <Bar dataKey="revenue" fill="#0f172a" radius={[4, 4, 0, 0]} barSize={60} />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
+  );
+};
 
 export default Dashboard;

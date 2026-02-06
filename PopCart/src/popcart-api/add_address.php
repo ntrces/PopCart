@@ -5,15 +5,16 @@ header("Access-Control-Allow-Methods: POST");
 header("Content-Type: application/json");
 
 require 'db_connect.php';
+require 'input_utils.php';
 
-$data = json_decode(file_get_contents("php://input"), true);
-$user_id = $data['user_id'] ?? '';
-$address_label = $data['address_label'] ?? '';
-$postal_code = $data['postal_code'] ?? '';
-$street_address = $data['street_address'] ?? '';
-$city_municipality = $data['city_municipality'] ?? '';
-$province = $data['province'] ?? '';
-$is_default = $data['is_default'] ?? false;
+$data = read_json_input();
+$user_id = validate_int($data['user_id'] ?? null, 1);
+$address_label = sanitize_text($data['address_label'] ?? '', 100);
+$postal_code = sanitize_string($data['postal_code'] ?? '', 20);
+$street_address = sanitize_text($data['street_address'] ?? '', 200);
+$city_municipality = sanitize_text($data['city_municipality'] ?? '', 120);
+$province = sanitize_text($data['province'] ?? '', 120);
+$is_default = isset($data['is_default']) ? (bool)$data['is_default'] : false;
 
 if (!$user_id || !$address_label || !$postal_code || !$street_address || !$city_municipality || !$province) {
     echo json_encode(["success" => false, "message" => "All fields are required"]);

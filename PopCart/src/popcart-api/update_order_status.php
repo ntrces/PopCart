@@ -1,6 +1,7 @@
 <?php
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
+require 'input_utils.php';
 
 $servername = "localhost";
 $username = "root";
@@ -21,8 +22,14 @@ if (!isset($_POST['order_header_id']) || !isset($_POST['status'])) {
     exit();
 }
 
-$order_header_id = $_POST['order_header_id'];
-$status = strtolower($_POST['status']);
+$order_header_id = validate_int($_POST['order_header_id'], 1);
+$status = validate_enum(strtolower($_POST['status']), ['approved', 'packing', 'shipped', 'delivered', 'cancelled']);
+
+if (!$order_header_id || !$status) {
+    http_response_code(400);
+    echo json_encode(["success" => false, "message" => "Invalid parameters."]);
+    exit();
+}
 
 // Map status to timestamp columns
 $timestampColumns = [

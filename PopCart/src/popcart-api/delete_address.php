@@ -5,10 +5,11 @@ header("Access-Control-Allow-Methods: POST");
 header("Content-Type: application/json");
 
 require 'db_connect.php';
+require 'input_utils.php';
 
-$data = json_decode(file_get_contents("php://input"), true);
-$shipping_address_id = $data['shipping_address_id'] ?? '';
-$user_id = $data['user_id'] ?? '';
+$data = read_json_input();
+$shipping_address_id = validate_int($data['shipping_address_id'] ?? null, 1);
+$user_id = validate_int($data['user_id'] ?? null, 1);
 
 if (!$shipping_address_id || !$user_id) {
     echo json_encode(["success" => false, "message" => "Address ID and User ID required"]);

@@ -18,6 +18,7 @@ import AdminDashboard from "./Admin/Dashboard/Dashboard.jsx";
 import Users from "./Admin/Users/Users.jsx";
 import ProductManagement from "./Admin/Products/ProductManagement.jsx";
 import OrderManagement from "./Admin/Orders/OrderManagement.jsx";
+import AuditLogs from "./Admin/AuditLogs/AuditLogs.jsx";
 
 import OrderManage from "./Employee/OrderManagement/OrderE.jsx";
 import ProductManage from "./Employee/ProductManagement/ProductE.jsx";
@@ -38,6 +39,7 @@ export default function App() {
       <Route path="/admin/users" element={<Users />} />
       <Route path="/admin/products" element={<ProductManagement />} />
       <Route path="/admin/orders" element={<OrderManagement />} />
+      <Route path="/admin/audit" element={<AuditLogs />} />
 
       {/* Buyer routes */}
       <Route path="/buyer" element={<Home />} />

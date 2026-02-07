@@ -5,14 +5,39 @@ header("Access-Control-Allow-Methods: POST");
 header("Content-Type: application/json");
 
 require 'db_connect.php';
+require 'input_utils.php';
 
-$data = json_decode(file_get_contents("php://input"), true);
-$user_id = $data['user_id'] ?? '';
-$shipping_address_id = $data['shipping_address_id'] ?? '';
-$items = $data['items'] ?? [];
+$data = read_json_input();
+$user_id = validate_int($data['user_id'] ?? null, 1);
+$shipping_address_id = validate_int($data['shipping_address_id'] ?? null, 1);
+$items = is_array($data['items'] ?? null) ? $data['items'] : [];
 
 if (!$user_id || !$shipping_address_id || empty($items)) {
     echo json_encode(["success" => false, "message" => "Invalid data"]);
+    exit;
+}
+
+$sanitized_items = [];
+foreach ($items as $item) {
+    if (!is_array($item)) {
+        continue;
+    }
+    $product_id = validate_int($item['product_id'] ?? null, 1);
+    $quantity = validate_int($item['quantity'] ?? null, 1);
+    $price = validate_float($item['price'] ?? null, 0);
+    if (!$product_id || !$quantity || $price === null) {
+        echo json_encode(["success" => false, "message" => "Invalid item data"]);
+        exit;
+    }
+    $sanitized_items[] = [
+        'product_id' => $product_id,
+        'quantity' => $quantity,
+        'price' => $price
+    ];
+}
+
+if (empty($sanitized_items)) {
+    echo json_encode(["success" => false, "message" => "Invalid item data"]);
     exit;
 }
 
@@ -39,7 +64,7 @@ $stmt->close();
 
 // Insert order details
 $stmt = $conn->prepare("INSERT INTO order_details (order_header_id, product_id, item_qty, item_price) VALUES (?, ?, ?, ?)");
-foreach ($items as $item) {
+foreach ($sanitized_items as $item) {
     $product_id = $item['product_id'];
     $quantity = $item['quantity'];
     $price = $item['price'];
@@ -55,7 +80,7 @@ $stmt->close();
 
 // Deduct stock
 $update_stmt = $conn->prepare("UPDATE products SET stock = stock - ? WHERE product_id = ?");
-foreach ($items as $item) {
+foreach ($sanitized_items as $item) {
     $product_id = $item['product_id'];
     $quantity = $item['quantity'];
     $update_stmt->bind_param("ii", $quantity, $product_id);

@@ -3,6 +3,10 @@ header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: Content-Type");
 header("Content-Type: application/json");
 
+// Include password utility functions for secure hashing
+require 'password_utils.php';
+require 'input_utils.php';
+
 // --- 1. Database Connection Configuration ---
 $servername = "localhost";
 $username = "root"; // XAMPP default
@@ -18,24 +22,20 @@ if ($conn->connect_error) {
 
 
 // --- 2. Get POST data ---
-$data = json_decode(file_get_contents("php://input"), true);
+$data = read_json_input();
 
-$lastname = $data['lastname'] ?? '';
-$firstname = $data['firstname'] ?? '';
-$email = $data['email'] ?? '';
-$birthday = $data['birthday'] ?? '';
-$plainPassword = $data['password'] ?? '';
-$usertype = $data['usertype'] ?? '';
+$lastname = sanitize_text($data['lastname'] ?? '', 100);
+$firstname = sanitize_text($data['firstname'] ?? '', 100);
+$error = null;
+$email = validate_email($data['email'] ?? '', $error);
+$birthday = sanitize_string($data['birthday'] ?? '', 10);
+$plainPassword = validate_password_length($data['password'] ?? '', $error);
+$usertype = validate_enum($data['usertype'] ?? '', ['buyer', 'employee', 'admin']);
 $status = "active";
 
 // Validate input
 if (empty($lastname) || empty($firstname) || empty($email) || empty($plainPassword) || empty($usertype)) {
-    echo json_encode(["success" => false, "message" => "All fields are required."]);
-    exit;
-}
-
-if (!in_array($usertype, ['buyer', 'employee', 'admin'])) {
-    echo json_encode(["success" => false, "message" => "Invalid user type."]);
+    echo json_encode(["success" => false, "message" => $error ?? "All fields are required."]);
     exit;
 }
 
@@ -55,8 +55,8 @@ if ($checkResult1->num_rows > 0 || $checkResult2->num_rows > 0) {
     exit;
 }
 
-// --- 3. Secure Password Hashing ---
-$hashedPassword = password_hash($plainPassword, PASSWORD_BCRYPT);
+// --- 3. Secure Password Hashing using ARGON2ID ---
+$hashedPassword = hashPassword($plainPassword);
 
 // --- 4. Determine which table to insert into based on usertype ---
 $table = ($usertype === 'admin') ? 'admins' : 'users';

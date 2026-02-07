@@ -6,17 +6,22 @@ header("Content-Type: application/json");
 
 require 'db_connect.php';
 
+// Include password utility functions for secure password hashing
+require 'password_utils.php';
+require 'input_utils.php';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['user_id']) && isset($_POST['usertype']) && isset($_POST['old_usertype'])) {
         // Admin edit usertype with complex table management
-        $user_id = $_POST['user_id'];
-        $email = $_POST['email'];
-        $new_usertype = $_POST['usertype'];
-        $old_usertype = $_POST['old_usertype'];
-        $source_table = $_POST['source_table'] ?? 'users';
+        $error = null;
+        $user_id = validate_int($_POST['user_id'] ?? null, 1);
+        $email = validate_email($_POST['email'] ?? '', $error);
+        $new_usertype = validate_enum($_POST['usertype'] ?? '', ['buyer', 'employee', 'admin']);
+        $old_usertype = validate_enum($_POST['old_usertype'] ?? '', ['buyer', 'employee', 'admin']);
+        $source_table = validate_enum($_POST['source_table'] ?? 'users', ['users', 'admins']) ?? 'users';
 
-        if (!in_array($new_usertype, ['buyer', 'employee', 'admin'])) {
-            echo json_encode(["success" => false, "message" => "Invalid user type"]);
+        if (!$user_id || !$email || !$new_usertype || !$old_usertype) {
+            echo json_encode(["success" => false, "message" => $error ?? "Invalid user data"]);
             exit;
         }
 
@@ -145,20 +150,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     } else {
         // Profile update (JSON)
-        $data = json_decode(file_get_contents("php://input"), true);
-        $user_id = $data['user_id'] ?? '';
-        $lastname = $data['lastname'] ?? '';
-        $firstname = $data['firstname'] ?? '';
-        $birthday = $data['birthday'] ?? '';
-        $contact_number = $data['contact_number'] ?? '';
+        $data = read_json_input();
+        $error = null;
+        $user_id = validate_int($data['user_id'] ?? null, 1);
+        $lastname = sanitize_text($data['lastname'] ?? '', 100);
+        $firstname = sanitize_text($data['firstname'] ?? '', 100);
+        $birthday = sanitize_string($data['birthday'] ?? '', 10);
+        $contact_number = sanitize_string($data['contact_number'] ?? '', 30);
+        $newPassword = $data['password'] ?? ''; // Optional field for password change
 
         if (!$user_id) {
             echo json_encode(["success" => false, "message" => "User ID required"]);
             exit;
         }
 
-        $stmt = $conn->prepare("UPDATE users SET lastname = ?, firstname = ?, birthday = ?, contact_number = ? WHERE user_id = ?");
-        $stmt->bind_param("ssssi", $lastname, $firstname, $birthday, $contact_number, $user_id);
+        // Check if password change is requested
+        if (!empty($newPassword)) {
+            $plainPassword = validate_password_length($newPassword, $error);
+            if (!$plainPassword) {
+                echo json_encode(["success" => false, "message" => $error ?? "Invalid password"]);
+                exit;
+            }
+            // Update all fields including password using secure hashing
+            $hashedPassword = hashPassword($plainPassword);
+            $stmt = $conn->prepare("UPDATE users SET lastname = ?, firstname = ?, birthday = ?, contact_number = ?, password = ? WHERE user_id = ?");
+            $stmt->bind_param("sssssi", $lastname, $firstname, $birthday, $contact_number, $hashedPassword, $user_id);
+        } else {
+            // Update without password change
+            $stmt = $conn->prepare("UPDATE users SET lastname = ?, firstname = ?, birthday = ?, contact_number = ? WHERE user_id = ?");
+            $stmt->bind_param("ssssi", $lastname, $firstname, $birthday, $contact_number, $user_id);
+        }
 
         if ($stmt->execute()) {
             echo json_encode(["success" => true, "message" => "Profile updated successfully"]);

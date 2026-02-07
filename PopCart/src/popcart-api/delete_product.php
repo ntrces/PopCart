@@ -5,6 +5,7 @@ header("Access-Control-Allow-Methods: POST");
 header("Content-Type: application/json");
 
 require 'db_connect.php';
+require 'input_utils.php';
 
 $data = json_decode(file_get_contents("php://input"), true);
 // Accept product_id from JSON payload or form-encoded POST (for compatibility)
@@ -18,9 +19,9 @@ if (is_array($data) && isset($data['product_id'])) {
 }
 
 // sanitize/validate
-$product_id = intval($product_id);
+$product_id = validate_int($product_id, 1);
 
-if ($product_id <= 0) {
+if (!$product_id) {
     echo json_encode(["success" => false, "message" => "Product ID required or invalid"]);
     exit;
 }

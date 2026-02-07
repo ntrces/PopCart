@@ -5,23 +5,14 @@ header("Access-Control-Allow-Methods: POST");
 header("Content-Type: application/json");
 
 require 'db_connect.php';
+require 'input_utils.php';
 
-$user_id = $_POST['user_id'] ?? '';
-$status = $_POST['status'] ?? '';
-$source_table = $_POST['source_table'] ?? 'users';
+$user_id = validate_int($_POST['user_id'] ?? null, 1);
+$status = validate_enum($_POST['status'] ?? '', ['active', 'inactive']);
+$source_table = validate_enum($_POST['source_table'] ?? 'users', ['users', 'admins']);
 
 if (!$user_id || !$status) {
     echo json_encode(["success" => false, "message" => "User ID and status required"]);
-    exit;
-}
-
-if (!in_array($status, ['active', 'inactive'])) {
-    echo json_encode(["success" => false, "message" => "Invalid status"]);
-    exit;
-}
-
-if (!in_array($source_table, ['users', 'admins'])) {
-    echo json_encode(["success" => false, "message" => "Invalid source table"]);
     exit;
 }
 

@@ -6,6 +6,8 @@ header("Content-Type: application/json");
 
 require 'db_connect.php';
 require 'input_utils.php';
+require 'session_config.php';
+require 'log_utils.php';
 
 $user_id = validate_int($_POST['user_id'] ?? null, 1);
 $status = validate_enum($_POST['status'] ?? '', ['active', 'inactive']);
@@ -20,6 +22,13 @@ $stmt = $conn->prepare("UPDATE $source_table SET status = ? WHERE user_id = ?");
 $stmt->bind_param("si", $status, $user_id);
 
 if ($stmt->execute()) {
+    $actor_id = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : $user_id;
+    $actor_role = isset($_SESSION['usertype']) ? $_SESSION['usertype'] : null;
+    if ($status === 'inactive') {
+        log_action($conn, $actor_id, $actor_role, "Deactivated account of user {$user_id}");
+    } else {
+        log_action($conn, $actor_id, $actor_role, "Activated account of user {$user_id}");
+    }
     echo json_encode(["success" => true, "message" => "User status updated successfully"]);
 } else {
     echo json_encode(["success" => false, "message" => "Error updating user status"]);

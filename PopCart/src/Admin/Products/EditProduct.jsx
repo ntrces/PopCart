@@ -16,6 +16,15 @@ function EditProduct({ product, onClose, onUpdate }) {
   const [showFileInput, setShowFileInput] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [currentProduct, setCurrentProduct] = useState(null);
+  const [originalFormData, setOriginalFormData] = useState({
+    price: "",
+    stockQuantity: "",
+  });
+
+  const hasChanges =
+    Math.abs(parseFloat(formData.price) - parseFloat(originalFormData.price)) > 0.001 ||
+    parseInt(formData.stockQuantity, 10) !== parseInt(originalFormData.stockQuantity, 10) ||
+    formData.albumCoverImage !== null;
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -33,6 +42,10 @@ function EditProduct({ product, onClose, onUpdate }) {
             genre: p.genre,
             releasedYear: p.released_year,
             description: p.description,
+          });
+          setOriginalFormData({
+            price: p.price,
+            stockQuantity: p.stock,
           });
         }
       } catch (error) {
@@ -63,8 +76,11 @@ function EditProduct({ product, onClose, onUpdate }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.albumCoverImage) {
+    if (showFileInput && !formData.albumCoverImage) {
       alert('Please upload an album cover image.');
+      return;
+    }
+    if (!hasChanges) {
       return;
     }
     const data = new FormData();
@@ -77,6 +93,7 @@ function EditProduct({ product, onClose, onUpdate }) {
     try {
       const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/update_product.php', {
         method: 'POST',
+        credentials: 'include',
         body: data
       });
       const result = await response.json();
@@ -300,7 +317,12 @@ function EditProduct({ product, onClose, onUpdate }) {
             Cancel
           </button>
 
-          <button type="submit" className="ap-submit-btn">
+          <button
+            type="submit"
+            className="ap-submit-btn"
+            disabled={!hasChanges}
+            aria-disabled={!hasChanges}
+          >
             Update Album
           </button>
         </div>

@@ -28,20 +28,28 @@ $weeklyRevenue = [];
 for ($i = 0; $i < 7; $i++) {
     $date = date('Y-m-d', strtotime($startOfWeek . ' +' . $i . ' days'));
     
-    // Sales for this day
-    $salesQuery = "SELECT COUNT(*) as sales FROM order_header WHERE order_status = 'delivered' AND delivered_date = '$date'";
-    $salesResult = $conn->query($salesQuery);
+    // Sales for this day - Using prepared statement to prevent SQL injection
+    $salesQuery = "SELECT COUNT(*) as sales FROM order_header WHERE order_status = 'delivered' AND delivered_date = ?";
+    $stmt = $conn->prepare($salesQuery);
+    $stmt->bind_param("s", $date);
+    $stmt->execute();
+    $salesResult = $stmt->get_result();
     $sales = $salesResult->fetch_assoc()['sales'];
+    $stmt->close();
     
-    // Revenue for this day
+    // Revenue for this day - Using prepared statement to prevent SQL injection
     $revenueQuery = "
     SELECT SUM(od.item_qty * od.item_price) as revenue
     FROM order_details od
     JOIN order_header oh ON od.order_header_id = oh.order_header_id
-    WHERE oh.order_status = 'delivered' AND oh.delivered_date = '$date'
+    WHERE oh.order_status = 'delivered' AND oh.delivered_date = ?
     ";
-    $revenueResult = $conn->query($revenueQuery);
+    $stmt = $conn->prepare($revenueQuery);
+    $stmt->bind_param("s", $date);
+    $stmt->execute();
+    $revenueResult = $stmt->get_result();
     $revenue = $revenueResult->fetch_assoc()['revenue'] ?? 0;
+    $stmt->close();
     
     $weeklySales[] = $sales;
     $weeklyRevenue[] = $revenue;

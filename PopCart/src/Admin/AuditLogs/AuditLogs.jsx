@@ -1,49 +1,189 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../auth/useAuth.jsx";
 import "./AuditLogs.css";
+import Sidebar from "../Sidebar/SidebarA.jsx";
+import Header from "../Header/HeaderA.jsx";
 
 export default function AuditLogs() {
- const [searchValue, setSearchValue] = useState("");
- const [dateValue, setDateValue] = useState("");
- const auditLogs = [
-    {
-      id: "LOG001",
-      timestamp: "01/02/2026, 14:30:00",
-      userId: "LOG001",
-      userInitial: "A",
-      userName: "Admin User",
-      userRole: "Admin",
-      actionDescription: "Deleted customer account: john.doe@example.com",
-    },
-    {
-      id: "LOG001",
-      timestamp: "01/02/2026, 14:30:00",
-      userId: "LOG001",
-      userInitial: "A",
-      userName: "Admin User",
-      userRole: "Admin",
-      actionDescription: "Deleted customer account: john.doe@example.com",
-    },
-    {
-      id: "LOG001",
-      timestamp: "01/02/2026, 14:30:00",
-      userId: "LOG001",
-      userInitial: "A",
-      userName: "Admin User",
-      userRole: "Admin",
-      actionDescription: "Deleted customer account: john.doe@example.com",
-    },
-    {
-      id: "LOG001",
-      timestamp: "01/02/2026, 14:30:00",
-      userId: "LOG001",
-      userInitial: "A",
-      userName: "Admin User",
-      userRole: "Admin",
-      actionDescription: "Deleted customer account: john.doe@example.com",
-    },
-  ];
+  const navigate = useNavigate();
+  const [searchValue, setSearchValue] = useState("");
+  const [dateValue, setDateValue] = useState("");
+  const [showSignOutModal, setShowSignOutModal] = useState(false);
+  const { logout } = useAuth();
+  const [auditLogs, setAuditLogs] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
+
+  useEffect(() => {
+    let isMounted = true;
+    setIsLoading(true);
+    setLoadError("");
+
+    const mapLog = (log) => ({
+      id: log.id,
+      timestamp: log.timestamp,
+      userId: log.user_id,
+      userRole: log.role,
+      actionDescription: log.action
+    });
+
+    const fetchLogs = async () => {
+      try {
+        const response = await fetch("http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/get_logs.php");
+        const data = await response.json();
+
+        if (!data.success) {
+          throw new Error(data.message || "Failed to load audit logs.");
+        }
+
+        const mappedLogs = (data.logs || []).map(mapLog);
+        if (isMounted) {
+          setAuditLogs(mappedLogs);
+          setIsLoading(false);
+        }
+      } catch (error) {
+        if (isMounted) {
+          setLoadError("Unable to load audit logs. Please try again.");
+          setIsLoading(false);
+        }
+      }
+    };
+
+    let initReceived = false;
+    const eventSource = new EventSource(
+      "http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/get_logs_stream.php"
+    );
+
+    eventSource.addEventListener("init", (event) => {
+      try {
+        const payload = JSON.parse(event.data || "{}");
+        const logs = Array.isArray(payload.logs) ? payload.logs : [];
+        const mappedLogs = logs.map(mapLog);
+        if (isMounted) {
+          setAuditLogs(mappedLogs);
+          setIsLoading(false);
+          initReceived = true;
+        }
+      } catch (error) {
+        if (isMounted) {
+          setLoadError("Unable to load audit logs. Please try again.");
+          setIsLoading(false);
+        }
+      }
+    });
+
+    eventSource.addEventListener("log", (event) => {
+      try {
+        const log = JSON.parse(event.data || "{}");
+        const mappedLog = mapLog(log);
+        if (isMounted) {
+          setAuditLogs((prevLogs) => {
+            if (prevLogs.some((item) => item.id === mappedLog.id)) {
+              return prevLogs;
+            }
+            return [...prevLogs, mappedLog];
+          });
+        }
+      } catch (error) {
+        // Ignore malformed log events
+      }
+    });
+
+    eventSource.onerror = () => {
+      if (!initReceived) {
+        eventSource.close();
+        fetchLogs();
+        return;
+      }
+      if (isMounted) {
+        setLoadError("Unable to load audit logs. Please try again.");
+        setIsLoading(false);
+      }
+    };
+
+    const initFallback = setTimeout(() => {
+      if (!initReceived) {
+        eventSource.close();
+        fetchLogs();
+      }
+    }, 3000);
+
+    return () => {
+      isMounted = false;
+      clearTimeout(initFallback);
+      eventSource.close();
+    };
+  }, []);
+
+  const getUserInitial = (role) => {
+    if (!role || typeof role !== "string") {
+      return "?";
+    }
+    return role.trim().charAt(0).toUpperCase();
+  };
+
+  const formatUserRole = (role) => {
+    if (!role || typeof role !== "string") {
+      return "";
+    }
+    const normalized = role.trim().replace(/_/g, " ");
+    if (normalized.toLowerCase() === "superadmin" || normalized.toLowerCase() === "super admin") {
+      return "Super Admin";
+    }
+    return normalized
+      .toLowerCase()
+      .split(" ")
+      .filter(Boolean)
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  };
+
+  const normalizeDate = (timestamp) => {
+    if (!timestamp || typeof timestamp !== "string") {
+      return "";
+    }
+    const parts = timestamp.split(" ");
+    if (parts.length > 0) {
+      return parts[0];
+    }
+    return timestamp.split("T")[0] || "";
+  };
+
+  const formatDateDisplay = (dateString) => {
+    if (!dateString) {
+      return "Select Date";
+    }
+    const monthNames = [
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+    ];
+    const [year, month, day] = dateString.split("-");
+    const monthIndex = parseInt(month, 10) - 1;
+    return `${monthNames[monthIndex]} ${parseInt(day, 10)}, ${year}`;
+  };
+
+  const filteredLogs = auditLogs.filter((log) => {
+    const searchTerm = searchValue.trim().toLowerCase();
+    const matchesSearch = !searchTerm || [
+      String(log.id),
+      String(log.userId),
+      String(log.userRole || ""),
+      String(log.actionDescription || ""),
+      String(log.timestamp || "")
+    ].some((value) => value.toLowerCase().includes(searchTerm));
+
+    const matchesDate = !dateValue || normalizeDate(log.timestamp) === dateValue;
+
+    return matchesSearch && matchesDate;
+  });
 
   return (
+    <div className="admin-layout">
+          <Header className="admin-header" />
+          <div className="admin-content-wrapper">
+            <Sidebar className="admin-sidebar" onSignOutClick={() => setShowSignOutModal(true)} />
+            <main className="admin-main-content">
     <div className="audit-logs-container">
       <header className="audit-logs-header">
         <div className="audit-logs-header-title">
@@ -85,7 +225,7 @@ export default function AuditLogs() {
             htmlFor="date-picker"
             className="audit-logs-date-picker-label"
           >
-            <span>Select Date</span>
+            <span>{formatDateDisplay(dateValue)}</span>
 
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M5.25 8.25H6.75V9.75H5.25V8.25ZM5.25 11.25H6.75V12.75H5.25V11.25ZM8.25 8.25H9.75V9.75H8.25V8.25ZM8.25 11.25H9.75V12.75H8.25V11.25ZM11.25 8.25H12.75V9.75H11.25V8.25ZM11.25 11.25H12.75V12.75H11.25V11.25Z" fill="#0A0A0A"/>
@@ -130,11 +270,32 @@ export default function AuditLogs() {
             </div>
 
             <div className="audit-logs-table-body">
-              {auditLogs.map((log, index) => (
-                <div
-                  key={index}
-                  className="audit-logs-table-row"
-                >
+              {isLoading && (
+                <div className="audit-logs-table-row">
+                  <div className="table-cell table-cell-action">
+                    <div>Loading audit logs...</div>
+                  </div>
+                </div>
+              )}
+
+              {!isLoading && loadError && (
+                <div className="audit-logs-table-row">
+                  <div className="table-cell table-cell-action">
+                    <div>{loadError}</div>
+                  </div>
+                </div>
+              )}
+
+              {!isLoading && !loadError && filteredLogs.length === 0 && (
+                <div className="audit-logs-table-row">
+                  <div className="table-cell table-cell-action">
+                    <div>No audit logs found.</div>
+                  </div>
+                </div>
+              )}
+
+              {!isLoading && !loadError && filteredLogs.map((log, index) => (
+                <div key={`${log.id}-${index}`} className="audit-logs-table-row">
                   <div className="table-cell table-cell-id">
                     <div>{log.id}</div>
                   </div>
@@ -145,10 +306,6 @@ export default function AuditLogs() {
 
                   <div className="table-cell table-cell-userid">
                     <div className="user-avatar-container">
-                      <div className="user-avatar">
-                        <div>{log.userInitial}</div>
-                      </div>
-
                       <div className="user-id-text">{log.userId}</div>
                     </div>
                   </div>
@@ -156,16 +313,12 @@ export default function AuditLogs() {
                   <div className="table-cell table-cell-role">
                     <div className="user-avatar-container">
                       <div className="user-avatar">
-                        <div>{log.userInitial}</div>
+                        <div>{getUserInitial(log.userRole)}</div>
                       </div>
 
                       <div className="user-info-container">
                         <div className="user-name">
-                          <div>{log.userName}</div>
-                        </div>
-
-                        <div className="user-role">
-                          <div>{log.userRole}</div>
+                          <div>{formatUserRole(log.userRole)}</div>
                         </div>
                       </div>
                     </div>
@@ -181,6 +334,32 @@ export default function AuditLogs() {
         </div>
       </div>
     </div>
+    </main>
+    </div>
+
+    {showSignOutModal && (
+        <div className="modal-overlay">
+          <div className="signout-modal">
+            <h3>Sign Out</h3>
+            <p>Are you sure you want to sign out?</p>
+            <div className="modal-buttons">
+              <button className="cancel-btn" onClick={() => setShowSignOutModal(false)}>Cancel</button>
+              <button
+                className="confirm-btn"
+                onClick={async () => {
+                  await logout();
+                  setShowSignOutModal(false);
+                  navigate("/signin");
+                }}
+              >
+                Sign Out
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+
 
   );
 };

@@ -16,7 +16,7 @@ if (session_status() === PHP_SESSION_NONE) {
         'domain' => '',              // Empty = current domain (works for localhost too)
         'secure' => false,           // Set to true in production with HTTPS
         'httponly' => true,          // Prevent JavaScript XSS access to session cookie
-        'samesite' => 'Strict'       // Prevent CSRF attacks
+        'samesite' => 'Lax'          // Changed from Strict to Lax for better CORS compatibility
     ]);
     
     // Start the session with a secure name

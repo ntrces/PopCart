@@ -6,6 +6,7 @@ header("Content-Type: application/json");
 
 require 'db_connect.php';
 require 'input_utils.php';
+require 'log_utils.php';
 
 $data = read_json_input();
 $user_id = validate_int($data['user_id'] ?? null, 1);
@@ -32,6 +33,7 @@ if ($update_stmt->execute()) {
     $update_user_stmt->bind_param("ii", $shipping_address_id, $user_id);
     $update_user_stmt->execute();
     $update_user_stmt->close();
+    log_action($conn, $user_id, null, "Updated shipping address {$shipping_address_id} to default");
     echo json_encode(["success" => true, "message" => "Address set as default"]);
 } else {
     echo json_encode(["success" => false, "message" => "Error updating address"]);

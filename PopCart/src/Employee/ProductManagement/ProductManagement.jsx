@@ -301,7 +301,7 @@ function ProductManagement() {
                     Cancel
                   </button>
 
-                  <button className="confirm-btn" onClick={() => { logout(); setShowSignOutModal(false); navigate('/signin'); }}>
+                  <button className="confirm-btn" onClick={async () => { await logout(); setShowSignOutModal(false); navigate('/signin'); }}>
                     Sign Out
                   </button>
                 </div>

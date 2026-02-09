@@ -110,10 +110,25 @@
   margin-bottom: 3px;
 }
 
-/* Email label and input in left column */
+/* Email label and input full width */
 label[for="email"],
 #email {
-  grid-column: 1;
+  grid-column: span 2;
+}
+
+/* Error text styling */
+.error-text {
+  color: #e63946;
+  font-size: 0.85rem;
+  margin-top: 4px;
+  margin-bottom: 10px;
+  grid-column: span 2;
+  display: block;
+}
+
+.input-error {
+  border: 1.5px solid #e63946 !important;
+  background: #ffe6e6;
 }
 
 /* Submit button */
@@ -126,6 +141,7 @@ label[for="email"],
   font-size: 0.95rem;
   cursor: pointer;
   height: 36px;
+  grid-column: span 2;
 }
 
 /* Simple back button (no background) */

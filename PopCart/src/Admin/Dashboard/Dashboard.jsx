@@ -89,6 +89,7 @@ export const Dashboard = () => {
       title: "Total Users",
       value: totalUsers,
       description: "All active users",
+      route: "/admin/users",
       icon: (
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M10.6666 14V12.6667C10.6666 11.9594 10.3857 11.2811 9.8856 10.781C9.3855 10.281 8.70722 10 7.99998 10H3.99998C3.29274 10 2.61446 10.281 2.11436 10.781C1.61426 11.2811 1.33331 11.9594 1.33331 12.6667V14" stroke="#717182" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round" />
@@ -102,6 +103,7 @@ export const Dashboard = () => {
       title: "Total Transactions",
       value: totalTransactions,
       description: "Total Orders",
+      route: "/admin/orders",
       icon: (
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M13.875 3H4.125C3.71079 3 3.375 3.33579 3.375 3.75V15.75C3.375 16.1642 3.71079 16.5 4.125 16.5H13.875C14.2892 16.5 14.625 16.1642 14.625 15.75V3.75C14.625 3.33579 14.2892 3 13.875 3Z" stroke="#717182" strokeWidth="1.5" strokeLinejoin="round" />
@@ -113,6 +115,7 @@ export const Dashboard = () => {
       title: "Total Products",
       value: totalProducts,
       description: "All existing products",
+      route: "/admin/products",
       icon: (
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M7.33333 14.4867C7.53603 14.6037 7.76595 14.6653 8 14.6653C8.23405 14.6653 8.46397 14.6037 8.66667 14.4867L13.3333 11.82C13.5358 11.7031 13.704 11.535 13.821 11.3326C13.938 11.1301 13.9998 10.9005 14 10.6667V5.33333C13.9998 5.09951 13.938 4.86987 13.821 4.66744C13.704 4.465 13.5358 4.2969 13.3333 4.17999L8.66667 1.51333C8.46397 1.3963 8.23405 1.33469 8 1.33469C7.76595 1.33469 7.53603 1.3963 7.33333 1.51333L2.66667 4.17999C2.46418 4.2969 2.29599 4.465 2.17897 4.66744C2.06196 4.86987 2.00024 5.09951 2 5.33333V10.6667C2.00024 10.9005 2.06196 11.1301 2.17897 11.3326C2.29599 11.535 2.46418 11.7031 2.66667 11.82L7.33333 14.4867Z" stroke="#717182" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round" />
@@ -251,11 +254,31 @@ export const Dashboard = () => {
               {statsData.map((stat, index) => (
                 <div key={index} className="stat-card">
                   <div className="stat-card-header">
-                    <h3 className="stat-card-title">{stat.title}</h3>
+                    {stat.route ? (
+                      <button
+                        type="button"
+                        className="stat-card-title stat-card-title-button"
+                        onClick={() => navigate(stat.route)}
+                      >
+                        {stat.title}
+                      </button>
+                    ) : (
+                      <h3 className="stat-card-title">{stat.title}</h3>
+                    )}
                     <div className="stat-card-icon">{stat.icon}</div>
                   </div>
                   <div className="stat-card-body">
-                    <div className="stat-card-value">{stat.value}</div>
+                    {stat.route ? (
+                      <button
+                        type="button"
+                        className="stat-card-value stat-card-value-button"
+                        onClick={() => navigate(stat.route)}
+                      >
+                        {stat.value}
+                      </button>
+                    ) : (
+                      <div className="stat-card-value">{stat.value}</div>
+                    )}
                     <p className="stat-card-description">{stat.description}</p>
                   </div>
                 </div>
@@ -316,7 +339,7 @@ export const Dashboard = () => {
             <p>Are you sure you want to sign out?</p>
             <div className="modal-buttons">
               <button className="cancel-btn" onClick={() => setShowSignOutModal(false)}>Cancel</button>
-              <button className="confirm-btn" onClick={() => { logout(); setShowSignOutModal(false); navigate('/signin'); }}>Sign Out</button>
+              <button className="confirm-btn" onClick={async () => { await logout(); setShowSignOutModal(false); navigate('/signin'); }}>Sign Out</button>
             </div>
           </div>
         </div>

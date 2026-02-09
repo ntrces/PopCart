@@ -37,6 +37,7 @@ export default function SignIn() {
       try {
         const response = await fetch("http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/signin.php", {
           method: "POST",
+          credentials: "include",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, password }),
         });
@@ -100,6 +101,7 @@ export default function SignIn() {
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              maxLength="25"
               className={errors.password ? "input-error" : ""}
             />
             <span

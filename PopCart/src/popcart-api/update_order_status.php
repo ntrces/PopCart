@@ -1,20 +1,19 @@
 <?php
 header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
-require 'input_utils.php';
+header('Access-Control-Allow-Origin: http://localhost:5173');
+header('Access-Control-Allow-Headers: Content-Type');
+header('Access-Control-Allow-Methods: POST, OPTIONS');
+header('Access-Control-Allow-Credentials: true');
 
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "popcart";
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-if ($conn->connect_error) {
-    http_response_code(500);
-    echo json_encode(["success" => false, "message" => "Connection failed: " . $conn->connect_error]);
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
     exit();
 }
+
+require 'db_connect.php';
+require 'input_utils.php';
+require 'session_config.php';
+require 'log_utils.php';
 
 if (!isset($_POST['order_header_id']) || !isset($_POST['status'])) {
     http_response_code(400);
@@ -56,6 +55,15 @@ $stmt = $conn->prepare($sql);
 $stmt->bind_param($types, ...$params);
 
 if ($stmt->execute()) {
+    $actor_id = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : 0;
+    $actor_role = isset($_SESSION['usertype']) ? $_SESSION['usertype'] : null;
+    if ($actor_id) {
+        if ($status === 'cancelled') {
+            log_action($conn, $actor_id, $actor_role, "Cancelled order {$order_header_id}");
+        } else {
+            log_action($conn, $actor_id, $actor_role, "Updated order {$order_header_id} to {$status}");
+        }
+    }
     echo json_encode(["success" => true]);
 } else {
     echo json_encode(["success" => false, "message" => "Update failed."]);

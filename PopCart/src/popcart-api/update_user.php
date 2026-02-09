@@ -9,6 +9,8 @@ require 'db_connect.php';
 // Include password utility functions for secure password hashing
 require 'password_utils.php';
 require 'input_utils.php';
+require 'session_config.php';
+require 'log_utils.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['user_id']) && isset($_POST['usertype']) && isset($_POST['old_usertype'])) {
@@ -77,6 +79,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
             $check_admin->close();
+            $actor_id = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : $user_id;
+            $actor_role = isset($_SESSION['usertype']) ? $_SESSION['usertype'] : null;
+            
+            // If role not in session, fetch from database
+            if (!$actor_role) {
+                $role_stmt = $conn->prepare("SELECT usertype FROM users WHERE user_id = ? AND status = 'active'");
+                $role_stmt->bind_param("i", $actor_id);
+                $role_stmt->execute();
+                $role_result = $role_stmt->get_result();
+                if ($role_row = $role_result->fetch_assoc()) {
+                    $actor_role = $role_row['usertype'];
+                } else {
+                    // Check admins table if not found in users
+                    $role_stmt->close();
+                    $role_stmt = $conn->prepare("SELECT usertype FROM admins WHERE user_id = ? AND status = 'active'");
+                    $role_stmt->bind_param("i", $actor_id);
+                    $role_stmt->execute();
+                    $role_result = $role_stmt->get_result();
+                    if ($role_row = $role_result->fetch_assoc()) {
+                        $actor_role = $role_row['usertype'];
+                    }
+                }
+                $role_stmt->close();
+            }
+            
+            log_action($conn, $actor_id, $actor_role, "Updated user role of user {$user_id} to {$new_usertype}");
+
             echo json_encode(["success" => true, "message" => "User promoted to admin successfully"]);
         }
         // Scenario 2: Admin -> Buyer/Employee
@@ -131,6 +160,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
             $check_user->close();
+            $actor_id = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : $user_id;
+            $actor_role = isset($_SESSION['usertype']) ? $_SESSION['usertype'] : null;
+            
+            // If role not in session, fetch from database
+            if (!$actor_role) {
+                $role_stmt = $conn->prepare("SELECT usertype FROM users WHERE user_id = ? AND status = 'active'");
+                $role_stmt->bind_param("i", $actor_id);
+                $role_stmt->execute();
+                $role_result = $role_stmt->get_result();
+                if ($role_row = $role_result->fetch_assoc()) {
+                    $actor_role = $role_row['usertype'];
+                } else {
+                    // Check admins table if not found in users
+                    $role_stmt->close();
+                    $role_stmt = $conn->prepare("SELECT usertype FROM admins WHERE user_id = ? AND status = 'active'");
+                    $role_stmt->bind_param("i", $actor_id);
+                    $role_stmt->execute();
+                    $role_result = $role_stmt->get_result();
+                    if ($role_row = $role_result->fetch_assoc()) {
+                        $actor_role = $role_row['usertype'];
+                    }
+                }
+                $role_stmt->close();
+            }
+            
+            log_action($conn, $actor_id, $actor_role, "Updated user role of user {$user_id} to {$new_usertype}");
+
             echo json_encode(["success" => true, "message" => "User role changed successfully"]);
         }
         // Scenario 3: Buyer <-> Employee (staying in users table)
@@ -139,6 +195,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->bind_param("si", $new_usertype, $user_id);
 
             if ($stmt->execute()) {
+                $actor_id = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : $user_id;
+                $actor_role = isset($_SESSION['usertype']) ? $_SESSION['usertype'] : null;
+                
+                // If role not in session, fetch from database
+                if (!$actor_role) {
+                    $role_stmt = $conn->prepare("SELECT usertype FROM users WHERE user_id = ? AND status = 'active'");
+                    $role_stmt->bind_param("i", $actor_id);
+                    $role_stmt->execute();
+                    $role_result = $role_stmt->get_result();
+                    if ($role_row = $role_result->fetch_assoc()) {
+                        $actor_role = $role_row['usertype'];
+                    } else {
+                        // Check admins table if not found in users
+                        $role_stmt->close();
+                        $role_stmt = $conn->prepare("SELECT usertype FROM admins WHERE user_id = ? AND status = 'active'");
+                        $role_stmt->bind_param("i", $actor_id);
+                        $role_stmt->execute();
+                        $role_result = $role_stmt->get_result();
+                        if ($role_row = $role_result->fetch_assoc()) {
+                            $actor_role = $role_row['usertype'];
+                        }
+                    }
+                    $role_stmt->close();
+                }
+                
+                log_action($conn, $actor_id, $actor_role, "Updated user role of user {$user_id} to {$new_usertype}");
+
                 echo json_encode(["success" => true, "message" => "User role updated successfully"]);
             } else {
                 echo json_encode(["success" => false, "message" => "Error updating user role"]);
@@ -158,17 +241,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $birthday = sanitize_string($data['birthday'] ?? '', 10);
         $contact_number = sanitize_string($data['contact_number'] ?? '', 30);
         $newPassword = $data['password'] ?? ''; // Optional field for password change
+        
+        // Track which fields were explicitly provided in the request
+        $has_birthday_in_request = isset($data['birthday']) && $data['birthday'] !== '';
+        $has_lastname_in_request = isset($data['lastname']) && $data['lastname'] !== '';
+        $has_firstname_in_request = isset($data['firstname']) && $data['firstname'] !== '';
+        $has_contact_in_request = isset($data['contact_number']) && $data['contact_number'] !== '';
 
         if (!$user_id) {
             echo json_encode(["success" => false, "message" => "User ID required"]);
             exit;
         }
 
+        // Fetch original user data BEFORE update for change tracking
+        $original_stmt = $conn->prepare("SELECT lastname, firstname, birthday, contact_number FROM users WHERE user_id = ?");
+        $original_stmt->bind_param("i", $user_id);
+        $original_stmt->execute();
+        $original_result = $original_stmt->get_result();
+        $original_row = $original_result->fetch_assoc();
+        $original_stmt->close();
+
         // Check if password change is requested
         if (!empty($newPassword)) {
-            $plainPassword = validate_password_length($newPassword, $error);
+            $password_error = null;
+            $plainPassword = validate_password_length($newPassword, $password_error);
             if (!$plainPassword) {
-                echo json_encode(["success" => false, "message" => $error ?? "Invalid password"]);
+                // Don't expose password requirements (8-12 characters) - use generic message
+                echo json_encode(["success" => false, "message" => "Invalid password"]);
                 exit;
             }
             // Update all fields including password using secure hashing
@@ -182,6 +281,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         if ($stmt->execute()) {
+            $actor_id = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : $user_id;
+            $actor_role = isset($_SESSION['usertype']) ? $_SESSION['usertype'] : null;
+            
+            // If role not in session, fetch from database
+            if (!$actor_role) {
+                $role_stmt = $conn->prepare("SELECT usertype FROM users WHERE user_id = ?");
+                $role_stmt->bind_param("i", $actor_id);
+                $role_stmt->execute();
+                $role_result = $role_stmt->get_result();
+                if ($role_row = $role_result->fetch_assoc()) {
+                    $actor_role = $role_row['usertype'];
+                }
+                $role_stmt->close();
+            }
+            
+            // Log each field change - ONLY if the field was explicitly provided in the request
+            if ($original_row) {
+                if ($has_lastname_in_request && $original_row['lastname'] !== $lastname) {
+                    log_action($conn, $actor_id, $actor_role, "Updated last name to {$lastname}");
+                }
+                if ($has_firstname_in_request && $original_row['firstname'] !== $firstname) {
+                    log_action($conn, $actor_id, $actor_role, "Updated first name to {$firstname}");
+                }
+                // Only log birthday if it was EXPLICITLY provided in the request (from MyProfile page update)
+                if ($has_birthday_in_request && $original_row['birthday'] !== $birthday) {
+                    log_action($conn, $actor_id, $actor_role, "Updated birthday to {$birthday}");
+                }
+                if ($has_contact_in_request && $original_row['contact_number'] !== $contact_number) {
+                    log_action($conn, $actor_id, $actor_role, "Updated phone number to {$contact_number}");
+                }
+            }
+            
             echo json_encode(["success" => true, "message" => "Profile updated successfully"]);
         } else {
             echo json_encode(["success" => false, "message" => "Error updating profile"]);

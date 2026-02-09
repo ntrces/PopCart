@@ -3,28 +3,17 @@ header('Content-Type: application/json');
 // Set CORS headers if needed for local development
 header('Access-Control-Allow-Origin: *'); 
 
-// 1. Database Connection (Replace with your actual credentials)
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "popcart"; 
+require 'db_connect.php';
+require 'input_utils.php';
 
-$conn = new mysqli($servername, $username, $password, $dbname);
+// Get and validate the Order Header ID
+$order_header_id = validate_int($_GET['order_header_id'] ?? null, 1);
 
-if ($conn->connect_error) {
-    http_response_code(500);
-    echo json_encode(["success" => false, "message" => "Connection failed: " . $conn->connect_error]);
-    exit();
-}
-
-// 2. Get the Order Header ID from the URL
-if (!isset($_GET['order_header_id'])) {
+if (!$order_header_id) {
     http_response_code(400);
-    echo json_encode(["success" => false, "message" => "Missing order_header_id parameter."]);
+    echo json_encode(["success" => false, "message" => "Valid order_header_id required."]);
     exit();
 }
-
-$order_header_id = $_GET['order_header_id'];
 
 // 3. Prepare and Execute the SQL Query
 $sql = "

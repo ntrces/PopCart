@@ -6,6 +6,7 @@ header("Content-Type: application/json");
 
 require 'db_connect.php';
 require 'input_utils.php';
+require 'log_utils.php';
 
 $data = read_json_input();
 $shipping_address_id = validate_int($data['shipping_address_id'] ?? null, 1);
@@ -36,6 +37,7 @@ if ($stmt->execute()) {
         }
     }
     $check_stmt->close();
+    log_action($conn, $user_id, null, "Removed shipping address {$shipping_address_id}");
     echo json_encode(["success" => true, "message" => "Address deleted successfully"]);
 } else {
     echo json_encode(["success" => false, "message" => "Error deleting address"]);

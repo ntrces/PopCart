@@ -3,9 +3,11 @@ import "./Home.css";
 import { Link, useNavigate } from "react-router-dom";
 import getImageUrl from "../../utils/getImageUrl";
 import { useAuthProtection } from '../../utils/useAuthHooks';
+import { useAuth } from "../../auth/useAuth.jsx";
 
 export default function Home() {
   const navigate = useNavigate();
+  const { logout } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [user, setUser] = useState(() => {
     try {
@@ -226,7 +228,7 @@ Home</button> </Link>
           Cancel
         </button>
 
-        <button className="confirm-btn-home" onClick={() => { localStorage.removeItem('user'); setShowSignOutModal(false); navigate('/signin'); }}>
+        <button className="confirm-btn-home" onClick={async () => { await logout(); setShowSignOutModal(false); navigate('/signin'); }}>
           Sign Out
         </button>
       </div>
@@ -273,7 +275,7 @@ Home</button> </Link>
 
 
 <div className="album-list-home">
-  {products.slice(0, 4).map((product) => (
+  {products.slice(0, 3).map((product) => (
     <div key={product.product_id} className={`album-card ${product.stock === 0 ? 'out-of-stock' : ''}`}>
       <div className="album-img">
         {product.stock === 0 && <div className="out-of-stock-label">Out of Stock</div>}

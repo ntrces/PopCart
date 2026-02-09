@@ -6,6 +6,7 @@ header("Content-Type: application/json");
 
 require 'db_connect.php';
 require 'input_utils.php';
+require 'log_utils.php';
 
 $data = read_json_input();
 $user_id = validate_int($data['user_id'] ?? null, 1);
@@ -44,13 +45,19 @@ $stmt = $conn->prepare("INSERT INTO shipping_address (user_id, address_label, po
 $stmt->bind_param("issssss", $user_id, $address_label, $postal_code, $street_address, $city_municipality, $province, $status);
 
 if ($stmt->execute()) {
-    $new_address_id = $conn->insert_id;
+    $new_address_id = (int)$conn->insert_id;
     // If this is the default, update users table
     if ($status === 'default') {
         $update_user_stmt = $conn->prepare("UPDATE users SET shipping_id = ? WHERE user_id = ?");
         $update_user_stmt->bind_param("ii", $new_address_id, $user_id);
         $update_user_stmt->execute();
         $update_user_stmt->close();
+    }
+    if ($new_address_id) {
+        log_action($conn, $user_id, null, "Added shipping address {$new_address_id}");
+        if ($status === 'default') {
+            log_action($conn, $user_id, null, "Updated shipping address {$new_address_id} to default");
+        }
     }
     echo json_encode(["success" => true, "message" => "Address added successfully"]);
 } else {

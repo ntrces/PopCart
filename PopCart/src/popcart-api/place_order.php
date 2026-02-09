@@ -6,6 +6,7 @@ header("Content-Type: application/json");
 
 require 'db_connect.php';
 require 'input_utils.php';
+require 'log_utils.php';
 
 $data = read_json_input();
 $user_id = validate_int($data['user_id'] ?? null, 1);
@@ -93,6 +94,7 @@ foreach ($sanitized_items as $item) {
 }
 $update_stmt->close();
 
+log_action($conn, $user_id, null, "Placed the order {$order_header_id}");
 echo json_encode(["success" => true, "message" => "Order placed successfully", "order_id" => $order_header_id]);
 $conn->close();
 ?>

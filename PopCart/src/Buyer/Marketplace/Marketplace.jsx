@@ -3,10 +3,12 @@ import "./Marketplace.css";
 import { Link, useNavigate } from "react-router-dom";
 import getImageUrl from "../../utils/getImageUrl";
 import placeholder from "../../assets/image.png";
+import { useAuth } from "../../auth/useAuth.jsx";
 
 
 export default function Marketplace() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const { logout } = useAuth();
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
   const [showSignOutModal, setShowSignOutModal] = useState(false);
@@ -271,7 +273,7 @@ export default function Marketplace() {
           Cancel
         </button>
 
-        <button className="confirm-btn-mp" onClick={() => { localStorage.removeItem('user'); setShowSignOutModal(false); navigate('/signin'); }}>
+        <button className="confirm-btn-mp" onClick={async () => { await logout(); setShowSignOutModal(false); navigate('/signin'); }}>
           Sign Out
         </button>
       </div>

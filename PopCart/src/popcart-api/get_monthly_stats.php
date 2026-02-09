@@ -3,21 +3,12 @@ header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: Content-Type");
 header("Content-Type: application/json");
 
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "popcart";
+require 'db_connect.php';
+require 'input_utils.php';
 
-$conn = new mysqli($servername, $username, $password, $dbname);
+$year = validate_int($_GET['year'] ?? date('Y'), 2000, 2100);
 
-if ($conn->connect_error) {
-    echo json_encode(["success" => false, "message" => "Connection failed."]);
-    exit;
-}
-
-$year = $_GET['year'] ?? date('Y');
-
-if (!is_numeric($year) || $year < 2000 || $year > 2100) {
+if (!$year) {
     echo json_encode(["success" => false, "message" => "Invalid year."]);
     exit;
 }

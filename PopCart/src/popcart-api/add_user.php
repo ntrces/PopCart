@@ -4,38 +4,33 @@ header("Access-Control-Allow-Headers: Content-Type");
 header("Content-Type: application/json");
 
 // Include password utility functions for secure hashing
+require 'db_connect.php';
 require 'password_utils.php';
 require 'input_utils.php';
+require 'session_config.php';
+require 'log_utils.php';
 
-// --- 1. Database Connection Configuration ---
-$servername = "localhost";
-$username = "root"; // XAMPP default
-$password = ""; // XAMPP default is empty
-$dbname = "popcart";
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-if ($conn->connect_error) {
-    echo json_encode(["success" => false, "message" => "Connection failed: " . $conn->connect_error]);
-    exit;
-}
-
-
-// --- 2. Get POST data ---
+// --- Get POST data ---
 $data = read_json_input();
 
 $lastname = sanitize_text($data['lastname'] ?? '', 100);
 $firstname = sanitize_text($data['firstname'] ?? '', 100);
-$error = null;
-$email = validate_email($data['email'] ?? '', $error);
+$email_error = null;
+$password_error = null;
+$email = validate_email($data['email'] ?? '', $email_error);
 $birthday = sanitize_string($data['birthday'] ?? '', 10);
-$plainPassword = validate_password_length($data['password'] ?? '', $error);
+$plainPassword = validate_password_length($data['password'] ?? '', $password_error);
 $usertype = validate_enum($data['usertype'] ?? '', ['buyer', 'employee', 'admin']);
 $status = "active";
 
 // Validate input
 if (empty($lastname) || empty($firstname) || empty($email) || empty($plainPassword) || empty($usertype)) {
-    echo json_encode(["success" => false, "message" => $error ?? "All fields are required."]);
+    // Show specific password requirement error during user creation
+    if (empty($plainPassword) && $password_error) {
+        echo json_encode(["success" => false, "message" => "Password should have 8-12 characters"]);
+    } else {
+        echo json_encode(["success" => false, "message" => "All fields are required."]);
+    }
     exit;
 }
 
@@ -51,9 +46,13 @@ $checkEmail2->execute();
 $checkResult2 = $checkEmail2->get_result();
 
 if ($checkResult1->num_rows > 0 || $checkResult2->num_rows > 0) {
-    echo json_encode(["success" => false, "message" => "Email already registered."]);
+    echo json_encode(["success" => false, "message" => "This email has already been used"]);
+    $checkEmail1->close();
+    $checkEmail2->close();
     exit;
 }
+$checkEmail1->close();
+$checkEmail2->close();
 
 // --- 3. Secure Password Hashing using ARGON2ID ---
 $hashedPassword = hashPassword($plainPassword);
@@ -66,11 +65,17 @@ $stmt = $conn->prepare("INSERT INTO $table (lastname, firstname, email, birthday
 $stmt->bind_param("sssssss", $lastname, $firstname, $email, $birthday, $hashedPassword, $usertype, $status);
 
 if ($stmt->execute()) {
+    $new_user_id = (int)$conn->insert_id;
+    $actor_id = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : $new_user_id;
+    $actor_role = isset($_SESSION['usertype']) ? $_SESSION['usertype'] : null;
+    if ($new_user_id) {
+        log_action($conn, $actor_id, $actor_role, "Added {$usertype} {$new_user_id}");
+    }
     echo json_encode(["success" => true, "message" => "User added successfully!"]);
 } else {
     // Check for unique constraint violation (email already exists)
     if ($conn->errno === 1062) {
-        echo json_encode(["success" => false, "message" => "The email address '$email' already exists."]);
+        echo json_encode(["success" => false, "message" => "This email has already been used"]);
     } else {
         echo json_encode(["success" => false, "message" => "Database error: " . $stmt->error]);
     }

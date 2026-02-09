@@ -78,12 +78,14 @@ export default function SignUpBuyer() {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
+          credentials: "include",
           body: JSON.stringify({
             lastName: form.lastName,
             firstName: form.firstName,
             email: form.email,
             birthday: form.birthday,
             password: form.password,
+            contactNumber: form.contactNumber || "",
           }),
         }
       );
@@ -179,6 +181,7 @@ export default function SignUpBuyer() {
             placeholder="••••••••"
             value={form.password}
             onChange={handleChange}
+            maxLength="15"
             className={errors.password ? "input-error" : ""}
           />
           {errors.password && (
@@ -192,6 +195,7 @@ export default function SignUpBuyer() {
             placeholder="••••••••"
             value={form.confirmPassword}
             onChange={handleChange}
+            maxLength="15"
             className={errors.confirmPassword ? "input-error" : ""}
           />
           {errors.confirmPassword && (

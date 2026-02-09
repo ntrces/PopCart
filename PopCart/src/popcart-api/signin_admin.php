@@ -1,9 +1,15 @@
 <?php
-header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Origin: http://localhost:5173");
 header("Access-Control-Allow-Headers: Content-Type");
-header("Access-Control-Allow-Methods: POST");
+header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Credentials: true");
 header("Content-Type: application/json");
+
+// Handle preflight OPTIONS request
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
 
 // Prevent caching to stop back navigation after logout
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
@@ -17,15 +23,24 @@ require 'session_config.php';
 // Include password utility functions for secure verification
 require 'password_utils.php';
 require 'input_utils.php';
+require 'log_utils.php';
 
 // Get JSON input
 $data = read_json_input();
-$error = null;
-$email = validate_email($data["email"] ?? "", $error);
-$password = validate_password_length($data["password"] ?? "", $error);
+$email_error = null;
+$email = validate_email($data["email"] ?? "", $email_error);
+$password = $data["password"] ?? "";  // Don't validate password length during login - only check if provided
 
-if (!$email || !$password) {
-    echo json_encode(["success" => false, "message" => $error ?? "Invalid credentials"]);
+// Check for brute force attack and apply exponential backoff delay
+$brute_force_delay = get_brute_force_delay($conn);
+if ($brute_force_delay > 0) {
+    sleep($brute_force_delay);  // Exponential backoff: 1s, 2s, 4s, 8s, 16s, 30s max
+}
+
+if (!$email || empty($password)) {
+    record_failed_login_attempt();
+    // Don't expose password requirements (8-12 characters) - use generic message
+    echo json_encode(["success" => false, "message" => "Invalid credentials"]);
     $conn->close();
     exit;
 }
@@ -69,6 +84,10 @@ if ($found && $user) {
         $_SESSION['source_table'] = 'admins';
         $_SESSION['authenticated'] = true;
 
+        log_action($conn, (int)$user["user_id"], $user["usertype"], "Logged in");
+
+        reset_login_attempts();  // Clear failed attempt counter on successful login
+
         echo json_encode([
             "success" => true,
             "usertype" => $user["usertype"],
@@ -83,6 +102,8 @@ if ($found && $user) {
             ]
         ]);
     } else {
+        record_failed_login_attempt();  // Record for brute force detection
+        
         $currentAttempts = isset($user["login_attempt"]) ? (int)$user["login_attempt"] : 0;
         $newAttempts = $currentAttempts + 1;
 
@@ -91,6 +112,9 @@ if ($found && $user) {
             $deactivateStmt->bind_param("i", $user["user_id"]);
             $deactivateStmt->execute();
             $deactivateStmt->close();
+
+            // Log the account deactivation
+            log_action($conn, (int)$user["user_id"], $user["usertype"], "Account deactivated due to 3 failed login attempts");
 
             echo json_encode(["success" => false, "message" => "Your Account has been deactivated"]);
         } else {
@@ -107,6 +131,8 @@ if ($found && $user) {
         }
     }
 } else {
+    record_failed_login_attempt();  // Record for brute force detection
+    
     echo json_encode(["success" => false, "message" => "Invalid credentials. Admin account required."]);
 }
 

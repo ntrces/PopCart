@@ -108,6 +108,18 @@ body {
   margin: 0;
 }
 
+.stat-card-title-button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+}
+
+.stat-card-title-button:hover {
+  text-decoration: underline;
+}
+
 .stat-card-icon {
   display: flex;
   align-items: center;
@@ -127,6 +139,18 @@ body {
   font-size: 24px;
   font-weight: 600;
   color: #111827;
+}
+
+.stat-card-value-button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+}
+
+.stat-card-value-button:hover {
+  text-decoration: underline;
 }
 
 .stat-card-description {

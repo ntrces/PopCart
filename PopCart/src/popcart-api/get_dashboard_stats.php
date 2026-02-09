@@ -30,13 +30,22 @@ $totalRevenueQuery = "
 $totalRevenueResult = $conn->query($totalRevenueQuery);
 $totalRevenue = $totalRevenueResult->fetch_assoc()['total_revenue'] ?? 0;
 
-// 3. Status counts for the status grid
+// 3. Status counts for the status grid - Using prepared statements to prevent SQL injection
 $statusCounts = [];
 $statuses = ['pending', 'approved', 'packing', 'shipped', 'delivered', 'cancelled'];
 foreach ($statuses as $status) {
-    $query = "SELECT COUNT(*) as count FROM order_header WHERE order_status = '$status'";
-    $result = $conn->query($query);
+    $query = "SELECT COUNT(*) as count FROM order_header WHERE order_status = ?";
+    $stmt = $conn->prepare($query);
+    if ($stmt === false) {
+        http_response_code(500);
+        echo json_encode(["success" => false, "message" => "Error preparing statement"]);
+        exit();
+    }
+    $stmt->bind_param("s", $status);
+    $stmt->execute();
+    $result = $stmt->get_result();
     $statusCounts[$status] = $result->fetch_assoc()['count'];
+    $stmt->close();
 }
 
 // 4. Sales Today: Count of orders delivered TODAY

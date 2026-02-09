@@ -63,6 +63,7 @@ export const Order = () => {
     try {
       const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/update_order_status.php', {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({ order_header_id: orderId, status: newStatus })
       });
@@ -79,6 +80,7 @@ export const Order = () => {
     try {
       const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/update_order_status.php', {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({ order_header_id: orderId, status: 'cancelled' })
       });
@@ -345,7 +347,7 @@ export const Order = () => {
                     Cancel
                   </button>
 
-                  <button className="confirm-btn" onClick={() => { logout(); setShowSignOutModal(false); navigate('/signin'); }}>
+                  <button className="confirm-btn" onClick={async () => { await logout(); setShowSignOutModal(false); navigate('/signin'); }}>
                     Sign Out
                   </button>
                 </div>

@@ -5,11 +5,12 @@ header("Access-Control-Allow-Methods: GET");
 header("Content-Type: application/json");
 
 require 'db_connect.php';
+require 'input_utils.php';
 
-$user_id = $_GET['user_id'] ?? '';
+$user_id = validate_int($_GET['user_id'] ?? null, 1);
 
 if (!$user_id) {
-    echo json_encode(["success" => false, "message" => "User ID required"]);
+    echo json_encode(["success" => false, "message" => "Valid User ID required"]);
     exit;
 }
 

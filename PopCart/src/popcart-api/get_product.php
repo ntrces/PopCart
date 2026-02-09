@@ -5,11 +5,12 @@ header("Access-Control-Allow-Methods: GET");
 header("Content-Type: application/json");
 
 require 'db_connect.php';
+require 'input_utils.php';
 
-$product_id = $_GET['product_id'] ?? '';
+$product_id = validate_int($_GET['product_id'] ?? null, 1);
 
 if (!$product_id) {
-    echo json_encode(["success" => false, "message" => "Product ID required"]);
+    echo json_encode(["success" => false, "message" => "Valid Product ID required"]);
     exit;
 }
 

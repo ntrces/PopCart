@@ -16,6 +16,15 @@ function EditE({ product, onClose, onUpdate }) {
   const [showFileInput, setShowFileInput] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [currentProduct, setCurrentProduct] = useState(null);
+  const [originalFormData, setOriginalFormData] = useState({
+    price: "",
+    stockQuantity: "",
+  });
+
+  const hasChanges =
+    Math.abs(parseFloat(formData.price) - parseFloat(originalFormData.price)) > 0.001 ||
+    parseInt(formData.stockQuantity, 10) !== parseInt(originalFormData.stockQuantity, 10) ||
+    formData.albumCoverImage !== null;
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -25,7 +34,7 @@ function EditE({ product, onClose, onUpdate }) {
         if (data.success) {
           const p = data.product;
           setCurrentProduct(p);
-          setFormData({
+          const initialData = {
             albumTitle: p.album_title,
             artist: p.artist,
             price: p.price,
@@ -33,6 +42,11 @@ function EditE({ product, onClose, onUpdate }) {
             genre: p.genre,
             releasedYear: p.released_year,
             description: p.description,
+          };
+          setFormData(initialData);
+          setOriginalFormData({
+            price: p.price,
+            stockQuantity: p.stock,
           });
         }
       } catch (error) {
@@ -67,6 +81,13 @@ function EditE({ product, onClose, onUpdate }) {
       alert('Please upload a new album cover image.');
       return;
     }
+    
+    // Check if there are any changes
+    if (!hasChanges) {
+      // No changes made, don't submit
+      return;
+    }
+    
     const data = new FormData();
     data.append('product_id', product.product_id);
     data.append('price', formData.price);
@@ -77,6 +98,7 @@ function EditE({ product, onClose, onUpdate }) {
     try {
       const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/update_product.php', {
         method: 'POST',
+        credentials: 'include',
         body: data
       });
       const result = await response.json();
@@ -300,7 +322,12 @@ function EditE({ product, onClose, onUpdate }) {
             Cancel
           </button>
 
-          <button type="submit" className="ap-submit-btn">
+          <button
+            type="submit"
+            className="ap-submit-btn"
+            disabled={!hasChanges}
+            aria-disabled={!hasChanges}
+          >
             Update Album
           </button>
         </div>

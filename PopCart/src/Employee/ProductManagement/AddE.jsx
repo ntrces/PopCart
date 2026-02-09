@@ -49,6 +49,7 @@ function AddE ({ onClose, onAdd }) {
     try {
       const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/add_product.php', {
         method: 'POST',
+        credentials: 'include',
         body: data
       });
       const result = await response.json();

@@ -11,6 +11,7 @@ export default function DeleteProduct ({ product, onClose, onDelete }) {
     try {
       const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/delete_product.php', {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ product_id: product.product_id })
       });

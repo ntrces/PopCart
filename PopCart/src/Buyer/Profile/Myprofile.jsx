@@ -1,16 +1,25 @@
 import React, { useState, useEffect } from "react";
 import "./Myprofile.css";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../auth/useAuth.jsx";
 
 
 export default function Myprofile() {
   const navigate = useNavigate(); // ✅ MUST be at top
+  const { logout } = useAuth();
 
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [showSignOutModal, setShowSignOutModal] = useState(false);
   const [showModal, setShowModal] = useState(false); // ✅ FOR ADD ADDRESS MODAL
   const [user, setUser] = useState(null);
   const [formData, setFormData] = useState({
+    lastname: '',
+    firstname: '',
+    birthday: '',
+    email: '',
+    contact_number: ''
+  });
+  const [originalFormData, setOriginalFormData] = useState({
     lastname: '',
     firstname: '',
     birthday: '',
@@ -47,13 +56,15 @@ export default function Myprofile() {
           const data = await response.json();
           if (data.success) {
             setUser(data.user);
-            setFormData({
+            const initialData = {
               lastname: data.user.lastname || '',
               firstname: data.user.firstname || '',
               birthday: data.user.birthday || '',
               email: data.user.email || '',
               contact_number: data.user.contact_number || '09'
-            });
+            };
+            setFormData(initialData);
+            setOriginalFormData(initialData);
           }
         } catch (error) {
           console.error('Error fetching user:', error);
@@ -99,6 +110,32 @@ export default function Myprofile() {
   };
 
   const handleSave = async () => {
+    // Validation: Check if firstname is empty
+    if (!formData.firstname.trim()) {
+      alert('First name cannot be empty');
+      return;
+    }
+
+    // Validation: Check if lastname is empty
+    if (!formData.lastname.trim()) {
+      alert('Last name cannot be empty');
+      return;
+    }
+
+    // Validation: Check if contact_number is exactly 11 digits
+    if (formData.contact_number.length !== 11) {
+      alert('Contact number must be exactly 11 digits');
+      return;
+    }
+
+    // Check if there are any changes
+    const hasChanges = JSON.stringify(formData) !== JSON.stringify(originalFormData);
+    
+    if (!hasChanges) {
+      alert('No changes made to your profile');
+      return;
+    }
+
     try {
       const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/update_user.php', {
         method: 'POST',
@@ -112,6 +149,7 @@ export default function Myprofile() {
         const updatedUser = { ...user, ...formData };
         localStorage.setItem('user', JSON.stringify(updatedUser));
         setUser(updatedUser);
+        setOriginalFormData(formData);
       } else {
         alert('Error updating profile');
       }
@@ -344,7 +382,7 @@ Home</button> </Link>
           Cancel
         </button>
 
-        <button className="confirm-btn-pf" onClick={() => { localStorage.removeItem('user'); setShowSignOutModal(false); navigate('/signin'); }}>
+        <button className="confirm-btn-pf" onClick={async () => { await logout(); setShowSignOutModal(false); navigate('/signin'); }}>
           Sign Out
         </button>
       </div>

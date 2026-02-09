@@ -1,11 +1,20 @@
 <?php
-header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Origin: http://localhost:5173");
 header("Access-Control-Allow-Headers: Content-Type");
-header("Access-Control-Allow-Methods: POST");
+header("Access-Control-Allow-Methods: POST, OPTIONS");
+header("Access-Control-Allow-Credentials: true");
 header("Content-Type: application/json");
+
+// Handle preflight OPTIONS request
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
 
 require 'db_connect.php';
 require 'input_utils.php';
+require 'session_config.php';
+require 'log_utils.php';
 
 $data = $_POST;
 
@@ -49,6 +58,12 @@ $stmt = $conn->prepare("INSERT INTO products (album_title, artist, price, stock,
 $stmt->bind_param("ssdissss", $album_title, $artist, $price, $stock, $genre, $released_year, $album_cover_img, $description);
 
 if ($stmt->execute()) {
+    $new_product_id = (int)$conn->insert_id;
+    $actor_id = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : 0;
+    $actor_role = isset($_SESSION['usertype']) ? $_SESSION['usertype'] : null;
+    if ($actor_id && $new_product_id) {
+        log_action($conn, $actor_id, $actor_role, "Added product {$new_product_id}");
+    }
     echo json_encode(["success" => true, "message" => "Product added successfully"]);
 } else {
     echo json_encode(["success" => false, "message" => "Failed to add product"]);

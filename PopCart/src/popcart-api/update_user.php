@@ -1,7 +1,8 @@
 <?php
-header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Origin: http://localhost:5173");
 header("Access-Control-Allow-Headers: Content-Type");
 header("Access-Control-Allow-Methods: POST");
+header("Access-Control-Allow-Credentials: true");
 header("Content-Type: application/json");
 
 require 'db_connect.php';
@@ -79,32 +80,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
             $check_admin->close();
-            $actor_id = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : $user_id;
+            $actor_id = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : null;
             $actor_role = isset($_SESSION['usertype']) ? $_SESSION['usertype'] : null;
             
-            // If role not in session, fetch from database
-            if (!$actor_role) {
-                $role_stmt = $conn->prepare("SELECT usertype FROM users WHERE user_id = ? AND status = 'active'");
-                $role_stmt->bind_param("i", $actor_id);
-                $role_stmt->execute();
-                $role_result = $role_stmt->get_result();
-                if ($role_row = $role_result->fetch_assoc()) {
-                    $actor_role = $role_row['usertype'];
-                } else {
-                    // Check admins table if not found in users
-                    $role_stmt->close();
-                    $role_stmt = $conn->prepare("SELECT usertype FROM admins WHERE user_id = ? AND status = 'active'");
-                    $role_stmt->bind_param("i", $actor_id);
-                    $role_stmt->execute();
-                    $role_result = $role_stmt->get_result();
-                    if ($role_row = $role_result->fetch_assoc()) {
-                        $actor_role = $role_row['usertype'];
-                    }
-                }
-                $role_stmt->close();
+            if ($actor_id) {
+                $old_label = ucfirst($old_usertype);
+                $new_label = ucfirst($new_usertype);
+                log_action($conn, $actor_id, $actor_role, "Updated {$old_label} {$user_id} to {$new_label}");
             }
-            
-            log_action($conn, $actor_id, $actor_role, "Updated user role of user {$user_id} to {$new_usertype}");
 
             echo json_encode(["success" => true, "message" => "User promoted to admin successfully"]);
         }
@@ -160,32 +143,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
             $check_user->close();
-            $actor_id = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : $user_id;
+            $actor_id = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : null;
             $actor_role = isset($_SESSION['usertype']) ? $_SESSION['usertype'] : null;
             
-            // If role not in session, fetch from database
-            if (!$actor_role) {
-                $role_stmt = $conn->prepare("SELECT usertype FROM users WHERE user_id = ? AND status = 'active'");
-                $role_stmt->bind_param("i", $actor_id);
-                $role_stmt->execute();
-                $role_result = $role_stmt->get_result();
-                if ($role_row = $role_result->fetch_assoc()) {
-                    $actor_role = $role_row['usertype'];
-                } else {
-                    // Check admins table if not found in users
-                    $role_stmt->close();
-                    $role_stmt = $conn->prepare("SELECT usertype FROM admins WHERE user_id = ? AND status = 'active'");
-                    $role_stmt->bind_param("i", $actor_id);
-                    $role_stmt->execute();
-                    $role_result = $role_stmt->get_result();
-                    if ($role_row = $role_result->fetch_assoc()) {
-                        $actor_role = $role_row['usertype'];
-                    }
-                }
-                $role_stmt->close();
+            if ($actor_id) {
+                $old_label = ucfirst($old_usertype);
+                $new_label = ucfirst($new_usertype);
+                log_action($conn, $actor_id, $actor_role, "Updated {$old_label} {$user_id} to {$new_label}");
             }
-            
-            log_action($conn, $actor_id, $actor_role, "Updated user role of user {$user_id} to {$new_usertype}");
 
             echo json_encode(["success" => true, "message" => "User role changed successfully"]);
         }
@@ -195,32 +160,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->bind_param("si", $new_usertype, $user_id);
 
             if ($stmt->execute()) {
-                $actor_id = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : $user_id;
+                $actor_id = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : null;
                 $actor_role = isset($_SESSION['usertype']) ? $_SESSION['usertype'] : null;
                 
-                // If role not in session, fetch from database
-                if (!$actor_role) {
-                    $role_stmt = $conn->prepare("SELECT usertype FROM users WHERE user_id = ? AND status = 'active'");
-                    $role_stmt->bind_param("i", $actor_id);
-                    $role_stmt->execute();
-                    $role_result = $role_stmt->get_result();
-                    if ($role_row = $role_result->fetch_assoc()) {
-                        $actor_role = $role_row['usertype'];
-                    } else {
-                        // Check admins table if not found in users
-                        $role_stmt->close();
-                        $role_stmt = $conn->prepare("SELECT usertype FROM admins WHERE user_id = ? AND status = 'active'");
-                        $role_stmt->bind_param("i", $actor_id);
-                        $role_stmt->execute();
-                        $role_result = $role_stmt->get_result();
-                        if ($role_row = $role_result->fetch_assoc()) {
-                            $actor_role = $role_row['usertype'];
-                        }
-                    }
-                    $role_stmt->close();
+                if ($actor_id) {
+                    $old_label = ucfirst($old_usertype);
+                    $new_label = ucfirst($new_usertype);
+                    log_action($conn, $actor_id, $actor_role, "Updated {$old_label} {$user_id} to {$new_label}");
                 }
-                
-                log_action($conn, $actor_id, $actor_role, "Updated user role of user {$user_id} to {$new_usertype}");
 
                 echo json_encode(["success" => true, "message" => "User role updated successfully"]);
             } else {
@@ -281,23 +228,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         if ($stmt->execute()) {
-            $actor_id = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : $user_id;
+            $actor_id = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : null;
             $actor_role = isset($_SESSION['usertype']) ? $_SESSION['usertype'] : null;
             
-            // If role not in session, fetch from database
-            if (!$actor_role) {
-                $role_stmt = $conn->prepare("SELECT usertype FROM users WHERE user_id = ?");
-                $role_stmt->bind_param("i", $actor_id);
-                $role_stmt->execute();
-                $role_result = $role_stmt->get_result();
-                if ($role_row = $role_result->fetch_assoc()) {
-                    $actor_role = $role_row['usertype'];
-                }
-                $role_stmt->close();
-            }
-            
             // Log each field change - ONLY if the field was explicitly provided in the request
-            if ($original_row) {
+            if ($original_row && $actor_id) {
                 if ($has_lastname_in_request && $original_row['lastname'] !== $lastname) {
                     log_action($conn, $actor_id, $actor_role, "Updated last name to {$lastname}");
                 }

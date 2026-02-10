@@ -1,6 +1,7 @@
 <?php
-header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Origin: http://localhost:5173");
 header("Access-Control-Allow-Headers: Content-Type");
+header("Access-Control-Allow-Credentials: true");
 header("Content-Type: application/json");
 
 // Include password utility functions for secure hashing
@@ -66,10 +67,11 @@ $stmt->bind_param("sssssss", $lastname, $firstname, $email, $birthday, $hashedPa
 
 if ($stmt->execute()) {
     $new_user_id = (int)$conn->insert_id;
-    $actor_id = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : $new_user_id;
+    $actor_id = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : null;
     $actor_role = isset($_SESSION['usertype']) ? $_SESSION['usertype'] : null;
-    if ($new_user_id) {
-        log_action($conn, $actor_id, $actor_role, "Added {$usertype} {$new_user_id}");
+    if ($new_user_id && $actor_id) {
+        $action_usertype = ucfirst($usertype);
+        log_action($conn, $actor_id, $actor_role, "Added {$action_usertype} {$new_user_id}");
     }
     echo json_encode(["success" => true, "message" => "User added successfully!"]);
 } else {

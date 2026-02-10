@@ -37,6 +37,7 @@ function AddUser ({ onClose, onSuccess, currentUser }) {
     try {
       const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/add_user.php', {
         method: 'POST',
+        credentials: 'include',
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           lastname: formData.lastname,

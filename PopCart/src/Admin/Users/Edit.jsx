@@ -59,6 +59,7 @@ function Edit ({ user, onClose, onSuccess, currentUser, isFirstAdmin }) {
     try {
       const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/update_user.php', {
         method: 'POST',
+        credentials: 'include',
         body: data
       });
       const result = await response.json();

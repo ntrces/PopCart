@@ -35,6 +35,7 @@ export default function Delete ({ onClose, user, onSuccess, currentUser }) {
     try {
       const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/update_user_status.php', {
         method: 'POST',
+        credentials: 'include',
         body: data
       });
       const result = await response.json();

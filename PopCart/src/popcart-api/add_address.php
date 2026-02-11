@@ -1,11 +1,10 @@
 <?php
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Headers: Content-Type");
-header("Access-Control-Allow-Methods: POST");
+require 'cors_config.php';
 header("Content-Type: application/json");
 
 require 'db_connect.php';
 require 'input_utils.php';
+require 'session_config.php';
 require 'log_utils.php';
 
 $data = read_json_input();
@@ -54,9 +53,10 @@ if ($stmt->execute()) {
         $update_user_stmt->close();
     }
     if ($new_address_id) {
-        log_action($conn, $user_id, null, "Added shipping address {$new_address_id}");
+        $user_role = isset($_SESSION['usertype']) ? $_SESSION['usertype'] : null;
+        log_action($conn, $user_id, $user_role, "Added shipping address {$new_address_id}");
         if ($status === 'default') {
-            log_action($conn, $user_id, null, "Updated shipping address {$new_address_id} to default");
+            log_action($conn, $user_id, $user_role, "Updated shipping address {$new_address_id} to default");
         }
     }
     echo json_encode(["success" => true, "message" => "Address added successfully"]);

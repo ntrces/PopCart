@@ -1,11 +1,10 @@
 <?php
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Headers: Content-Type");
-header("Access-Control-Allow-Methods: POST");
+require 'cors_config.php';
 header("Content-Type: application/json");
 
 require 'db_connect.php';
 require 'input_utils.php';
+require 'session_config.php';
 require 'log_utils.php';
 
 $data = read_json_input();
@@ -94,7 +93,8 @@ foreach ($sanitized_items as $item) {
 }
 $update_stmt->close();
 
-log_action($conn, $user_id, null, "Placed the order {$order_header_id}");
+$user_role = isset($_SESSION['usertype']) ? $_SESSION['usertype'] : null;
+log_action($conn, $user_id, $user_role, "Placed the order {$order_header_id}");
 echo json_encode(["success" => true, "message" => "Order placed successfully", "order_id" => $order_header_id]);
 $conn->close();
 ?>

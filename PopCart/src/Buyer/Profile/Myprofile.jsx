@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { apiUrl } from "../../utils/api.js";
 import "./Myprofile.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/useAuth.jsx";
@@ -137,7 +138,7 @@ export default function Myprofile() {
     }
 
     try {
-      const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/update_user.php', {
+      const response = await fetch(apiUrl('update_user.php'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_id: user.user_id, ...formData })
@@ -161,7 +162,7 @@ export default function Myprofile() {
   const handleAddressSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/add_address.php', {
+      const response = await fetch(apiUrl('add_address.php'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_id: user.user_id, ...addressForm })
@@ -201,7 +202,7 @@ export default function Myprofile() {
 
   const handleSetDefault = async (addressId) => {
     try {
-      const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/update_address_status.php', {
+      const response = await fetch(apiUrl('update_address_status.php'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_id: user.user_id, shipping_address_id: addressId })
@@ -233,7 +234,7 @@ export default function Myprofile() {
   const handleDeleteAddress = async (addressId) => {
     if (confirm('Are you sure you want to delete this address?')) {
       try {
-        const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/delete_address.php', {
+        const response = await fetch(apiUrl('delete_address.php'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ user_id: user.user_id, shipping_address_id: addressId })

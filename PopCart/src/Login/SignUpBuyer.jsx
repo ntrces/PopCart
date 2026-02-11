@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { apiUrl } from "../utils/api.js";
 import "./SignUpBuyer.css";
 
 export default function SignUpBuyer() {
@@ -74,7 +75,7 @@ export default function SignUpBuyer() {
 
     try {
       const response = await fetch(
-        "http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/signup_buyer.php",
+        apiUrl("signup_buyer.php"),
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

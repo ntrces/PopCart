@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { apiUrl } from "../../utils/api.js";
 import "./Cart.css";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -43,7 +44,7 @@ export default function Cart() {
       if (storedUser) {
         const userData = JSON.parse(storedUser);
         try {
-          const response = await fetch(`http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/get_user.php?user_id=${userData.user_id}`);
+          const response = await fetch(apiUrl(`get_user.php?user_id=${userData.user_id}`));
           const data = await response.json();
           if (data.success) {
             setUser(data.user);
@@ -80,7 +81,7 @@ export default function Cart() {
     // Fetch products to filter cart
     const fetchProducts = async () => {
       try {
-        const res = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/get_products.php');
+        const res = await fetch(apiUrl('get_products.php'));
         const data = await res.json();
         if (data && data.success && Array.isArray(data.products)) {
           const productIds = data.products.map(p => Number(p.product_id));
@@ -126,7 +127,7 @@ export default function Cart() {
     if (storedUser) {
       const userData = JSON.parse(storedUser);
       try {
-        const response = await fetch(`http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/get_addresses.php?user_id=${userData.user_id}`);
+        const response = await fetch(apiUrl(`get_addresses.php?user_id=${userData.user_id}`));
         const data = await response.json();
         if (data.success) {
           const sorted = data.addresses.sort((a, b) => {
@@ -152,7 +153,7 @@ export default function Cart() {
     const userData = JSON.parse(storedUser);
 
     try {
-      const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/add_address.php', {
+      const response = await fetch(apiUrl('add_address.php'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -190,7 +191,7 @@ export default function Cart() {
     if (!storedUser) return;
     const userData = JSON.parse(storedUser);
     try {
-      const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/update_address_status.php', {
+      const response = await fetch(apiUrl('update_address_status.php'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -319,7 +320,7 @@ export default function Cart() {
     }));
 
     try {
-      const orderResponse = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/place_order.php', {
+      const orderResponse = await fetch(apiUrl('place_order.php'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -334,7 +335,7 @@ export default function Cart() {
         // Update contact if editable and changed
         if (user && !user.contact_number && contact.trim()) {
           try {
-            const updateResponse = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/update_user.php', {
+            const updateResponse = await fetch(apiUrl('update_user.php'), {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({

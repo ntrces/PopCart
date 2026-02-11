@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { apiUrl } from "../../utils/api.js";
 import "./Marketplace.css";
 import { Link, useNavigate } from "react-router-dom";
 import getImageUrl from "../../utils/getImageUrl";
@@ -62,7 +63,7 @@ export default function Marketplace() {
       if (storedUser) {
         const userData = JSON.parse(storedUser);
         try {
-          const response = await fetch(`http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/get_user.php?user_id=${userData.user_id}`);
+          const response = await fetch(apiUrl(`get_user.php?user_id=${userData.user_id}`));
           const data = await response.json();
           if (data.success) {
             setUser(data.user);
@@ -77,7 +78,7 @@ export default function Marketplace() {
     // Fetch products from API and replace sample data
     const fetchProducts = async () => {
       try {
-        const res = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/get_products.php');
+        const res = await fetch(apiUrl('get_products.php'));
         const data = await res.json();
         if (data && data.success && Array.isArray(data.products)) {
           setProducts(data.products);

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { apiUrl } from "../../utils/api.js";
 import "./Home.css";
 import { Link, useNavigate } from "react-router-dom";
 import getImageUrl from "../../utils/getImageUrl";
@@ -30,12 +31,12 @@ export default function Home() {
       if (storedUser) {
         const userData = JSON.parse(storedUser);
         try {
-          const response = await fetch(`http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/get_user.php?user_id=${userData.user_id}`);
+          const response = await fetch(apiUrl(`get_user.php?user_id=${userData.user_id}`));
           const data = await response.json();
           if (data.success) {
             setUser(data.user);
             // Fetch order stats
-            const statsResponse = await fetch(`http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/get_order_stats.php?user_id=${userData.user_id}`);
+            const statsResponse = await fetch(apiUrl(`get_order_stats.php?user_id=${userData.user_id}`));
             const statsData = await statsResponse.json();
             if (statsData.success) {
               setOrderStats({
@@ -54,7 +55,7 @@ export default function Home() {
     // Fetch products for the home albums list
     const fetchProducts = async () => {
       try {
-        const res = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/get_products.php');
+        const res = await fetch(apiUrl('get_products.php'));
         const data = await res.json();
         if (data && data.success && Array.isArray(data.products)) {
           const mapped = data.products.map(p => ({

@@ -1,11 +1,10 @@
 <?php
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Headers: Content-Type");
-header("Access-Control-Allow-Methods: POST");
+require 'cors_config.php';
 header("Content-Type: application/json");
 
 require 'db_connect.php';
 require 'input_utils.php';
+require 'session_config.php';
 require 'log_utils.php';
 
 $data = read_json_input();
@@ -33,7 +32,8 @@ if ($update_stmt->execute()) {
     $update_user_stmt->bind_param("ii", $shipping_address_id, $user_id);
     $update_user_stmt->execute();
     $update_user_stmt->close();
-    log_action($conn, $user_id, null, "Updated shipping address {$shipping_address_id} to default");
+    $user_role = isset($_SESSION['usertype']) ? $_SESSION['usertype'] : null;
+    log_action($conn, $user_id, $user_role, "Updated shipping address {$shipping_address_id} to default");
     echo json_encode(["success" => true, "message" => "Address set as default"]);
 } else {
     echo json_encode(["success" => false, "message" => "Error updating address"]);

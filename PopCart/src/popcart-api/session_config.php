@@ -9,12 +9,15 @@ header("Pragma: no-cache");
 header("Expires: Sat, 26 Jul 1997 05:00:00 GMT");
 
 if (session_status() === PHP_SESSION_NONE) {
+    // Auto-detect if HTTPS is enabled (secure only in production)
+    $https_enabled = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
+    
     // Configure secure session cookie parameters
     session_set_cookie_params([
         'lifetime' => 0,             // Expire when browser closes
         'path' => '/',
-        'domain' => '',              // Empty = current domain (works for localhost too)
-        'secure' => false,           // Set to true in production with HTTPS
+        'domain' => '',              // Empty = current domain (works for localhost and LAN IPs)
+        'secure' => $https_enabled,  // true only on HTTPS; false on HTTP (for LAN/dev)
         'httponly' => true,          // Prevent JavaScript XSS access to session cookie
         'samesite' => 'Lax'          // Changed from Strict to Lax for better CORS compatibility
     ]);

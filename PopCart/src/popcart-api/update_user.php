@@ -1,8 +1,5 @@
 <?php
-header("Access-Control-Allow-Origin: http://localhost:5173");
-header("Access-Control-Allow-Headers: Content-Type");
-header("Access-Control-Allow-Methods: POST");
-header("Access-Control-Allow-Credentials: true");
+require 'cors_config.php';
 header("Content-Type: application/json");
 
 require 'db_connect.php';
@@ -230,6 +227,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($stmt->execute()) {
             $actor_id = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : null;
             $actor_role = isset($_SESSION['usertype']) ? $_SESSION['usertype'] : null;
+            
+            // If no session actor_id, use the user being updated (self-profile update)
+            if (!$actor_id) {
+                $actor_id = $user_id;
+            }
             
             // Log each field change - ONLY if the field was explicitly provided in the request
             if ($original_row && $actor_id) {

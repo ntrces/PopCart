@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { apiUrl } from "../utils/api.js";
 import "./SignInAdmin.css";
 
 export default function SignInAdmin() {
@@ -35,7 +36,7 @@ export default function SignInAdmin() {
     e.preventDefault();
     if (validateForm()) {
       try {
-        const response = await fetch("http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/signin_admin.php", {
+        const response = await fetch(apiUrl("signin_admin.php"), {
           method: "POST",
           credentials: "include",
           headers: { "Content-Type": "application/json" },

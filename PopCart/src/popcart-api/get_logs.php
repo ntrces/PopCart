@@ -1,17 +1,12 @@
 <?php
+require 'cors_config.php';
+require 'db_connect.php';
+
 header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
 
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "popcart";
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-if ($conn->connect_error) {
+if (!$conn || $conn->connect_error) {
     http_response_code(500);
-    echo json_encode(["success" => false, "message" => "Connection failed: " . $conn->connect_error]);
+    echo json_encode(["success" => false, "message" => "Database connection failed"]);
     exit();
 }
 
@@ -40,6 +35,4 @@ echo json_encode([
     "success" => true,
     "logs" => $logs
 ]);
-
-$conn->close();
 ?>

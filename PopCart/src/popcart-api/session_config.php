@@ -13,14 +13,21 @@ if (session_status() === PHP_SESSION_NONE) {
     $https_enabled = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
     
     // Configure secure session cookie parameters
+    // CRITICAL: lifetime => 0 means session cookie expires when browser closes
     session_set_cookie_params([
-        'lifetime' => 0,             // Expire when browser closes
+        'lifetime' => 0,             // Expire immediately when browser closes (session cookie)
         'path' => '/',
         'domain' => '',              // Empty = current domain (works for localhost and LAN IPs)
         'secure' => $https_enabled,  // true only on HTTPS; false on HTTP (for LAN/dev)
         'httponly' => true,          // Prevent JavaScript XSS access to session cookie
-        'samesite' => 'Lax'          // Changed from Strict to Lax for better CORS compatibility
+        'samesite' => 'Strict'       // Strict mode for maximum security - prevents CSRF attacks
     ]);
+    
+    // Configure session parameters for automatic cleanup
+    // Sessions older than 24 hours are deleted by garbage collector
+    ini_set('session.gc_maxlifetime', 86400);  // 24 hours
+    ini_set('session.gc_probability', 1);       // Run GC on 1 in 1000 requests (aggressive)
+    ini_set('session.gc_divisor', 100);         // Probability = 1/100
     
     // Start the session with a secure name
     session_name('POPCART_SESSION');

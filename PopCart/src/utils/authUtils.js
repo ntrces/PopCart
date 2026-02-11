@@ -1,12 +1,6 @@
 // Logout utility with back button prevention
+// Note: Use AuthContext.logout() instead - this is deprecated
 export const handleLogout = (navigate) => {
-  // Clear localStorage
-  localStorage.removeItem('user');
-  localStorage.clear();
-  
-  // Clear session storage if used
-  sessionStorage.clear();
-  
   // Navigate to signin and replace history
   navigate('/signin', { replace: true });
   
@@ -21,12 +15,10 @@ export const handleLogout = (navigate) => {
 };
 
 // Prevent back navigation after logout
-const preventBackNavigation = (event) => {
-  const user = localStorage.getItem('user');
-  if (!user) {
-    window.history.pushState(null, '', window.location.href);
-    window.history.forward();
-  }
+const preventBackNavigation = () => {
+  // Note: ProtectedRoute will verify session server-side
+  window.history.pushState(null, '', window.location.href);
+  window.history.forward();
 };
 
 // Initialize back button prevention on auth pages
@@ -35,16 +27,11 @@ export const initializeAuthProtection = () => {
   window.history.pushState(null, '', window.location.href);
   
   // Listen for back button
-  const handlePopState = (event) => {
-    const user = localStorage.getItem('user');
-    if (user) {
-      // User is logged in, allow navigation
-      return;
-    } else {
-      // User is logged out, prevent back navigation
-      window.history.pushState(null, '', window.location.href);
-      window.history.forward();
-    }
+  const handlePopState = () => {
+    // Note: ProtectedRoute will handle session verification
+    // Just prevent back navigation for UX
+    window.history.pushState(null, '', window.location.href);
+    window.history.forward();
   };
   
   window.addEventListener('popstate', handlePopState);
@@ -56,15 +43,19 @@ export const initializeAuthProtection = () => {
 };
 
 // Check if user is authenticated
+// Note: Deprecated - use AuthContext hook instead
 export const isAuthenticated = () => {
-  const user = localStorage.getItem('user');
-  return !!user;
+  // Always verify with server via ProtectedRoute
+  return false;
 };
 
 // Verify session is still valid (optional - requires session endpoint)
 export const verifySession = async () => {
   try {
-    const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/verify_session.php', {
+    const protocol = window.location.protocol;
+    const host = window.location.hostname;
+    const apiBase = `${protocol}//${host}/PopCart1/PopCart/PopCart/src/popcart-api`;
+    const response = await fetch(`${apiBase}/verify_session.php`, {
       method: 'GET',
       credentials: 'include',
     });

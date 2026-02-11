@@ -53,7 +53,7 @@ export default function Myprofile() {
       if (storedUser) {
         const userData = JSON.parse(storedUser);
         try {
-          const response = await fetch(`http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/get_user.php?user_id=${userData.user_id}`);
+          const response = await fetch(apiUrl(`get_user.php?user_id=${userData.user_id}`));
           const data = await response.json();
           if (data.success) {
             setUser(data.user);
@@ -77,7 +77,7 @@ export default function Myprofile() {
       if (storedUser) {
         const userData = JSON.parse(storedUser);
         try {
-          const response = await fetch(`http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/get_addresses.php?user_id=${userData.user_id}`);
+          const response = await fetch(apiUrl(`get_addresses.php?user_id=${userData.user_id}`));
           const data = await response.json();
           if (data.success) {
             setAddresses(data.addresses);
@@ -182,7 +182,7 @@ export default function Myprofile() {
         // Refresh addresses
         const fetchAddresses = async () => {
           try {
-            const response = await fetch(`http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/get_addresses.php?user_id=${user.user_id}`);
+            const response = await fetch(apiUrl(`get_addresses.php?user_id=${user.user_id}`));
             const data = await response.json();
             if (data.success) {
               setAddresses(data.addresses);
@@ -213,7 +213,7 @@ export default function Myprofile() {
         // Refresh addresses
         const fetchAddresses = async () => {
           try {
-            const response = await fetch(`http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/get_addresses.php?user_id=${user.user_id}`);
+            const response = await fetch(apiUrl(`get_addresses.php?user_id=${user.user_id}`));
             const data = await response.json();
             if (data.success) {
               setAddresses(data.addresses);
@@ -245,7 +245,7 @@ export default function Myprofile() {
           // Refresh addresses
           const fetchAddresses = async () => {
             try {
-              const response = await fetch(`http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/get_addresses.php?user_id=${user.user_id}`);
+              const response = await fetch(apiUrl(`get_addresses.php?user_id=${user.user_id}`));
               const data = await response.json();
               if (data.success) {
                 setAddresses(data.addresses);

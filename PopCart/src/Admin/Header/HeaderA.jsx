@@ -1,16 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "./HeaderA.css";
+import { useAuth } from "../../auth/useAuth";
 
 export default function HeaderA() {
+  const { user: authUser } = useAuth();
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      const userData = JSON.parse(storedUser);
-      setUser(userData);
+    if (authUser?.user_id) {
+      // For admin header, use the authUser which now includes firstname from database
+      setUser(authUser);
     }
-  }, []);
+  }, [authUser]);
 
   return (
     <div className="header-wrapper" role="banner">

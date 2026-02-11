@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/useAuth.jsx";
+import { apiUrl } from "../../utils/api.js";
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Cell, Legend, Tooltip, ResponsiveContainer } from "recharts";
 import "./Dashboard.css";
 import Monthly from "./Monthly.jsx";
@@ -31,7 +32,7 @@ export const Dashboard = () => {
   useEffect(() => {
     const fetchUserCount = async () => {
       try {
-        const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/get_user_count.php');
+        const response = await fetch(apiUrl('get_user_count.php'));
         const data = await response.json();
         if (data.success) {
           setTotalUsers(data.total_users.toString());
@@ -46,7 +47,7 @@ export const Dashboard = () => {
   useEffect(() => {
     const fetchProductCount = async () => {
       try {
-        const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/get_product_count.php');
+        const response = await fetch(apiUrl('get_product_count.php'));
         const data = await response.json();
         if (data.success) {
           setTotalProducts(data.total_products.toString());
@@ -61,7 +62,7 @@ export const Dashboard = () => {
   useEffect(() => {
     const fetchDashboardStats = async () => {
       try {
-        const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/get_dashboard_stats.php');
+        const response = await fetch(apiUrl('get_dashboard_stats.php'));
         const data = await response.json();
         if (data.success) {
           setTotalTransactions(data.total_transactions.toString());

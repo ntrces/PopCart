@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { apiUrl } from "../../utils/api.js";
 import "./EditProduct.css";
 import getImageUrl from "../../utils/getImageUrl";
 
@@ -29,7 +30,7 @@ function EditProduct({ product, onClose, onUpdate }) {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await fetch(`http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/get_product.php?product_id=${product.product_id}`);
+        const response = await fetch(apiUrl(`get_product.php?product_id=${product.product_id}`));
         const data = await response.json();
         if (data.success) {
           const p = data.product;
@@ -91,7 +92,7 @@ function EditProduct({ product, onClose, onUpdate }) {
       data.append('album_cover_img[]', formData.albumCoverImage);
     }
     try {
-      const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/update_product.php', {
+      const response = await fetch(apiUrl('update_product.php'), {
         method: 'POST',
         credentials: 'include',
         body: data

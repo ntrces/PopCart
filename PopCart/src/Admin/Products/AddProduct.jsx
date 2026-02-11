@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { apiUrl } from "../../utils/api.js";
 import "./AddProduct.css";
 
 function AddProduct({ onClose, onAdd }) {
@@ -47,7 +48,7 @@ function AddProduct({ onClose, onAdd }) {
     data.append('description', formData.description);
     data.append('album_cover_img[]', formData.albumCoverImage);
     try {
-      const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/add_product.php', {
+      const response = await fetch(apiUrl('add_product.php'), {
         method: 'POST',
         credentials: 'include',
         body: data

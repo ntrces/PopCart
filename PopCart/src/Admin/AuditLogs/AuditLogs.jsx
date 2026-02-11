@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/useAuth.jsx";
+import { apiUrl } from "../../utils/api.js";
 import "./AuditLogs.css";
 import Sidebar from "../Sidebar/SidebarA.jsx";
 import Header from "../Header/HeaderA.jsx";
@@ -30,7 +31,7 @@ export default function AuditLogs() {
 
     const fetchLogs = async () => {
       try {
-        const response = await fetch("http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/get_logs.php");
+        const response = await fetch(apiUrl('get_logs.php'));
         const data = await response.json();
 
         if (!data.success) {
@@ -52,7 +53,7 @@ export default function AuditLogs() {
 
     let initReceived = false;
     const eventSource = new EventSource(
-      "http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/get_logs_stream.php"
+      apiUrl("get_logs_stream.php")
     );
 
     eventSource.addEventListener("init", (event) => {

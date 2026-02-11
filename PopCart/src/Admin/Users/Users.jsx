@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/useAuth.jsx";
+import { apiUrl } from "../../utils/api.js";
 import "./Users.css";
 import Delete from "./Delete.jsx";
 import EditUser from "./Edit.jsx";
@@ -11,7 +12,7 @@ import Sidebar from "../Sidebar/SidebarA.jsx";
 
 export default function Users() {
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { logout, user: authUser } = useAuth();
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -23,16 +24,14 @@ export default function Users() {
   const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      const userData = JSON.parse(storedUser);
-      setCurrentUser(userData);
+    if (authUser?.user_id) {
+      setCurrentUser(authUser);
     }
-  }, []);
+  }, [authUser]);
 
   const fetchCounts = async () => {
     try {
-      const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/get_user_counts.php');
+      const response = await fetch(apiUrl('get_user_counts.php'));
       const data = await response.json();
       if (data.success) {
         setCounts(data.counts);
@@ -44,7 +43,7 @@ export default function Users() {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/get_users.php');
+      const response = await fetch(apiUrl('get_users.php'));
       const data = await response.json();
       if (data.success) {
         setUsers(data.users);

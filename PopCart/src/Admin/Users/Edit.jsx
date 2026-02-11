@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { apiUrl } from "../../utils/api.js";
 import "./Edit.css";
 
 
@@ -36,7 +37,7 @@ function Edit ({ user, onClose, onSuccess, currentUser, isFirstAdmin }) {
     if (user.usertype === 'admin' && formData.usertype !== 'admin') {
       // Check active admin count
       try {
-        const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/get_user_counts.php');
+        const response = await fetch(apiUrl('get_user_counts.php'));
         const data = await response.json();
         if (data.success && data.counts.admin <= 1) {
           alert('Cannot change role: At least one active admin must remain.');
@@ -57,7 +58,7 @@ function Edit ({ user, onClose, onSuccess, currentUser, isFirstAdmin }) {
     data.append('source_table', user.source_table || 'users');
     
     try {
-      const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/update_user.php', {
+      const response = await fetch(apiUrl('update_user.php'), {
         method: 'POST',
         credentials: 'include',
         body: data

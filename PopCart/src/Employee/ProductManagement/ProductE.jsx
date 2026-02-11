@@ -6,6 +6,7 @@ import EditProduct from "./EditE.jsx";
 import DeleteProduct from "./DeleteE.jsx";
 import image from "../../assets/image.png";
 import getImageUrl from "../../utils/getImageUrl";
+import { apiUrl } from "../../utils/api.js";
 import Header from "../Header/HeaderE.jsx";
 import Sidebar from "../Sidebar/SidebarE.jsx";
 
@@ -47,7 +48,7 @@ function ProductE() {
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/get_products.php');
+      const response = await fetch(apiUrl('get_products.php'));
       const data = await response.json();
       if (data.success) {
         setTableData(data.products);

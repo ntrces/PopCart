@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../auth/useAuth';
 
 // Custom hook to prevent back navigation after logout
 export const usePreventBackAfterLogout = () => {
@@ -8,12 +9,9 @@ export const usePreventBackAfterLogout = () => {
     window.history.pushState(null, null, window.location.href);
     
     const handlePopState = () => {
-      const user = localStorage.getItem('user');
-      
-      if (!user) {
-        // User is not logged in, prevent going back
-        window.history.pushState(null, null, window.location.href);
-      }
+      // Note: ProtectedRoute will handle session verification
+      // Just prevent back navigation for UX
+      window.history.pushState(null, null, window.location.href);
     };
     
     window.addEventListener('popstate', handlePopState);
@@ -27,25 +25,18 @@ export const usePreventBackAfterLogout = () => {
 // Custom hook to protect routes that require authentication
 export const useAuthProtection = (requiredRoles = []) => {
   const navigate = useNavigate();
+  const { user: authUser } = useAuth();
   
   useEffect(() => {
-    const user = localStorage.getItem('user');
-    
-    if (!user) {
+    if (!authUser?.user_id) {
       // Not logged in, redirect to signin
       navigate('/signin', { replace: true });
       return;
     }
     
     if (requiredRoles.length > 0) {
-      try {
-        const userData = JSON.parse(user);
-        if (!requiredRoles.includes(userData.usertype)) {
-          // User doesn't have required role
-          navigate('/signin', { replace: true });
-        }
-      } catch (error) {
-        console.error('Error parsing user data:', error);
+      if (!requiredRoles.includes(authUser.usertype)) {
+        // User doesn't have required role
         navigate('/signin', { replace: true });
       }
     }
@@ -53,11 +44,10 @@ export const useAuthProtection = (requiredRoles = []) => {
     // Prevent back navigation
     window.history.pushState(null, null, window.location.href);
     
-    const handleBackButton = (event) => {
-      const currentUser = localStorage.getItem('user');
-      if (!currentUser) {
-        window.history.pushState(null, null, window.location.href);
-      }
+    const handleBackButton = () => {
+      // Note: Let ProtectedRoute handle session verification
+      // Just prevent actual back navigation for UX
+      window.history.pushState(null, null, window.location.href);
     };
     
     window.addEventListener('popstate', handleBackButton);
@@ -65,30 +55,24 @@ export const useAuthProtection = (requiredRoles = []) => {
     return () => {
       window.removeEventListener('popstate', handleBackButton);
     };
-  }, [navigate, requiredRoles]);
+  }, [navigate, requiredRoles, authUser]);
 };
 
 // Custom hook for signin/landing pages - prevent access if already logged in
 export const useRedirectIfAuthenticated = (redirectTo = '/buyer') => {
   const navigate = useNavigate();
+  const { user: authUser } = useAuth();
   
   useEffect(() => {
-    const user = localStorage.getItem('user');
-    
-    if (user) {
-      try {
-        const userData = JSON.parse(user);
-        // Redirect based on usertype
-        if (userData.usertype === 'buyer') {
-          navigate('/buyer', { replace: true });
-        } else if (userData.usertype === 'employee') {
-          navigate('/employee', { replace: true });
-        } else if (userData.usertype === 'admin' || userData.usertype === 'SuperAdmin') {
-          navigate('/admin', { replace: true });
-        }
-      } catch (error) {
-        console.error('Error parsing user data:', error);
+    if (authUser?.user_id) {
+      // Redirect based on usertype from verified session
+      if (authUser.usertype === 'buyer') {
+        navigate('/buyer', { replace: true });
+      } else if (authUser.usertype === 'employee') {
+        navigate('/employee', { replace: true });
+      } else if (authUser.usertype === 'admin' || authUser.usertype === 'SuperAdmin') {
+        navigate('/admin', { replace: true });
       }
     }
-  }, [navigate, redirectTo]);
+  }, [navigate, authUser]);
 };

@@ -1,4 +1,5 @@
 import React from "react";
+import { apiUrl } from "../../utils/api.js";
 import "./DeleteProduct.css";
 
 export default function DeleteProduct ({ product, onClose, onDelete }) {
@@ -9,7 +10,7 @@ export default function DeleteProduct ({ product, onClose, onDelete }) {
 
   const handleDelete = async () => {
     try {
-      const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/delete_product.php', {
+      const response = await fetch(apiUrl('delete_product.php'), {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },

@@ -1,11 +1,10 @@
-// ...existing code...
 import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 
 import LandingPage from "./Login/LandingPage.jsx";
 import SignIn from "./Login/SignIn.jsx";
 import SignUpBuyer from "./Login/SignUpBuyer.jsx";
-
+import SignInAdmin from './Login/SignInAdmin.jsx';
 
 import Home from "./Buyer/Home/Home.jsx";
 import Marketplace from "./Buyer/Marketplace/Marketplace.jsx";
@@ -22,38 +21,42 @@ import AuditLogs from "./Admin/AuditLogs/AuditLogs.jsx";
 
 import OrderManage from "./Employee/OrderManagement/OrderE.jsx";
 import ProductManage from "./Employee/ProductManagement/ProductE.jsx";
-import SignInAdmin from './Login/SignInAdmin.jsx';
+
+import ProtectedRoute from "./routes/ProtectedRoute.jsx";
 
 
 export default function App() {
   return (
+    
     <Routes>
+      {/* Public routes - No authentication required */}
       <Route path="/" element={<LandingPage />} />
       <Route path="/landing" element={<LandingPage />} />
-      <Route path="/SignIn" element={<SignIn />} />
+      <Route path="/signin" element={<SignIn />} />
       <Route path="/signup-buyer" element={<SignUpBuyer />} />
-
-      {/* Admin routes */}
       <Route path="/admin/signin" element={<SignInAdmin />} />
-      <Route path="/admin" element={<AdminDashboard />} />
-      <Route path="/admin/users" element={<Users />} />
-      <Route path="/admin/products" element={<ProductManagement />} />
-      <Route path="/admin/orders" element={<OrderManagement />} />
-      <Route path="/admin/audit" element={<AuditLogs />} />
 
-      {/* Buyer routes */}
-      <Route path="/buyer" element={<Home />} />
-      <Route path="/buyer/marketplace" element={<Marketplace />} />
-      <Route path="/buyer/orders" element={<MyOrder />} />
-      <Route path="/buyer/profile" element={<MyProfile />} />
-      <Route path="/buyer/cart" element={<Cart />} />
-      <Route path="/buyer/notifications" element={<BuyerNotification />} />
+      {/* Protected Admin routes - Requires admin or SuperAdmin role */}
+      <Route path="/admin" element={<ProtectedRoute allowedRoles={["admin", "SuperAdmin"]}><AdminDashboard /></ProtectedRoute>} />
+      <Route path="/admin/users" element={<ProtectedRoute allowedRoles={["admin", "SuperAdmin"]}><Users /></ProtectedRoute>} />
+      <Route path="/admin/products" element={<ProtectedRoute allowedRoles={["admin", "SuperAdmin"]}><ProductManagement /></ProtectedRoute>} />
+      <Route path="/admin/orders" element={<ProtectedRoute allowedRoles={["admin", "SuperAdmin"]}><OrderManagement /></ProtectedRoute>} />
+      <Route path="/admin/audit" element={<ProtectedRoute allowedRoles={["admin", "SuperAdmin"]}><AuditLogs /></ProtectedRoute>} />
 
-      {/* Employee routes */}
-        <Route path="/employee" element={<Navigate to="/employee/products" replace />} />
-        <Route path="/employee/products" element={<ProductManage />} />
-        <Route path="/employee/orders" element={<OrderManage />} />
+      {/* Protected Buyer routes - Requires buyer role */}
+      <Route path="/buyer" element={<ProtectedRoute allowedRoles={["buyer"]}><Home /></ProtectedRoute>} />
+      <Route path="/buyer/marketplace" element={<ProtectedRoute allowedRoles={["buyer"]}><Marketplace /></ProtectedRoute>} />
+      <Route path="/buyer/orders" element={<ProtectedRoute allowedRoles={["buyer"]}><MyOrder /></ProtectedRoute>} />
+      <Route path="/buyer/profile" element={<ProtectedRoute allowedRoles={["buyer"]}><MyProfile /></ProtectedRoute>} />
+      <Route path="/buyer/cart" element={<ProtectedRoute allowedRoles={["buyer"]}><Cart /></ProtectedRoute>} />
+      <Route path="/buyer/notifications" element={<ProtectedRoute allowedRoles={["buyer"]}><BuyerNotification /></ProtectedRoute>} />
 
+      {/* Protected Employee routes - Requires employee role */}
+      <Route path="/employee" element={<Navigate to="/employee/products" replace />} />
+      <Route path="/employee/products" element={<ProtectedRoute allowedRoles={["employee"]}><ProductManage /></ProtectedRoute>} />
+      <Route path="/employee/orders" element={<ProtectedRoute allowedRoles={["employee"]}><OrderManage /></ProtectedRoute>} />
+
+      {/* Catch-all: Redirect unknown paths to home */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

@@ -1,23 +1,27 @@
 import React, { useState, useEffect } from "react";
 import "./HeaderE.css";
+import { useAuth } from "../../auth/useAuth";
 
 export default function HeaderE() {
-  const [user, setUser] = useState(() => {
-    try {
-      const s = localStorage.getItem('user');
-      return s ? JSON.parse(s) : null;
-    } catch (e) {
-      return null;
-    }
-  });
+  const { user: authUser } = useAuth();
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      const userData = JSON.parse(storedUser);
-      setUser(userData);
+    if (authUser?.user_id) {
+      // For employee header, we can use the authUser directly
+      setUser(authUser);
+    } else {
+      // Fallback to localStorage if authUser doesn't have data yet
+      try {
+        const storedUser = JSON.parse(localStorage.getItem('user'));
+        if (storedUser?.user_id) {
+          setUser(storedUser);
+        }
+      } catch (e) {
+        // Silently handle parsing errors
+      }
     }
-  }, []);
+  }, [authUser]);
 
   return (
     <div className="header-wrapper" role="banner">

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/useAuth.jsx";
+import { apiUrl } from "../../utils/api.js";
 import "./Order.css";
 import OrderDetails from "./OrderDetails.jsx";
 import Header from "../Header/HeaderA.jsx";
@@ -41,7 +42,7 @@ export const OrderManagement = () => {
 
   const fetchOrders = async () => {
     try {
-      const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/get_all_orders.php');
+      const response = await fetch(apiUrl('get_all_orders.php'));
       const data = await response.json();
       if (data.success) {
         setOrders(data.orders);
@@ -61,7 +62,7 @@ export const OrderManagement = () => {
 
   const handleStatusChange = async (orderId, newStatus) => {
     try {
-      const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/update_order_status.php', {
+      const response = await fetch(apiUrl('update_order_status.php'), {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -78,7 +79,7 @@ export const OrderManagement = () => {
 
   const handleCancel = async (orderId) => {
     try {
-      const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/update_order_status.php', {
+      const response = await fetch(apiUrl('update_order_status.php'), {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },

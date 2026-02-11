@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./LandingPage.css";
 import { useNavigate } from "react-router-dom";
+import { apiUrl } from "../utils/api.js";
 import getImageUrl from "../utils/getImageUrl";
 
 export const LandingPage = () => {
@@ -10,7 +11,7 @@ export const LandingPage = () => {
   useEffect(() => {
     const fetchFeaturedProducts = async () => {
       try {
-        const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/get_featured_products.php');
+        const response = await fetch(apiUrl('get_featured_products.php'));
         const data = await response.json();
         if (data.success) {
           setAlbums(data.products);

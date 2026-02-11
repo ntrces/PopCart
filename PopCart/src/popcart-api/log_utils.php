@@ -3,6 +3,7 @@ require_once 'input_utils.php';
 
 /**
  * Retrieves the role for a user by checking admin and user tables.
+ * Used as fallback when session data is not available (e.g., during logout).
  */
 function get_role_for_user($conn, int $user_id): ?string {
     $role = null;
@@ -37,8 +38,20 @@ function get_role_for_user($conn, int $user_id): ?string {
 }
 
 /**
- * Main logging function.
- * Updated to handle "Signed out" actions specifically.
+ * Main logging function for recording user actions.
+ * 
+ * IMPORTANT: The $role parameter should be obtained from $_SESSION['usertype'] 
+ * to ensure the logged usertype matches the user's actual role at the time of the action.
+ * 
+ * @param mysqli $conn Database connection
+ * @param int $user_id The ID of the user performing the action
+ * @param ?string $role The usertype/role of the user (should come from $_SESSION['usertype'])
+ * @param string $action Description of the action performed
+ * 
+ * This function will:
+ * 1. Use the provided $role if available (from session)
+ * 2. Fall back to looking up role in database if $role is not provided
+ * 3. Record the action with the user_id, role, and action in the logs table
  */
 function log_action($conn, int $user_id, ?string $role, string $action): void {
     $debug_log = __DIR__ . '/logout_debug.log';
@@ -50,14 +63,20 @@ function log_action($conn, int $user_id, ?string $role, string $action): void {
         return;
     }
 
-    // Lookup role if missing (common during logout if session is already cleared)
+    // Lookup role if missing (fallback for cases where session data is unavailable)
     if (empty($role)) {
+        // This fallback is mainly needed during logout when session is being destroyed
         $role = get_role_for_user($conn, $user_id);
+        
+        if ($role) {
+            file_put_contents($debug_log, $timestamp . "log_action: Role looked up from database - user_id=$user_id, role='$role'\n", FILE_APPEND);
+        }
     }
     
     // Final fallback
     if (!$role) {
-        $role = 'buyer'; 
+        $role = 'buyer';  // Default to 'buyer' if role cannot be determined
+        file_put_contents($debug_log, $timestamp . "log_action: Warning - Role could not be determined, defaulting to 'buyer' for user_id=$user_id\n", FILE_APPEND);
     }
 
     // Sanitize
@@ -72,7 +91,7 @@ function log_action($conn, int $user_id, ?string $role, string $action): void {
         $clean_action = substr($action, 0, 255);
     }
 
-    file_put_contents($debug_log, $timestamp . "Sanitized - Role: '$clean_role', Action: '$clean_action'\n", FILE_APPEND);
+    file_put_contents($debug_log, $timestamp . "log_action: Recording - user_id=$user_id, role='$clean_role', action='$clean_action'\n", FILE_APPEND);
 
     // Database Insertion
     $stmt = $conn->prepare("INSERT INTO logs (user_id, role, action) VALUES (?, ?, ?)");
@@ -84,14 +103,12 @@ function log_action($conn, int $user_id, ?string $role, string $action): void {
 
     $stmt->bind_param("iss", $user_id, $clean_role, $clean_action);
     
-    file_put_contents($debug_log, $timestamp . "Executing INSERT with user_id=$user_id, role='$clean_role', action='$clean_action'\n", FILE_APPEND);
-    
     if (!$stmt->execute()) {
         file_put_contents($debug_log, $timestamp . "SQL Execute Error: " . $stmt->error . "\n", FILE_APPEND);
         error_log("Execute failed in log_action: " . $stmt->error);
     } else {
         $insert_id = $conn->insert_id;
-        file_put_contents($debug_log, $timestamp . "SUCCESS! Inserted log ID: $insert_id\n", FILE_APPEND);
+        file_put_contents($debug_log, $timestamp . "log_action: SUCCESS! Inserted log ID=$insert_id for user_id=$user_id\n", FILE_APPEND);
     }
 
     $stmt->close();

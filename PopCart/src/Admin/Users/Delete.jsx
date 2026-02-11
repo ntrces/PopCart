@@ -1,4 +1,5 @@
 import React from "react";
+import { apiUrl } from "../../utils/api.js";
 import "./Delete.css";
 
 export default function Delete ({ onClose, user, onSuccess, currentUser }) {
@@ -17,7 +18,7 @@ export default function Delete ({ onClose, user, onSuccess, currentUser }) {
     if (user.usertype === 'admin') {
       // Check active admin count
       try {
-        const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/get_user_counts.php');
+        const response = await fetch(apiUrl('get_user_counts.php'));
         const data = await response.json();
         if (data.success && data.counts.admin <= 1) {
           alert('Cannot delete: At least one active admin must remain.');
@@ -33,7 +34,7 @@ export default function Delete ({ onClose, user, onSuccess, currentUser }) {
     data.append('user_id', user.user_id);
     data.append('status', 'inactive');
     try {
-      const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/update_user_status.php', {
+      const response = await fetch(apiUrl('update_user_status.php'), {
         method: 'POST',
         credentials: 'include',
         body: data

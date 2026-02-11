@@ -27,7 +27,7 @@ if (!$conn || $conn->connect_error) {
     exit;
 }
 
-// 1. Resolve Identity
+// 1. Resolve Identity from request body or session
 $data = read_json_input();
 $user_id = null;
 $user_role = null;
@@ -57,12 +57,27 @@ if ($user_id && $user_id > 0) {
     file_put_contents($log_file, $timestamp . "SKIPPED LOGGING - user_id is invalid or zero\n", FILE_APPEND);
 }
 
-// 3. Cleanup Session
+// 3. Cleanup Session completely
+// Clear all session variables
 $_SESSION = [];
+
+// Delete the session cookie by setting expires time to the past
 if (isset($_COOKIE[session_name()])) {
-    setcookie(session_name(), '', time() - 3600, '/');
+    setcookie(
+        session_name(),
+        '',
+        time() - 3600,  // Set to 1 hour ago to ensure deletion
+        '/',
+        '',
+        false,
+        true
+    );
 }
+
+// Force session destruction and removal of all data
 session_destroy();
+
+file_put_contents($log_file, $timestamp . "Session destroyed successfully\n", FILE_APPEND);
 
 // 4. Response
 echo json_encode([

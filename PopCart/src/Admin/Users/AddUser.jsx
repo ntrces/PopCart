@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { apiUrl } from "../../utils/api.js";
 import "./AddUser.css";
 
 function AddUser ({ onClose, onSuccess, currentUser }) {
@@ -35,7 +36,7 @@ function AddUser ({ onClose, onSuccess, currentUser }) {
       return;
     }
     try {
-      const response = await fetch('http://localhost/PopCart1/PopCart/PopCart/src/popcart-api/add_user.php', {
+      const response = await fetch(apiUrl('add_user.php'), {
         method: 'POST',
         credentials: 'include',
         headers: { "Content-Type": "application/json" },

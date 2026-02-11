@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../auth/useAuth.jsx";
 import { apiUrl } from "../utils/api.js";
 import "./SignIn.css";
 
 export default function SignIn() {
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -48,6 +50,9 @@ export default function SignIn() {
         if (data.success) {
           // Store user data in localStorage
           localStorage.setItem('user', JSON.stringify(data.user));
+          
+          // Update AuthContext immediately with current user data
+          login(data.usertype, data.user);
 
           // Navigate based on usertype
           if (data.usertype === "buyer") {

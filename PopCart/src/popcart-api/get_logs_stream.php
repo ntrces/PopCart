@@ -1,18 +1,14 @@
 <?php
+require 'cors_config.php';
+require 'db_connect.php';
+
 header('Content-Type: text/event-stream');
 header('Cache-Control: no-cache');
 header('Connection: keep-alive');
-header('Access-Control-Allow-Origin: *');
 
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "popcart";
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-if ($conn->connect_error) {
+if (!$conn || $conn->connect_error) {
     echo "event: error\n";
-    echo 'data: {"success":false,"message":"Connection failed"}\n\n';
+    echo 'data: {"success":false,"message":"Database connection failed"}\n\n';
     flush();
     exit();
 }

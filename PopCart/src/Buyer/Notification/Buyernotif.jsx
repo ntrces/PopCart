@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import "../Cart/Cart.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../auth/useAuth";
 
 
 export default function Buyernotif() {
+  const navigate = useNavigate();
+  const { logout } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
@@ -126,7 +129,7 @@ Home</button> </Link>
           Cancel
         </button>
 
-        <button className="confirm-btn" onClick={() => { localStorage.removeItem('user'); setShowSignOutModal(false); navigate('/signin'); }}>
+        <button className="confirm-btn" onClick={() => { logout(); setShowSignOutModal(false); }}>
           Sign Out
         </button>
       </div>
